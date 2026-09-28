@@ -941,7 +941,6 @@ a{ text-decoration:none; }
   align-items:center;
   padding:64px 0 70px;
   background:linear-gradient(120deg,#6637F4 0%,#7547FF 52%,#5C2FE8 100%);
-  border-radius:34px 34px 0 0;
 }
 
 .cta-shape{
@@ -1312,7 +1311,7 @@ a{ text-decoration:none; }
 
   .testimonial-dots{ display:flex; }
 
-  .cta-band{ min-height:0; padding:60px 0 64px; border-radius:26px 26px 0 0; }
+  .cta-band{ min-height:0; padding:60px 0 64px; }
   .site-footer{ padding:60px 0 30px; }
   .footer-divider{ margin:40px 0 22px; }
 
@@ -1373,7 +1372,7 @@ a{ text-decoration:none; }
   .stat-value{ font-size:28px; }
   .stat-label{ font-size:13.5px; }
 
-  .cta-band{ padding:52px 0 56px; border-radius:22px 22px 0 0; }
+  .cta-band{ padding:52px 0 56px; }
   .cta-title{ font-size:27px; }
   .cta-text br{ display:none; }
   .cta-inner .btn{ width:100%; max-width:320px; }
