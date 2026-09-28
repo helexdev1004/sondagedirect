@@ -414,67 +414,109 @@ a{ text-decoration:none; }
 }
 
 /* --------------------------------------------------------------------------
-   Trusted logos
+   Rewards
    -------------------------------------------------------------------------- */
 
-.logos-section{
+.rewards-section{
   background:var(--white);
-  padding:52px 0 56px;
+  padding:84px 0 92px;
 }
 
-.logos-eyebrow{
+.rewards-section .section-head{ margin-bottom:34px; }
+
+.rewards-trusted{
   text-align:center;
-  color:#7E8AA5;
-  font-size:11px;
+  color:var(--navy);
+  font-size:15px;
   font-weight:600;
-  letter-spacing:.14em;
-  text-transform:uppercase;
   margin-bottom:34px;
 }
 
-/* Equal columns keep the optical rhythm even, since the wordmarks differ
-   in length; each lockup is centred in its own cell. */
-.logos-row{
+.rewards-grid{
   display:grid;
-  grid-template-columns:repeat(7,1fr);
-  align-items:center;
-  gap:20px;
+  grid-template-columns:repeat(5,1fr);
+  gap:18px;
   margin:0;
 }
 
-.logo-item{
+/* The reference stands each brand on its own coloured card; on a light page
+   that reads as ten competing blocks, so the card is ours and the colour
+   stays in the logo. */
+.reward-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  aspect-ratio:1 / 1.12;
+  padding:18px 14px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(28,82,160,.05);
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.reward-card:hover{
+  transform:translateY(-3px);
+  border-color:#BBDCF7;
+  box-shadow:0 16px 36px rgba(28,82,160,.12);
+}
+
+.reward-logo{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:9px;
-  transition:transform .2s ease;
+  gap:6px;
+  min-height:34px;
 }
 
-.logo-item:hover{ transform:translateY(-2px); }
-
-.logo-mark{
-  width:28px;
-  height:28px;
+.reward-mark{
+  width:22px;
+  height:22px;
   flex:none;
   display:block;
 }
 
-.logo-word{
-  font-size:20px;
+.reward-mark--wide{ width:40px; height:auto; }
+
+.reward-word{
+  font-size:17px;
   font-weight:700;
   letter-spacing:-.02em;
   line-height:1;
+  color:#111;
   white-space:nowrap;
 }
 
-/* Each brand in its own colour rather than a flat muted row. */
-.logo-word--loreal{ font-size:18px; letter-spacing:.09em; color:#111; }
-.logo-word--dropbox{ color:#0061FF; }
-.logo-word--canva{ color:#6420FF; }
-.logo-word--notion{ color:#121212; }
-.logo-word--stripe{ font-size:21px; letter-spacing:-.04em; color:#635BFF; }
-.logo-word--airbnb{ letter-spacing:-.025em; color:#FF5A5F; }
-.logo-word--hubspot{ color:#FF7A59; }
+.reward-kind{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#8A94AC;
+}
+
+/* Brand colours, since the card itself is plain. */
+.reward-word--ubereats{ color:#06C167; margin-left:2px; }
+.reward-word--zalando{ font-size:16px; letter-spacing:-.01em; }
+.reward-word--paypal-a{ color:#003087; }
+.reward-word--paypal-b{ color:#009CDE; }
+.reward-word--visa{ color:#1A1F71; font-size:20px; letter-spacing:.02em; font-style:italic; }
+.reward-word--hm{ color:#E50010; font-size:21px; }
+.reward-word--deliveroo{ color:#00A79D; font-size:16px; }
+
+/* IKEA's wordmark only reads inside its yellow oval. */
+.reward-logo--ikea{
+  background:#FFDA1A;
+  border-radius:50% / 50%;
+  padding:7px 16px;
+  min-height:0;
+}
+
+.reward-word--ikea{ color:#0058A3; font-size:17px; letter-spacing:.02em; }
+
+.rewards-cta{ margin-top:36px; }
 
 /* --------------------------------------------------------------------------
    Features
@@ -1340,8 +1382,7 @@ a{ text-decoration:none; }
   .cta-title{ font-size:34px; }
   .primary-nav{ gap:26px; }
   .header-actions{ gap:18px; }
-  .logos-row{ grid-template-columns:repeat(4,1fr); gap:28px 18px; }
-  .logo-word{ font-size:16px; }
+  .rewards-grid{ grid-template-columns:repeat(4,1fr); }
   .hero-points{ gap:22px; }
 }
 
@@ -1476,9 +1517,10 @@ a{ text-decoration:none; }
 
   .hero-visual-img{ border-radius:20px; }
 
-  .logos-section{ padding:44px 0 46px; }
-  .logos-row{ grid-template-columns:repeat(3,1fr); gap:24px 14px; }
-  .logo-word{ font-size:15px; }
+  .rewards-section{ padding:58px 0 64px; }
+  .rewards-grid{ grid-template-columns:repeat(3,1fr); gap:14px; }
+  .reward-word{ font-size:15px; }
+  .reward-mark--wide{ width:34px; }
   .logo-mark{ width:19px; height:19px; }
 
   .section-title{ font-size:30px; }
@@ -1517,7 +1559,7 @@ a{ text-decoration:none; }
 }
 
 @media (max-width:575.98px){
-  .logos-row{ grid-template-columns:repeat(2,1fr); }
+  .rewards-grid{ grid-template-columns:repeat(2,1fr); }
   .hero-heading{ font-size:34px; }
   .hero-heading br{ display:none; }
   .section-title{ font-size:27px; }
