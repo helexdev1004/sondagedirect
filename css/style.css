@@ -254,28 +254,21 @@ a{ text-decoration:none; }
   align-items:center;
   padding:80px 0 84px;
   background:
-    radial-gradient(760px 520px at 6% 10%, #F0E9FF 0%, rgba(240,233,255,0) 64%),
-    radial-gradient(940px 640px at 86% 54%, #EDE4FF 0%, rgba(237,228,255,0) 62%),
-    linear-gradient(180deg,#F8F5FF 0%,#FCFAFF 100%);
+    url("../assets/hero-wave-bg.svg") center / cover no-repeat,
+    linear-gradient(180deg,#F5F0FE 0%,#FBF9FF 100%);
   overflow:hidden;
 }
 
-/* The copy side would otherwise sit on flat colour while the right half has a
-   room behind it. A mirrored, heavily blurred echo of the same photograph
-   gives it the same light and depth without competing with the text. */
+/* A soft wash that lifts the copy off the wave. It has no edge of its own —
+   it only brightens what sits behind the text, so nothing reads as a panel. */
 .hero-section::before{
   content:"";
   position:absolute;
   left:0;
   top:0;
   bottom:0;
-  width:54%;
-  background:url("../assets/hero-main.jpg") center / cover no-repeat;
-  transform:scaleX(-1);
-  filter:blur(42px) saturate(.75);
-  opacity:.36;
-  -webkit-mask-image:linear-gradient(to left,transparent 0%,rgba(0,0,0,.55) 42%,#000 100%);
-  mask-image:linear-gradient(to left,transparent 0%,rgba(0,0,0,.55) 42%,#000 100%);
+  width:58%;
+  background:radial-gradient(72% 64% at 32% 50%, rgba(255,255,255,.8) 0%, rgba(255,255,255,.46) 48%, rgba(255,255,255,0) 80%);
   z-index:0;
   pointer-events:none;
 }
