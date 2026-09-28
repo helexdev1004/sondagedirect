@@ -689,80 +689,69 @@ a{ text-decoration:none; }
   padding:88px 0 94px;
 }
 
-.impact-row{
-  display:flex;
-  align-items:center;
-  gap:60px;
-}
-
-.impact-copy-col{
-  flex:0 1 42%;
-  max-width:42%;
-}
-
-.impact-stats-col{
-  flex:0 1 58%;
-  max-width:58%;
-}
-
-.impact-title{
-  font-size:36px;
-  line-height:1.24;
-  margin-top:20px;
-}
-
-.impact-text{
-  color:var(--body);
-  font-size:15px;
-  line-height:1.72;
-  margin-top:16px;
-  max-width:400px;
-}
-
-.stats-row{
-  display:flex;
-  justify-content:space-between;
-  gap:22px;
-}
+.stats-row{ --bs-gutter-x:24px; --bs-gutter-y:24px; }
 
 .stat{
-  flex:1 1 0;
-  text-align:center;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  --accent:var(--purple);
+  --glow:rgba(102,55,244,.15);
+  position:relative;
+  height:100%;
+  overflow:hidden;
+  padding:30px 24px 28px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r-card);
+  box-shadow:0 10px 30px rgba(46,31,92,.05);
+  transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+/* A wash of the card's own accent bleeding in from the top corner. */
+.stat::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(150px 130px at 100% 0%, var(--glow), transparent 72%);
+  pointer-events:none;
+}
+
+.stat:hover{
+  border-color:var(--accent);
+  box-shadow:0 20px 44px rgba(46,31,92,.14);
+  transform:translateY(-3px);
 }
 
 .stat-icon{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:62px;
-  height:62px;
-  border-radius:50%;
-  background:var(--white);
-  box-shadow:0 8px 24px rgba(46,31,92,.07);
-  margin-bottom:18px;
-}
-
-.stat-icon img{
-  width:28px;
-  height:28px;
+  position:relative;
+  display:block;
+  width:46px;
+  height:46px;
+  margin-bottom:20px;
 }
 
 .stat-value{
-  font-size:30px;
+  position:relative;
+  display:block;
+  font-size:34px;
   font-weight:800;
-  letter-spacing:-.02em;
+  letter-spacing:-.035em;
+  font-variant-numeric:tabular-nums;
   color:var(--navy);
-  line-height:1.1;
+  line-height:1.05;
+  margin-bottom:6px;
 }
 
 .stat-label{
+  position:relative;
+  display:block;
   color:var(--body);
-  font-size:13.5px;
-  margin-top:8px;
+  font-size:14.5px;
+  line-height:1.5;
 }
+
+.stat--customers{ --accent:#6637F4; --glow:rgba(102,55,244,.15); }
+.stat--surveys  { --accent:#2B7FFF; --glow:rgba(43,127,255,.15); }
+.stat--responses{ --accent:#10B981; --glow:rgba(16,185,129,.15); }
+.stat--uptime   { --accent:#F59E0B; --glow:rgba(245,158,11,.17); }
 
 /* --------------------------------------------------------------------------
    Testimonials
@@ -1209,7 +1198,6 @@ a{ text-decoration:none; }
   .hero-copy-col{ width:47%; }
   .section-title{ font-size:38px; }
   .how-title{ font-size:36px; }
-  .impact-title{ font-size:32px; }
   .cta-title{ font-size:34px; }
   .primary-nav{ gap:26px; }
   .header-actions{ gap:18px; }
@@ -1246,8 +1234,7 @@ a{ text-decoration:none; }
   }
 
   .hero-row,
-  .how-row,
-  .impact-row{
+  .how-row{
     flex-direction:column;
     gap:46px;
   }
@@ -1255,9 +1242,7 @@ a{ text-decoration:none; }
   .hero-copy-col,
   .hero-visual-col,
   .how-copy-col,
-  .how-visual-col,
-  .impact-copy-col,
-  .impact-stats-col{
+  .how-visual-col{
     flex:1 1 100%;
     max-width:100%;
   }
@@ -1297,9 +1282,6 @@ a{ text-decoration:none; }
   .impact-section{ padding:70px 0 76px; }
 
   .section-head{ margin-bottom:42px; }
-
-  .stats-row{ flex-wrap:wrap; row-gap:34px; }
-  .stat{ flex:1 1 40%; }
 
   /* Three cards no longer fit side by side — swipe one at a time, which is
      what the dots below the track drive. */
@@ -1376,11 +1358,10 @@ a{ text-decoration:none; }
   .how-plant-img{ width:24%; right:-2%; }
 
   .impact-section{ padding:58px 0 64px; }
-  .impact-title{ font-size:28px; }
-  .impact-title br{ display:none; }
-  .stat{ flex:1 1 42%; }
-  .stat-icon{ width:56px; height:56px; }
-  .stat-value{ font-size:26px; }
+  .stat{ padding:24px 18px 22px; }
+  .stat-icon{ width:40px; height:40px; margin-bottom:16px; }
+  .stat-value{ font-size:28px; }
+  .stat-label{ font-size:13.5px; }
 
   .cta-band{ padding:52px 0 56px; border-radius:22px 22px 0 0; }
   .cta-title{ font-size:27px; }
@@ -1398,7 +1379,6 @@ a{ text-decoration:none; }
   .hero-heading{ font-size:34px; }
   .hero-heading br{ display:none; }
   .section-title{ font-size:27px; }
-  .stat{ flex:1 1 100%; }
   .footer-col{ width:100%; }
 }
 
