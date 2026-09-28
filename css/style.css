@@ -759,150 +759,96 @@ a{ text-decoration:none; }
 }
 
 .testimonial-card{
-  position:relative;
-  height:100%;
-  min-height:330px;
-  overflow:hidden;
-  border-radius:28px;
-  border:1px solid rgba(255,255,255,.8);
-  background:linear-gradient(104deg,#F8FCFF 0%,#F0F8FE 44%,#CFE6FA 68%,#5AA7F5 100%);
-  box-shadow:0 18px 46px rgba(28,82,160,.14);
-}
-
-/* Soft light sphere the portrait sits against, as in the reference. */
-.testimonial-card::before{
-  content:"";
-  position:absolute;
-  right:2%;
-  top:-24%;
-  width:62%;
-  aspect-ratio:1;
-  border-radius:50%;
-  background:radial-gradient(circle at 34% 30%, rgba(255,255,255,1), rgba(235,245,253,.88) 42%, rgba(196,225,250,.45) 68%, transparent 76%);
-  pointer-events:none;
-  z-index:1;
-}
-
-.testimonial-body{
-  position:relative;
-  z-index:4;
   display:flex;
   flex-direction:column;
   height:100%;
-  max-width:58%;
-  padding:28px 14px 26px 28px;
+  padding:28px 28px 26px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.9);
+  background:rgba(255,255,255,.82);
+  box-shadow:0 14px 38px rgba(28,82,160,.10);
 }
 
 .testimonial-quote{
   color:var(--navy);
-  font-size:14px;
-  line-height:1.66;
-  font-weight:500;
-  margin-bottom:16px;
+  font-size:15px;
+  line-height:1.7;
+  font-weight:400;
+  margin:0 0 22px;
 }
 
 .stars{
   color:#F5A623;
-  font-size:19px;
-  letter-spacing:3px;
+  font-size:16px;
+  letter-spacing:2px;
   line-height:1;
-  margin-bottom:13px;
+  margin-bottom:14px;
+}
+
+/* A round avatar beside the name, the way a review actually carries a face —
+   not a photograph filling half the card. */
+.testimonial-person{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  margin-top:auto;
+}
+
+.testimonial-avatar{
+  width:48px;
+  height:48px;
+  flex:none;
+  border-radius:50%;
+  object-fit:cover;
+  background:var(--tint);
+  box-shadow:0 0 0 3px var(--white), 0 2px 8px rgba(28,82,160,.14);
 }
 
 .person-name{
-  font-size:18px;
+  font-size:15.5px;
   font-weight:700;
   color:var(--navy);
   line-height:1.3;
 }
 
 .person-role{
-  font-size:15px;
+  font-size:13px;
   color:var(--body);
   line-height:1.4;
-  margin-top:4px;
+  margin-top:2px;
 }
 
-.company-chip{
+/* What they actually walked away with — the point of the whole page. */
+.redeemed-chip{
   display:inline-flex;
   align-items:center;
-  gap:9px;
+  gap:8px;
   align-self:flex-start;
-  margin-top:auto;
-  padding:10px 18px;
+  margin-top:18px;
+  padding:7px 13px;
   background:var(--white);
-  border:1px solid rgba(255,255,255,.9);
-  border-radius:14px;
-  box-shadow:0 6px 18px rgba(28,82,160,.12);
+  border:1px solid var(--border);
+  border-radius:99px;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--navy);
+  box-shadow:0 2px 8px rgba(28,82,160,.07);
 }
 
-.company-chip img{
-  width:22px;
-  height:22px;
+.redeemed-mark{
+  width:15px;
+  height:15px;
+  flex:none;
   display:block;
 }
 
-.company-chip span{
-  font-size:16px;
-  font-weight:700;
-  letter-spacing:-.02em;
-  line-height:1;
+/* IKEA's mark is an outline that disappears at this size without its field. */
+.redeemed-mark--ikea{
+  background:#FFDA1A;
+  border-radius:3px;
+  padding:1px 2px;
+  box-sizing:content-box;
 }
-
-
-/* The portrait is bled into the card rather than boxed: the left and top
-   edges are masked to nothing so the photograph melts into the gradient. */
-.testimonial-portrait{
-  position:absolute;
-  right:0;
-  bottom:0;
-  z-index:2;
-  width:42%;
-  height:100%;
-  overflow:hidden;
-  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 17%);
-  mask-image:linear-gradient(to right,transparent 0%,#000 17%);
-}
-
-.portrait-photo{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  max-width:none;
-  object-fit:cover;
-  object-position:50% 50%;
-  filter:saturate(.96) contrast(1.04);
-  display:block;
-}
-
-/* Stands in until a portrait exists for that person. */
-.portrait-pending{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(158deg,#8FC4F8 0%,#3B8DF0 52%,#0B63E0 100%);
-}
-
-.portrait-pending::before{
-  content:attr(data-initials);
-  position:relative;
-  z-index:1;
-  font-size:32px;
-  font-weight:700;
-  letter-spacing:.04em;
-  color:#fff;
-  text-shadow:0 2px 12px rgba(10,35,80,.32);
-}
-
-.testimonial-track > .testimonial-card:nth-child(3) .portrait-pending{
-  background:linear-gradient(158deg,#A6D2F9 0%,#4E9BF2 52%,#1670E8 100%);
-}
-
-/* Per-portrait framing so each face sits clear of the card's blended edge. */
-.testimonial-track > .testimonial-card:nth-child(1) .portrait-photo{ object-position:52% 12%; }
-.testimonial-track > .testimonial-card:nth-child(2) .portrait-photo{ object-position:52% 30%; }
-.testimonial-track > .testimonial-card:nth-child(3) .portrait-photo{ object-position:46% 26%; }
 
 .testimonials-section .section-title{ font-size:46px; }
 .testimonials-section .section-sub{ font-size:16.5px; }
@@ -1465,8 +1411,7 @@ a{ text-decoration:none; }
   .usecases-section,
   .testimonials-section{ padding:62px 0 66px; }
 
-  .testimonial-body{ padding:20px 14px 18px 18px; }
-  .testimonial-portrait{ flex-basis:34%; }
+  .testimonial-card{ padding:24px 22px 22px; }
 
   .how-section{ padding:62px 0 70px; }
   .how-title{ font-size:30px; }

@@ -55,14 +55,6 @@
     sections.forEach(function (section) { spy.observe(section); });
   }
 
-  // A portrait that hasn't been supplied yet drops out so the tinted panel
-  // behind it shows instead of a broken-image icon.
-  document.querySelectorAll('.portrait-photo').forEach(function (img) {
-    var drop = function () { img.remove(); };
-    if (img.complete && img.naturalWidth === 0) drop();
-    img.addEventListener('error', drop);
-  });
-
   var track = document.getElementById('testimonialTrack');
   var dotWrap = document.getElementById('testimonialDots');
 
