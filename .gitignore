@@ -1,0 +1,15 @@
+# OS cruft
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Scratch files used while building
+_check.html
+_measure.html
+_mobile.html
