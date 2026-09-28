@@ -260,6 +260,26 @@ a{ text-decoration:none; }
   overflow:hidden;
 }
 
+/* The copy side would otherwise sit on flat colour while the right half has a
+   room behind it. A mirrored, heavily blurred echo of the same photograph
+   gives it the same light and depth without competing with the text. */
+.hero-section::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:54%;
+  background:url("../assets/hero-main.jpg") center / cover no-repeat;
+  transform:scaleX(-1);
+  filter:blur(42px) saturate(.75);
+  opacity:.36;
+  -webkit-mask-image:linear-gradient(to left,transparent 0%,rgba(0,0,0,.55) 42%,#000 100%);
+  mask-image:linear-gradient(to left,transparent 0%,rgba(0,0,0,.55) 42%,#000 100%);
+  z-index:0;
+  pointer-events:none;
+}
+
 .hero-row{
   display:flex;
   align-items:center;
@@ -357,11 +377,11 @@ a{ text-decoration:none; }
   object-position:56% 46%;
   display:block;
   -webkit-mask-image:
-    linear-gradient(to right,transparent 0%,rgba(0,0,0,.22) 26%,rgba(0,0,0,.8) 48%,#000 66%),
-    linear-gradient(to bottom,transparent 0%,#000 12%,#000 86%,transparent 100%);
+    linear-gradient(to right,transparent 0%,rgba(0,0,0,.55) 16%,#000 34%),
+    linear-gradient(to bottom,transparent 0%,#000 9%,#000 90%,transparent 100%);
   mask-image:
-    linear-gradient(to right,transparent 0%,rgba(0,0,0,.22) 26%,rgba(0,0,0,.8) 48%,#000 66%),
-    linear-gradient(to bottom,transparent 0%,#000 12%,#000 86%,transparent 100%);
+    linear-gradient(to right,transparent 0%,rgba(0,0,0,.55) 16%,#000 34%),
+    linear-gradient(to bottom,transparent 0%,#000 9%,#000 90%,transparent 100%);
   -webkit-mask-composite:source-in;
   mask-composite:intersect;
 }
@@ -1245,7 +1265,10 @@ a{ text-decoration:none; }
   .hero-copy-col{ width:100%; }
 
   /* Stacked layout: the photograph returns to the flow as a normal image
-     rather than a background the copy would have to sit on top of. */
+     rather than a background the copy would have to sit on top of, so the
+     blurred echo behind the copy is no longer needed. */
+  .hero-section::before{ display:none; }
+
   .hero-visual-col{
     position:static;
     width:100%;
