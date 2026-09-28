@@ -22,6 +22,39 @@
     });
   }
 
+  // Mark the nav link for whichever section is currently in view.
+  var navLinks = [].slice.call(document.querySelectorAll('.primary-nav .nav-link'));
+  var sections = navLinks
+    .map(function (link) { return document.querySelector(link.getAttribute('href')); })
+    .filter(Boolean);
+
+  if (sections.length && 'IntersectionObserver' in window) {
+    var setCurrent = function (id) {
+      navLinks.forEach(function (link) {
+        link.classList.toggle('is-current', link.getAttribute('href') === '#' + id);
+      });
+    };
+
+    // Track what is on screen rather than reacting to entries alone: a callback
+    // only carries the sections whose status changed, so a fast jump can deliver
+    // nothing but departures and leave the highlight stranded.
+    var onScreen = [];
+
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var at = onScreen.indexOf(entry.target);
+        if (entry.isIntersecting && at === -1) onScreen.push(entry.target);
+        if (!entry.isIntersecting && at !== -1) onScreen.splice(at, 1);
+      });
+
+      // sections is in document order, so the first still on screen is the topmost.
+      var top = sections.filter(function (s) { return onScreen.indexOf(s) !== -1; })[0];
+      setCurrent(top ? top.id : null);
+    }, { rootMargin: '-88px 0px -45% 0px', threshold: 0 });
+
+    sections.forEach(function (section) { spy.observe(section); });
+  }
+
   // A portrait that hasn't been supplied yet drops out so the tinted panel
   // behind it shows instead of a broken-image icon.
   document.querySelectorAll('.portrait-photo').forEach(function (img) {

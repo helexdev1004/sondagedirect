@@ -172,14 +172,23 @@ a{ text-decoration:none; }
   position:sticky;
   top:0;
   z-index:1030;
-  background:var(--white);
-  border-bottom:1px solid var(--border);
-  transition:box-shadow .25s ease;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid transparent;
+  transition:box-shadow .25s ease, border-color .25s ease, background-color .25s ease;
 }
 
-.site-header.is-stuck{ box-shadow:0 6px 24px rgba(46,31,92,.06); }
+.site-header.is-stuck{
+  background:rgba(255,255,255,.94);
+  border-bottom-color:var(--border);
+  box-shadow:0 6px 24px rgba(46,31,92,.06);
+}
 
-.site-header .navbar{ min-height:78px; }
+.site-header .navbar{ min-height:76px; }
+
+/* Anchored sections would otherwise land under the sticky bar. */
+[id]{ scroll-margin-top:96px; }
 
 .brand-lockup{
   display:inline-flex;
@@ -202,18 +211,43 @@ a{ text-decoration:none; }
   line-height:1;
 }
 
-.primary-nav{ gap:36px; }
+.primary-nav{ gap:30px; }
 
 .primary-nav .nav-link{
-  color:var(--navy);
+  position:relative;
+  color:var(--body);
   font-size:14.5px;
   font-weight:500;
   padding:6px 0;
-  position:relative;
+  transition:color .2s ease;
+}
+
+/* The rule grows from the centre, so it reads as the link waking up rather
+   than a block sliding in. */
+.primary-nav .nav-link::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-2px;
+  height:2px;
+  border-radius:2px;
+  background:var(--purple);
+  transform:scaleX(0);
+  transition:transform .22s ease;
 }
 
 .primary-nav .nav-link:hover,
-.primary-nav .nav-link:focus{ color:var(--purple); }
+.primary-nav .nav-link:focus-visible{ color:var(--navy); }
+
+.primary-nav .nav-link:hover::after{ transform:scaleX(.55); }
+
+.primary-nav .nav-link.is-current{
+  color:var(--navy);
+  font-weight:600;
+}
+
+.primary-nav .nav-link.is-current::after{ transform:scaleX(1); }
 
 .header-actions{
   display:flex;
