@@ -925,6 +925,103 @@ a{ text-decoration:none; }
 }
 
 /* --------------------------------------------------------------------------
+   FAQ
+   -------------------------------------------------------------------------- */
+
+.faq-section{
+  background:var(--bg-soft);
+  padding:88px 0 96px;
+}
+
+.faq-list{
+  max-width:860px;
+  margin-inline:auto;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.faq-item{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(46,31,92,.04);
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+
+.faq-item[open]{
+  border-color:#D8CEF6;
+  box-shadow:0 12px 34px rgba(46,31,92,.09);
+}
+
+.faq-q{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:22px 26px;
+  cursor:pointer;
+  list-style:none;
+  font-size:16.5px;
+  font-weight:600;
+  color:var(--navy);
+  line-height:1.5;
+  transition:color .2s ease;
+}
+
+/* Safari and Chrome each need their own opt-out of the default marker. */
+.faq-q::-webkit-details-marker{ display:none; }
+.faq-q::marker{ content:""; }
+
+.faq-q:hover{ color:var(--purple); }
+
+.faq-q:focus-visible{
+  outline:3px solid rgba(102,55,244,.35);
+  outline-offset:-3px;
+  border-radius:16px;
+}
+
+/* A plus that becomes a minus, drawn from two bars so it can rotate. */
+.faq-icon{
+  position:relative;
+  flex:none;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:var(--lavender);
+  transition:background-color .2s ease;
+}
+
+.faq-icon::before,
+.faq-icon::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:12px;
+  height:2px;
+  border-radius:2px;
+  background:var(--purple);
+  transform:translate(-50%,-50%);
+  transition:transform .25s ease, opacity .2s ease;
+}
+
+.faq-icon::after{ transform:translate(-50%,-50%) rotate(90deg); }
+
+.faq-item[open] .faq-icon{ background:var(--purple); }
+.faq-item[open] .faq-icon::before,
+.faq-item[open] .faq-icon::after{ background:var(--white); }
+.faq-item[open] .faq-icon::after{ opacity:0; }
+
+.faq-a{
+  padding:0 26px 24px;
+  color:var(--body);
+  font-size:15px;
+  line-height:1.75;
+  max-width:70ch;
+}
+
+/* --------------------------------------------------------------------------
    Final CTA
    -------------------------------------------------------------------------- */
 
