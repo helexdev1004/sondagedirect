@@ -567,47 +567,25 @@ a{ text-decoration:none; }
 
 .how-visual-wrap{
   position:relative;
-  aspect-ratio:1 / .96;
+  aspect-ratio:1100 / 966;
 }
 
-/* Both how-it-works files ship with their own soft lavender backdrop, so they
-   are rounded to read as panels rather than pasted rectangles. */
-.how-survey-img{
-  position:relative;
-  z-index:2;
+/* The illustration carries its own lavender backdrop, near-identical to the
+   band's. Feathering every edge lets it sit in the section rather than on it,
+   with no rectangle to give it away. */
+.how-main-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
   display:block;
-  width:90%;
-  border-radius:28px;
-  box-shadow:0 22px 56px rgba(46,31,92,.10);
-}
-
-.how-plant-img{
-  position:absolute;
-  z-index:1;
-  right:-17%;
-  bottom:-4%;
-  width:29%;
-  height:auto;
   -webkit-mask-image:
-    linear-gradient(to bottom,transparent 0%,#000 16%,#000 96%,transparent 100%),
-    linear-gradient(to right,transparent 0%,#000 14%);
+    linear-gradient(to right,transparent 0%,#000 14%,#000 86%,transparent 100%),
+    linear-gradient(to bottom,transparent 0%,#000 12%,#000 88%,transparent 100%);
   mask-image:
-    linear-gradient(to bottom,transparent 0%,#000 16%,#000 96%,transparent 100%),
-    linear-gradient(to right,transparent 0%,#000 14%);
+    linear-gradient(to right,transparent 0%,#000 14%,#000 86%,transparent 100%),
+    linear-gradient(to bottom,transparent 0%,#000 12%,#000 88%,transparent 100%);
   -webkit-mask-composite:source-in;
   mask-composite:intersect;
-  pointer-events:none;
-}
-
-.how-arrow-img{
-  position:absolute;
-  z-index:3;
-  left:-3%;
-  top:2%;
-  width:12%;
-  opacity:.35;
-  transform:rotate(166deg);
-  pointer-events:none;
 }
 
 /* --------------------------------------------------------------------------
@@ -1265,7 +1243,6 @@ a{ text-decoration:none; }
   .hero-sub{ max-width:640px; }
 
   .how-visual-wrap{ max-width:620px; margin-inline:auto; }
-  .how-survey-img{ width:88%; }
 
   .features-section,
   .usecases-section,
@@ -1347,9 +1324,6 @@ a{ text-decoration:none; }
   .how-title br{ display:none; }
   .steps{ margin:32px 0 32px; gap:24px; }
   .how-cta{ width:100%; }
-  .how-arrow-img{ display:none; }
-  .how-plant-img{ width:24%; right:-2%; }
-
   .impact-section{ padding:58px 0 64px; }
   .stat{ padding:24px 18px 22px; }
   .stat-icon{ width:40px; height:40px; margin-bottom:16px; }
