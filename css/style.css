@@ -519,51 +519,6 @@ a{ text-decoration:none; }
 .rewards-cta{ margin-top:36px; }
 
 /* --------------------------------------------------------------------------
-   Features
-   -------------------------------------------------------------------------- */
-
-.features-section{
-  background:var(--bg-soft);
-  padding:94px 0 102px;
-}
-
-.feature-grid{ --bs-gutter-x:26px; --bs-gutter-y:26px; }
-
-.feature-card{
-  height:100%;
-  background:var(--white);
-  border:1px solid var(--border);
-  border-radius:var(--r-card);
-  box-shadow:var(--shadow-card);
-  padding:32px 30px 34px;
-  transition:transform .25s ease, box-shadow .25s ease;
-}
-
-.feature-card:hover{
-  transform:translateY(-4px);
-  box-shadow:var(--shadow-soft);
-}
-
-.feature-icon{
-  width:50px;
-  height:50px;
-  display:block;
-  margin-bottom:26px;
-}
-
-.feature-title{
-  font-size:19px;
-  font-weight:700;
-  margin-bottom:12px;
-}
-
-.feature-text{
-  color:var(--body);
-  font-size:14.5px;
-  line-height:1.72;
-}
-
-/* --------------------------------------------------------------------------
    How it works
    -------------------------------------------------------------------------- */
 
@@ -1453,7 +1408,7 @@ a{ text-decoration:none; }
 
   .how-visual-wrap{ max-width:620px; margin-inline:auto; }
 
-  .features-section,
+  .rewards-section,
   .usecases-section,
   .testimonials-section{ padding:78px 0 84px; }
 
@@ -1527,7 +1482,6 @@ a{ text-decoration:none; }
   .section-sub{ font-size:15px; }
   .section-sub br{ display:none; }
 
-  .features-section,
   .usecases-section,
   .testimonials-section{ padding:62px 0 66px; }
 
