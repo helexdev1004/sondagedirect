@@ -417,9 +417,13 @@ a{ text-decoration:none; }
    Rewards
    -------------------------------------------------------------------------- */
 
+/* Tinted with a rule top and bottom: white cards on a white page left the
+   band with no edge, so where it started and stopped was unreadable. */
 .rewards-section{
-  background:var(--white);
-  padding:84px 0 92px;
+  background:#F1F7FE;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:78px 0 84px;
 }
 
 .rewards-section .section-head{ margin-bottom:34px; }
@@ -435,8 +439,9 @@ a{ text-decoration:none; }
 .rewards-grid{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:18px;
-  margin:0;
+  gap:16px;
+  max-width:920px;
+  margin:0 auto;
 }
 
 /* The reference stands each brand on its own coloured card; on a light page
@@ -447,13 +452,13 @@ a{ text-decoration:none; }
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:10px;
-  aspect-ratio:1 / 1.12;
-  padding:18px 14px;
+  gap:9px;
+  aspect-ratio:1 / 0.82;
+  padding:14px 10px;
   background:var(--white);
   border:1px solid var(--border);
-  border-radius:16px;
-  box-shadow:0 6px 20px rgba(28,82,160,.05);
+  border-radius:13px;
+  box-shadow:0 4px 14px rgba(28,82,160,.06);
   transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
@@ -467,56 +472,32 @@ a{ text-decoration:none; }
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:6px;
-  min-height:34px;
 }
 
+/* The marks are official single-path artwork on a 24x24 grid, so they stay
+   crisp at any size instead of relying on a webfont to draw a wordmark. */
 .reward-mark{
-  width:22px;
-  height:22px;
-  flex:none;
+  width:46px;
+  height:46px;
   display:block;
 }
 
-.reward-mark--wide{ width:40px; height:auto; }
-
-.reward-word{
-  font-size:17px;
-  font-weight:700;
-  letter-spacing:-.02em;
-  line-height:1;
-  color:#111;
-  white-space:nowrap;
+/* IKEA's wordmark only reads inside its yellow field. */
+.reward-logo--pill{
+  background:#FFDA1A;
+  border-radius:8px;
+  padding:3px 9px;
 }
 
 .reward-kind{
-  font-size:10px;
+  font-size:9.5px;
   font-weight:600;
-  letter-spacing:.12em;
+  letter-spacing:.11em;
   text-transform:uppercase;
   color:#8A94AC;
 }
 
-/* Brand colours, since the card itself is plain. */
-.reward-word--ubereats{ color:#06C167; margin-left:2px; }
-.reward-word--zalando{ font-size:16px; letter-spacing:-.01em; }
-.reward-word--paypal-a{ color:#003087; }
-.reward-word--paypal-b{ color:#009CDE; }
-.reward-word--visa{ color:#1A1F71; font-size:20px; letter-spacing:.02em; font-style:italic; }
-.reward-word--hm{ color:#E50010; font-size:21px; }
-.reward-word--deliveroo{ color:#00A79D; font-size:16px; }
-
-/* IKEA's wordmark only reads inside its yellow oval. */
-.reward-logo--ikea{
-  background:#FFDA1A;
-  border-radius:50% / 50%;
-  padding:7px 16px;
-  min-height:0;
-}
-
-.reward-word--ikea{ color:#0058A3; font-size:17px; letter-spacing:.02em; }
-
-.rewards-cta{ margin-top:36px; }
+.rewards-cta{ margin-top:32px; }
 
 /* --------------------------------------------------------------------------
    How it works
@@ -1473,9 +1454,8 @@ a{ text-decoration:none; }
   .hero-visual-img{ border-radius:20px; }
 
   .rewards-section{ padding:58px 0 64px; }
-  .rewards-grid{ grid-template-columns:repeat(3,1fr); gap:14px; }
-  .reward-word{ font-size:15px; }
-  .reward-mark--wide{ width:34px; }
+  .rewards-grid{ grid-template-columns:repeat(3,1fr); gap:12px; }
+  .reward-mark{ width:40px; height:40px; }
   .logo-mark{ width:19px; height:19px; }
 
   .section-title{ font-size:30px; }
