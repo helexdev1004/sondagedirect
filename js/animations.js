@@ -1,31 +1,37 @@
 /* Scroll and entrance animation.
  *
- * Bidirectional: what arrives on the way down leaves again on the way back
- * up, so the page reads the same travelling in either direction rather than
- * being a one-way trip that is spent after a single pass.
+ * One rule, learned the hard way: nothing that carries meaning is ever partly
+ * or conditionally invisible. Text, figures and cards either have arrived or
+ * are still below the fold — there is no third state.
  *
- * There are two kinds of motion here, and deciding which kind a thing gets is
- * the whole design. Both directions come out of that split.
+ * Three earlier versions each broke that rule a different way.
  *
- *   TIMED, played and reversed on a trigger — every content reveal. The tween
- *   owns its own clock, so once it is let go it always reaches an end. Stop
- *   the wheel wherever you like and every card is fully in or fully out,
- *   never stranded partway. This matters: a previous version scrubbed these,
- *   which ties progress to scroll position, and a scrubbed tween has no
- *   notion of being finished — parking mid-range left cards at 94% scale and
- *   45px down indefinitely, out of line with everything beside them.
+ *   Scrubbing reveals tied their progress to the scroll position, so stopping
+ *   mid-range left cards at 94% scale and 45px down for as long as you stopped
+ *   there. A scrubbed tween has no notion of being finished.
  *
- *   SCRUBBED, tied frame-for-frame to the wheel — the progress bar, the
- *   parallax layers, the hero's drift. These are values where part-way is a
- *   legitimate resting state: a layer parked at some offset is just a layer
- *   at an offset, and the bar is meant to read as "this far down". Nothing
- *   here can look stuck, because there is no destination to be stuck short of.
+ *   Reversing them on the way back up — play none none reverse — looked fine
+ *   in a clean sweep and was unusable in practice: six small nudges of the
+ *   wheel near a trigger line produced twelve visibility flips, a whole grid
+ *   of cards strobing while you read.
  *
- * It fails visible twice over. Nothing runs unless gsap and ScrollTrigger
- * both loaded, so a dead CDN leaves plain fully-rendered HTML. And because a
- * from() hides its target as it is built, every reveal is registered with a
- * backstop that finishes anything still hidden once the page has settled — a
- * trigger that never fires then costs some motion, never the content.
+ *   Scrubbing the hero copy's opacity left the headline sitting at 0.48 of
+ *   full wherever you happened to stop.
+ *
+ * So reveals here fire once, run on their own clock, and stay. The trigger
+ * retires the moment it fires, which is what makes jitter a non-event: there
+ * is no line left to waver across.
+ *
+ * Motion that genuinely does run both ways is still here — the progress bar
+ * and the parallax layers are scrubbed frame-for-frame to the wheel. Those are
+ * safe to scrub precisely because they carry no meaning: a decorative layer
+ * parked at some offset is just a layer at an offset, and the bar is supposed
+ * to read as "this far down".
+ *
+ * It fails visible twice. Nothing runs unless gsap and ScrollTrigger both
+ * loaded, so a dead CDN leaves plain, fully rendered HTML. And since a from()
+ * hides its target as it is built, every reveal is registered with a backstop
+ * that finishes anything still hidden once the page has settled.
  */
 (function () {
   'use strict';
@@ -40,17 +46,14 @@
     return [].slice.call((root || document).querySelectorAll(sel));
   };
 
-  /* Every reveal lands here so the backstop at the foot of the file can find
-     anything that never got its trigger. */
-  var pending = [];
+  var pending = [];        // every reveal, for the backstop at the foot of the file
 
   /* ---------- hero ---------- */
 
   /* The headline arrives a word at a time, each word rising out of its own
-     clipped box. That needs two elements per word: an outer .word that does the
-     clipping and an inner .word-i that moves. Splitting only text nodes leaves
-     the <br> and the accented span where the copy put them, so the line breaks
-     survive. */
+     clipped box. That needs two elements per word: an outer .word that clips
+     and an inner .word-i that moves. Splitting only text nodes leaves the <br>
+     and the accented span where the copy put them, so the line breaks survive. */
   var heading = document.querySelector('.hero-heading');
   var headingWords = [];
 
@@ -91,29 +94,25 @@
     });
   }
 
-  /* The one timeline that runs on load rather than on a trigger. */
   var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   tl.from('.hero-copy-col .eyebrow', { y: 16, opacity: 0, duration: 0.5 });
 
   if (headingWords.length) {
     tl.from(headingWords, {
-      yPercent: 112, opacity: 0, duration: 0.85, stagger: 0.055, ease: 'power4.out'
+      yPercent: 110, opacity: 0, duration: 0.8, stagger: 0.05, ease: 'power4.out'
     }, '-=0.25');
   }
 
   tl.from('.hero-sub', { y: 18, opacity: 0, duration: 0.55 }, '-=0.45')
-    .from('.hero-cta-row .btn', { y: 20, opacity: 0, duration: 0.5, stagger: 0.09 }, '-=0.35')
+    .from('.hero-cta-row .btn', { y: 18, opacity: 0, duration: 0.5, stagger: 0.08 }, '-=0.35')
     .from('.hero-point', { y: 14, opacity: 0, duration: 0.45, stagger: 0.07 }, '-=0.3')
-    /* The visual settles out of a slight overscale rather than sliding in —
-       it reads as the photograph coming to rest instead of arriving. */
-    .from('.hero-visual-col', {
-      scale: 1.06, opacity: 0, duration: 1.2, ease: 'power2.out'
-    }, 0.15);
+    .from('.hero-visual-col', { scale: 1.05, opacity: 0, duration: 1.1, ease: 'power2.out' }, 0.15);
 
-  /* If the ticker ever stalls, the most important thing on the page would stay
-     blank — so jump the timeline to the end if it has not finished long after
-     it should have. A no-op normally. */
+  /* The hero runs on load, so its from() tweens hide their targets the moment
+     they are built. If the ticker ever stalls, the most important thing on the
+     page would stay blank — so jump to the end if it has not finished long
+     after it should have. A no-op normally. */
   window.setTimeout(function () {
     if (tl.progress() < 1) tl.progress(1);
   }, 4000);
@@ -122,34 +121,28 @@
 
   /* ---------- the reveal ---------- */
 
-  /* Timed, and triggered both ways: play entering, reverse leaving backwards.
-     Because the tween owns its clock it always completes, so the reversal is a
-     real animation out rather than a jump — that is what makes going back up
-     read as the same page running in rewind instead of content blinking off.
+  /* Timed, so it always reaches an end, and once, so the trigger retires as it
+     fires. Nothing to waver across afterwards, nothing to strobe.
 
-     start is 'top 88%': far enough down that the element is properly on screen
-     when it goes, close enough to the edge that the reversal happens as it
-     leaves rather than in the middle of the screen. */
-  var reveal = function (targets, vars, trigger, opts) {
-    if (!targets) return;
-    if (targets.length === 0) return;
-    opts = opts || {};
+     start is 'top 86%' — low enough that the element is properly on screen
+     when it goes, high enough that you are not watching a gap wait for it. */
+  var reveal = function (targets, vars, trigger) {
+    if (!targets || targets.length === 0) return;
 
     pending.push(gsap.from(targets, Object.assign({
-      duration: 0.8,
+      y: 28,
+      opacity: 0,
+      duration: 0.7,
       ease: 'power3.out',
-      scrollTrigger: {
-        trigger: trigger,
-        start: opts.start || 'top 88%',
-        toggleActions: 'play none none reverse'
-      }
+      clearProps: 'transform',
+      scrollTrigger: { trigger: trigger, start: 'top 86%', once: true }
     }, vars)));
   };
 
-  /* ---------- reading position ---------- */
+  /* ---------- the two things that do run both ways ---------- */
 
-  /* Scrubbed, and the plainest case for it: the bar IS how far down you are,
-     so it tracks the wheel exactly and runs backwards without being asked. */
+  /* The bar IS how far down you are, so it is scrubbed straight off the
+     scrollbar and tracks the wheel in either direction. */
   var bar = document.getElementById('scrollProgress');
   if (bar) {
     gsap.to(bar, {
@@ -158,105 +151,71 @@
     });
   }
 
-  /* ---------- parallax ---------- */
-
-  /* Layers moving at their own rate as the page travels past. Scrubbed, so
-     they are pinned to the wheel in both directions, and the one family of
-     motion where a tween sitting part-way is meaningless. Kept small — this
-     is depth, not a ride. */
-  var drift = function (sel, fromVars, toVars, trigger, scrub) {
+  /* Decorative layers drifting at their own rate as the page travels past,
+     also scrubbed and also bidirectional. Safe to scrub because they carry no
+     meaning — parked at an offset, they are simply at an offset. Kept small:
+     this is depth, not a ride. */
+  var drift = function (sel, from, to, trigger) {
     var el = document.querySelector(sel);
     if (!el) return;
-    gsap.fromTo(el, fromVars, Object.assign({
+    gsap.fromTo(el, from, Object.assign({
       ease: 'none',
-      scrollTrigger: {
-        trigger: trigger || sel,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: scrub === undefined ? 0.8 : scrub
-      }
-    }, toVars));
+      scrollTrigger: { trigger: trigger || sel, start: 'top bottom', end: 'bottom top', scrub: 0.8 }
+    }, to));
   };
 
-  drift('.hero-visual-col', { yPercent: 0 }, { yPercent: 8 }, '.hero-section');
-  drift('.how-visual-col', { yPercent: 6 }, { yPercent: -6 }, '.how-section');
+  drift('.hero-visual-col', { yPercent: 0 }, { yPercent: 7 }, '.hero-section');
+  drift('.how-visual-col', { yPercent: 5 }, { yPercent: -5 }, '.how-section');
 
-  /* The closing band's wave layers, each at its own rate. */
   [['.cta-shape-1', -5], ['.cta-shape-2', 3], ['.cta-shape-3', 7]].forEach(function (pair) {
-    drift(pair[0], { xPercent: -pair[1] }, { xPercent: pair[1] }, '.cta-band', 1);
+    drift(pair[0], { xPercent: -pair[1] }, { xPercent: pair[1] }, '.cta-band');
   });
 
-  /* The hero copy eases away as you leave it, so the fold hands over rather
-     than simply scrolling off. Scrubbed for the same reason — any point in it
-     is a valid place to stop. */
-  var heroCopy = document.querySelector('.hero-copy-col');
-  if (heroCopy) {
-    gsap.to(heroCopy, {
-      y: -40, opacity: 0.25, ease: 'none',
-      scrollTrigger: {
-        trigger: '.hero-section',
-        start: 'center center',
-        end: 'bottom top',
-        scrub: 0.6
-      }
-    });
-  }
-
-  /* ---------- section headings ---------- */
+  /* ---------- everything that reveals ---------- */
 
   q('.section-head').forEach(function (head) {
-    reveal(head.children, { y: 30, opacity: 0, stagger: 0.09 }, head);
+    reveal(head.children, { stagger: 0.08 }, head);
   });
 
-  /* ---------- grids ---------- */
-
-  /* Cards lean up out of the page as they arrive — rotateX against the
-     perspective the stylesheet puts on each grid. Triggered on the container
-     so a row comes in together rather than each card waiting for its own line
-     to be crossed, and reversed as a group on the way back. */
-  var grids = [
-    { sel: '.reward-card',      vars: { y: 34, rotateX: -14, opacity: 0, scale: 0.96, stagger: 0.055 } },
-    { sel: '.usecase-card',     vars: { y: 40, rotateX: -10, opacity: 0, stagger: 0.08 } },
-    { sel: '.stat',             vars: { y: 30, rotateX: -12, opacity: 0, scale: 0.97, stagger: 0.07 } },
-    { sel: '.testimonial-card', vars: { y: 38, rotateX: -8, opacity: 0, stagger: 0.09 } },
-    { sel: '.faq-item',         vars: { y: 18, opacity: 0, stagger: 0.05, duration: 0.6 } }
-  ];
-
-  grids.forEach(function (g) {
-    var items = q(g.sel);
+  /* Each grid goes as one group, triggered on its container, so a row arrives
+     together rather than each card waiting for its own line. */
+  [
+    ['.reward-card',      { y: 26, scale: 0.97, stagger: 0.05, ease: 'back.out(1.3)' }],
+    ['.usecase-card',     { y: 30, stagger: 0.08 }],
+    ['.stat',             { y: 26, scale: 0.97, stagger: 0.07, ease: 'back.out(1.3)' }],
+    ['.testimonial-card', { y: 28, stagger: 0.09 }],
+    ['.faq-item',         { y: 16, stagger: 0.05, duration: 0.55 }]
+  ].forEach(function (pair) {
+    var items = q(pair[0]);
     if (!items.length) return;
-    reveal(items, g.vars, items[0].parentNode);
+    reveal(items, pair[1], items[0].parentNode);
   });
-
-  /* ---------- how it works ---------- */
 
   var howCopy = document.querySelector('.how-copy-col');
   if (howCopy) {
     reveal(
       [howCopy.querySelector('.eyebrow'), howCopy.querySelector('.how-title'), howCopy.querySelector('.how-sub')].filter(Boolean),
-      { y: 28, opacity: 0, stagger: 0.09 },
+      { stagger: 0.08 },
       howCopy
     );
   }
 
   q('.step').forEach(function (step, i) {
-    reveal(step, { x: -30, opacity: 0, delay: i * 0.08 }, step, { start: 'top 90%' });
+    reveal(step, { x: -26, y: 0, delay: i * 0.08 }, step);
     var num = step.querySelector('.step-num');
     if (num) {
-      reveal(num, {
-        scale: 0.3, rotate: -60, opacity: 0,
-        duration: 0.6, delay: i * 0.08 + 0.12, ease: 'back.out(2)'
-      }, step, { start: 'top 90%' });
+      reveal(num, { y: 0, scale: 0.4, duration: 0.55, delay: i * 0.08 + 0.1, ease: 'back.out(2)' }, step);
     }
   });
 
-  /* ---------- the figures, counting both ways ---------- */
+  var ctaInner = document.querySelector('.cta-inner');
+  if (ctaInner) reveal(ctaInner.children, { stagger: 0.09 }, '.cta-band');
 
-  /* A timed count, played and reversed like every other reveal — so the
-     figures run back down to zero if you scroll up past them and count again
-     on the next pass. The text is seeded to zero at build so a figure never
-     sits at its real value and then snaps back to zero when the trigger fires;
-     the backstop below restores the real value if the trigger never comes. */
+  /* ---------- the figures ---------- */
+
+  /* Counts up once, on its own duration. Seeded to zero at build so a figure
+     never shows its real value and then snaps back to zero when the trigger
+     fires; the backstop restores the real value if the trigger never comes. */
   q('.stat-value').forEach(function (el) {
     var raw = el.textContent.trim();
     var match = raw.match(/^([\d.]+)(.*)$/);
@@ -271,36 +230,21 @@
 
     pending.push(gsap.to(counter, {
       n: target,
-      duration: 1.25,
+      duration: 1.2,
       ease: 'power2.out',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 88%',
-        toggleActions: 'play none none reverse'
-      },
+      scrollTrigger: { trigger: el, start: 'top 86%', once: true },
       onUpdate: function () {
-        // Write the original string back at the top so no rounding artefact
-        // survives, and so "10K+" keeps its shape rather than "10.0K+".
-        el.textContent = Math.abs(counter.n - target) < 0.005
-          ? raw
-          : counter.n.toFixed(decimals) + suffix;
-      }
+        el.textContent = counter.n.toFixed(decimals) + suffix;
+      },
+      onComplete: function () { el.textContent = raw; }   // never a rounding artefact
     }));
   });
-
-  /* ---------- closing band ---------- */
-
-  var ctaInner = document.querySelector('.cta-inner');
-  if (ctaInner) {
-    reveal(ctaInner.children, { y: 32, opacity: 0, stagger: 0.1 }, '.cta-band');
-  }
 
   /* ---------- the answers, sliding ---------- */
 
   /* <details> snaps. Taking over the summary click lets the answer slide, and
-     lets a closing panel finish its animation before the element actually
-     closes. main.js keeps the plain version for when GSAP is not here, so it
-     is told to stand down. */
+     lets a closing panel finish before the element actually closes. main.js
+     keeps the plain version for when GSAP is not here, so it stands down. */
   var faqItems = q('.faq-item');
 
   if (faqItems.length) {
@@ -341,7 +285,7 @@
         event.preventDefault();               // we drive the open state
         var wasOpen = item.open;
 
-        faqItems.forEach(function (other) {   // one answer at a time
+        faqItems.forEach(function (other) {
           if (other !== item && other.open) slide(other, false);
         });
 
@@ -352,13 +296,9 @@
 
   /* ---------- pointer play ---------- */
 
-  /* Cards tilt very slightly towards the cursor. Capped at a few degrees —
-     enough to feel alive, not enough to read as a gimmick. quickTo writes
-     rotateY/rotateX/y continuously, so it is left to settle to zero on leave
-     rather than fighting the reveal for the same properties. */
-  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-  if (canHover) {
+  /* Cards tilt very slightly towards the cursor — a few degrees, enough to
+     feel alive and not enough to read as a gimmick. */
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
     q('.reward-card, .stat, .usecase-card').forEach(function (card) {
       var rotY = gsap.quickTo(card, 'rotateY', { duration: 0.5, ease: 'power2.out' });
       var rotX = gsap.quickTo(card, 'rotateX', { duration: 0.5, ease: 'power2.out' });
@@ -366,14 +306,13 @@
 
       card.addEventListener('pointermove', function (e) {
         var r = card.getBoundingClientRect();
-        rotY(((e.clientX - r.left) / r.width - 0.5) * 6);
-        rotX(((e.clientY - r.top) / r.height - 0.5) * -6);
+        rotY(((e.clientX - r.left) / r.width - 0.5) * 5);
+        rotX(((e.clientY - r.top) / r.height - 0.5) * -5);
       });
-      card.addEventListener('pointerenter', function () { lift(-6); });
+      card.addEventListener('pointerenter', function () { lift(-5); });
       card.addEventListener('pointerleave', function () { rotY(0); rotX(0); lift(0); });
     });
 
-    /* Primary buttons lean towards the pointer. */
     q('.btn-brand, .btn-white-cta').forEach(function (btn) {
       var x = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3.out' });
       var y = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3.out' });
@@ -394,10 +333,9 @@
        trigger positions measured a moment ago are stale. */
     ScrollTrigger.refresh();
 
-    /* Then, once everything has had its chance: anything still holding its
-       start state while sitting in or above the viewport never got its
-       trigger and would otherwise stay invisible. Finish it. Normally this
-       finds nothing. */
+    /* Then: anything still holding its start state while sitting in or above
+       the viewport never got its trigger and would otherwise stay invisible.
+       Finish it. Normally this finds nothing. */
     window.setTimeout(function () {
       pending.forEach(function (tween) {
         if (tween.progress() > 0) return;
