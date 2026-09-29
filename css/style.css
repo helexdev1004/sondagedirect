@@ -1449,40 +1449,6 @@ a{ text-decoration:none; }
   .footer-col{ flex:1 1 40%; }
 }
 
-/* ============ ANIMATION SUPPORT ============ */
-
-/* Reading position, tied straight to the scrollbar so it runs both ways. It
-   starts at zero width, so if GSAP never loads it simply never appears —
-   decoration should fail quiet. Above the header's 1030. */
-.scroll-progress{
-  position:fixed;
-  inset:0 0 auto 0;
-  height:3px;
-  z-index:1040;
-  background:linear-gradient(90deg, var(--blue), var(--blue-deep));
-  transform:scaleX(0);
-  transform-origin:0 50%;
-  pointer-events:none;
-}
-
-/* Split headline words. The outer box clips, the inner box moves. The padding
-   keeps descenders out of the clip; the matching negative margin means adding
-   it costs no line spacing. */
-.hero-heading .word{
-  display:inline-block;
-  vertical-align:top;
-  overflow:hidden;
-  padding-bottom:.14em;
-  margin-bottom:-.14em;
-}
-
-.hero-heading .word-i{ display:inline-block; }
-
-/* Tilt only reads as depth if the parent supplies a vanishing point. */
-.rewards-grid,
-.stats-row,
-.usecase-grid{ perspective:1100px; }
-
 .to-top{
   position:fixed;
   right:26px;

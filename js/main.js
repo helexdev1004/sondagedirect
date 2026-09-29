@@ -47,7 +47,7 @@
         title: mark.getAttribute('aria-label'),
         placement: 'top',
         trigger: 'hover',
-        container: 'body'      // the grid carries a perspective; Popper needs out of it
+        container: 'body'      // out of the grid, so no ancestor can clip it
       });
     });
 
@@ -112,13 +112,11 @@
   }
 
   // Only one answer open at a time, so the list never runs away down the page.
-  // If the animation layer loaded it drives the accordion itself, sliding the
-  // panels rather than snapping them, and this stays out of the way.
+  // <details> does the opening and closing itself; this just closes the others.
   var faqItems = [].slice.call(document.querySelectorAll('.faq-item'));
 
   faqItems.forEach(function (item) {
     item.addEventListener('toggle', function () {
-      if (window.__faqAnimated) return;
       if (!item.open) return;
       faqItems.forEach(function (other) {
         if (other !== item) other.open = false;
