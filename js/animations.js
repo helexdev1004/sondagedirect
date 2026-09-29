@@ -201,7 +201,13 @@
   /* Each grid goes as one group, triggered on its container, so a row arrives
      together rather than each card waiting for its own line. */
   [
-    ['.reward-card',      { y: 26, scale: 0.97, stagger: 0.05, ease: 'back.out(1.3)' }],
+    /* Opens in place. y stays at zero on purpose: rising the cards up into
+       position meant ten of them arriving on ten slightly different offsets,
+       and a grid where every tile is a few pixels out and settling reads as
+       the whole block bubbling rather than as ten cards appearing. Scaling
+       up from closed keeps every tile exactly where the grid put it, so the
+       only thing that changes is the card opening. */
+    ['.reward-card',      { y: 0, scale: 0.84, stagger: 0.04, duration: 0.5, ease: 'back.out(1.7)' }],
     ['.usecase-card',     { y: 30, stagger: 0.08 }],
     ['.stat',             { y: 26, scale: 0.97, stagger: 0.07, ease: 'back.out(1.3)' }],
     ['.testimonial-card', { y: 28, stagger: 0.09 }],
@@ -319,8 +325,12 @@
 
   /* Cards tilt very slightly towards the cursor — a few degrees, enough to
      feel alive and not enough to read as a gimmick. */
+  /* The reward cards are deliberately absent here. Their hover is the hold in
+     the stylesheet and nothing else: the tilt wrote rotateY/rotateX and the
+     lift wrote y, so a card under the cursor was being moved by three things
+     at once on top of a CSS hover that also moved it. */
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    q('.reward-card, .stat, .usecase-card').forEach(function (card) {
+    q('.stat, .usecase-card').forEach(function (card) {
       var rotY = gsap.quickTo(card, 'rotateY', { duration: 0.5, ease: 'power2.out' });
       var rotX = gsap.quickTo(card, 'rotateX', { duration: 0.5, ease: 'power2.out' });
       var lift = gsap.quickTo(card, 'y', { duration: 0.45, ease: 'power2.out' });

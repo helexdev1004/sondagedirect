@@ -499,8 +499,11 @@ a{ text-decoration:none; }
   transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
+/* Held, not lifted. The card stays exactly where it sits in the grid and only
+   firms up very slightly under the cursor — a card being picked up off the
+   page rather than one jumping out of its row. */
 .reward-card:hover{
-  transform:translateY(-3px);
+  transform:scale(1.035);
   border-color:#BBDCF7;
   box-shadow:0 16px 36px rgba(28,82,160,.12);
 }
