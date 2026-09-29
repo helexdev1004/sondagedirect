@@ -112,11 +112,13 @@
   }
 
   // Only one answer open at a time, so the list never runs away down the page.
-  // <details> does the opening and closing itself; this just closes the others.
+  // If the animation layer loaded it drives the accordion itself, sliding the
+  // panels rather than snapping them, and this stays out of the way.
   var faqItems = [].slice.call(document.querySelectorAll('.faq-item'));
 
   faqItems.forEach(function (item) {
     item.addEventListener('toggle', function () {
+      if (window.__faqAnimated) return;
       if (!item.open) return;
       faqItems.forEach(function (other) {
         if (other !== item) other.open = false;
