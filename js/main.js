@@ -22,37 +22,52 @@
     });
   }
 
-  // Mark the nav link for whichever section is currently in view.
-  var navLinks = [].slice.call(document.querySelectorAll('.primary-nav .nav-link'));
-  var sections = navLinks
-    .map(function (link) { return document.querySelector(link.getAttribute('href')); })
-    .filter(Boolean);
+  var hasBootstrap = typeof window.bootstrap !== 'undefined';
 
-  if (sections.length && 'IntersectionObserver' in window) {
-    var setCurrent = function (id) {
-      navLinks.forEach(function (link) {
-        link.classList.toggle('is-current', link.getAttribute('href') === '#' + id);
+  // Bootstrap's own ScrollSpy marks the nav link for the section in view. It
+  // handles the cases a hand-rolled observer gets wrong — resize, refresh,
+  // and the last section being too short to ever reach the trigger line.
+  if (hasBootstrap && document.querySelector('.primary-nav')) {
+    new bootstrap.ScrollSpy(document.body, {
+      target: '.primary-nav',
+      rootMargin: '-88px 0px -40%',   // clear the sticky header, aim above the fold
+      smoothScroll: true
+    });
+  }
+
+  // A reward card shows a logo and the words "Gift card", so the brand name is
+  // only in the mark's aria-label. Sighted pointer users are the ones missing
+  // it — screen readers already read the label, and the cards are not
+  // interactive, so no tabindex and no focus trigger.
+  if (hasBootstrap) {
+    document.querySelectorAll('.reward-card').forEach(function (card) {
+      var mark = card.querySelector('[aria-label]');
+      if (!mark) return;
+      new bootstrap.Tooltip(card, {
+        title: mark.getAttribute('aria-label'),
+        placement: 'top',
+        trigger: 'hover',
+        container: 'body'      // the grid carries a perspective; Popper needs out of it
       });
+    });
+
+    document.querySelectorAll('.social-row a[aria-label]').forEach(function (link) {
+      new bootstrap.Tooltip(link, { placement: 'top', trigger: 'hover focus', container: 'body' });
+    });
+  }
+
+  // Back to the top, once there is a page behind you.
+  var toTop = document.getElementById('toTop');
+
+  if (toTop) {
+    var toggleToTop = function () {
+      toTop.classList.toggle('is-shown', window.scrollY > 900);
     };
-
-    // Track what is on screen rather than reacting to entries alone: a callback
-    // only carries the sections whose status changed, so a fast jump can deliver
-    // nothing but departures and leave the highlight stranded.
-    var onScreen = [];
-
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        var at = onScreen.indexOf(entry.target);
-        if (entry.isIntersecting && at === -1) onScreen.push(entry.target);
-        if (!entry.isIntersecting && at !== -1) onScreen.splice(at, 1);
-      });
-
-      // sections is in document order, so the first still on screen is the topmost.
-      var top = sections.filter(function (s) { return onScreen.indexOf(s) !== -1; })[0];
-      setCurrent(top ? top.id : null);
-    }, { rootMargin: '-88px 0px -45% 0px', threshold: 0 });
-
-    sections.forEach(function (section) { spy.observe(section); });
+    toggleToTop();
+    window.addEventListener('scroll', toggleToTop, { passive: true });
+    toTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   var track = document.getElementById('testimonialTrack');
@@ -97,10 +112,13 @@
   }
 
   // Only one answer open at a time, so the list never runs away down the page.
+  // If the animation layer loaded it drives the accordion itself, sliding the
+  // panels rather than snapping them, and this stays out of the way.
   var faqItems = [].slice.call(document.querySelectorAll('.faq-item'));
 
   faqItems.forEach(function (item) {
     item.addEventListener('toggle', function () {
+      if (window.__faqAnimated) return;
       if (!item.open) return;
       faqItems.forEach(function (other) {
         if (other !== item) other.open = false;

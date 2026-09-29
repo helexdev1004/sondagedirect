@@ -242,12 +242,13 @@ a{ text-decoration:none; }
 
 .primary-nav .nav-link:hover::after{ transform:scaleX(.55); }
 
-.primary-nav .nav-link.is-current{
+/* .active is what Bootstrap's ScrollSpy sets. */
+.primary-nav .nav-link.active{
   color:var(--navy);
   font-weight:600;
 }
 
-.primary-nav .nav-link.is-current::after{ transform:scaleX(1); }
+.primary-nav .nav-link.active::after{ transform:scaleX(1); }
 
 .header-actions{
   display:flex;
@@ -1444,6 +1445,79 @@ a{ text-decoration:none; }
   .section-title{ font-size:27px; }
   .footer-nav{ flex-wrap:wrap; gap:32px 40px; }
   .footer-col{ flex:1 1 40%; }
+}
+
+/* ============ ANIMATION SUPPORT ============ */
+
+/* Reading position, tied straight to the scrollbar so it runs both ways. It
+   starts at zero width, so if GSAP never loads it simply never appears —
+   decoration should fail quiet. Above the header's 1030. */
+.scroll-progress{
+  position:fixed;
+  inset:0 0 auto 0;
+  height:3px;
+  z-index:1040;
+  background:linear-gradient(90deg, var(--blue), var(--blue-deep));
+  transform:scaleX(0);
+  transform-origin:0 50%;
+  pointer-events:none;
+}
+
+/* Split headline words. The outer box clips, the inner box moves. The padding
+   keeps descenders out of the clip; the matching negative margin means adding
+   it costs no line spacing. */
+.hero-heading .word{
+  display:inline-block;
+  vertical-align:top;
+  overflow:hidden;
+  padding-bottom:.14em;
+  margin-bottom:-.14em;
+}
+
+.hero-heading .word-i{ display:inline-block; }
+
+/* Tilt only reads as depth if the parent supplies a vanishing point. */
+.rewards-grid,
+.stats-row,
+.usecase-grid{ perspective:1100px; }
+
+.to-top{
+  position:fixed;
+  right:26px;
+  bottom:26px;
+  z-index:60;
+  width:46px;
+  height:46px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  color:var(--white);
+  background:var(--blue);
+  border:0;
+  border-radius:50%;
+  box-shadow:var(--shadow-float);
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(14px) scale(.9);
+  transition:opacity .25s ease, transform .25s ease, visibility .25s, background .2s ease;
+}
+
+.to-top.is-shown{
+  opacity:1;
+  visibility:visible;
+  transform:none;
+}
+
+.to-top:hover{ background:var(--blue-deep); }
+.to-top:active{ transform:scale(.94); }
+
+.to-top:focus-visible{
+  outline:2px solid var(--navy);
+  outline-offset:3px;
+}
+
+@media (max-width:575.98px){
+  .to-top{ right:16px; bottom:16px; width:42px; height:42px; }
 }
 
 @media (prefers-reduced-motion:reduce){
