@@ -107,7 +107,9 @@
   tl.from('.hero-sub', { y: 18, opacity: 0, duration: 0.55 }, '-=0.45')
     .from('.hero-cta-row .btn', { y: 18, opacity: 0, duration: 0.5, stagger: 0.08 }, '-=0.35')
     .from('.hero-point', { y: 14, opacity: 0, duration: 0.45, stagger: 0.07 }, '-=0.3')
-    .from('.hero-visual-col', { scale: 1.05, opacity: 0, duration: 1.1, ease: 'power2.out' }, 0.15);
+    /* Opacity only. The frame carries the mask now, so scaling it would scale
+       the dissolve along with it and the soft edge would visibly swell. */
+    .from('.hero-visual-col', { opacity: 0, duration: 1.1, ease: 'power2.out' }, 0.15);
 
   /* The hero runs on load, so its from() tweens hide their targets the moment
      they are built. If the ticker ever stalls, the most important thing on the
@@ -164,7 +166,26 @@
     }, to));
   };
 
-  drift('.hero-visual-col', { yPercent: 0 }, { yPercent: 7 }, '.hero-section');
+  /* The hero drifts the <img> inside its frame, never the frame. Moving the
+     column moved the mask with it, which dragged the bottom fade below the
+     section's overflow:hidden and ended the photograph on a hard sliced edge.
+     It also starts at 'top top' rather than 'top bottom': the hero is already
+     on screen at load, so a range beginning at the bottom of the viewport is
+     half spent before the page has been scrolled at all, and the picture sat
+     24px out of place on the very first frame. */
+  var heroImg = document.querySelector('.hero-visual-img');
+  if (heroImg) {
+    gsap.fromTo(heroImg, { yPercent: 0 }, {
+      yPercent: 5, ease: 'none',
+      scrollTrigger: {
+        trigger: '.hero-section',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 0.8
+      }
+    });
+  }
+
   drift('.how-visual-col', { yPercent: 5 }, { yPercent: -5 }, '.how-section');
 
   [['.cta-shape-1', -5], ['.cta-shape-2', 3], ['.cta-shape-3', 7]].forEach(function (pair) {

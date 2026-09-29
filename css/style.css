@@ -327,6 +327,12 @@ a{ text-decoration:none; }
 /* The photograph is the band's right-hand background rather than a panel:
    it bleeds off the right edge and its left side is masked away so it
    dissolves into the gradient behind the copy. */
+/* The frame the photograph lives in. The dissolve into the page is masked
+   HERE rather than on the <img>, and that placement is the point: the image
+   drifts inside this frame as you scroll, and a mask carried on the image
+   would drift with it — which pulled the bottom fade down past the section's
+   overflow:hidden and left the photograph ending in a hard sliced edge. The
+   frame never moves, so the fade never moves. */
 .hero-visual-col{
   position:absolute;
   top:0;
@@ -336,6 +342,30 @@ a{ text-decoration:none; }
   z-index:0;
   overflow:hidden;
   pointer-events:none;
+  -webkit-mask-image:
+    linear-gradient(to right,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,.028) 4%, rgba(0,0,0,.104) 8%,
+      rgba(0,0,0,.216) 12%, rgba(0,0,0,.352) 16%, rgba(0,0,0,.5) 20%,
+      rgba(0,0,0,.648) 24%, rgba(0,0,0,.784) 28%, rgba(0,0,0,.896) 32%,
+      rgba(0,0,0,.972) 36%, #000 40%),
+    linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,.156) 2.25%, rgba(0,0,0,.5) 4.5%,
+      rgba(0,0,0,.844) 6.75%, #000 9%,
+      #000 90%, rgba(0,0,0,.844) 92.5%, rgba(0,0,0,.5) 95%,
+      rgba(0,0,0,.156) 97.5%, rgba(0,0,0,0) 100%);
+  mask-image:
+    linear-gradient(to right,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,.028) 4%, rgba(0,0,0,.104) 8%,
+      rgba(0,0,0,.216) 12%, rgba(0,0,0,.352) 16%, rgba(0,0,0,.5) 20%,
+      rgba(0,0,0,.648) 24%, rgba(0,0,0,.784) 28%, rgba(0,0,0,.896) 32%,
+      rgba(0,0,0,.972) 36%, #000 40%),
+    linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%, rgba(0,0,0,.156) 2.25%, rgba(0,0,0,.5) 4.5%,
+      rgba(0,0,0,.844) 6.75%, #000 9%,
+      #000 90%, rgba(0,0,0,.844) 92.5%, rgba(0,0,0,.5) 95%,
+      rgba(0,0,0,.156) 97.5%, rgba(0,0,0,0) 100%);
+  -webkit-mask-composite:source-in;
+  mask-composite:intersect;
 }
 
 .hero-heading{
@@ -402,7 +432,13 @@ a{ text-decoration:none; }
 
 .hero-visual-img{
   width:100%;
-  height:100%;
+  /* Taller than the frame on purpose. The photograph drifts vertically as the
+     page scrolls, and with height:100% it exactly filled the frame, so any
+     drift at all pulled an empty edge into view. The extra 12%, pulled up by
+     half of it, is the headroom that drift moves within. */
+  height:112%;
+  position:relative;
+  top:-6%;
   object-fit:cover;
   /* Pinned to the right edge so the dissolve on the left lands on the plain
      wall and shelving rather than on the potted plants further into the
@@ -412,38 +448,6 @@ a{ text-decoration:none; }
      the photograph's right edge meets the column's at every width. */
   object-position:100% 46%;
   display:block;
-  /* The photograph has to dissolve into the page rather than stop at an edge,
-     and the shape of that dissolve is the whole job. A two-stop ramp was
-     doing it before — transparent, then .55 at 16%, then solid at 34% — which
-     ran alpha up at .034 per percent and then abruptly at .025. The eye reads
-     that change of slope as a line, and it landed right in the open part of
-     the picture where there is nothing else to look at.
-     These are smoothstep curves instead, t*t*(3-2t) sampled every tenth, so
-     the rate eases in and out and there is no step in the slope anywhere. */
-  -webkit-mask-image:
-    linear-gradient(to right,
-      rgba(0,0,0,0) 0%, rgba(0,0,0,.028) 4%, rgba(0,0,0,.104) 8%,
-      rgba(0,0,0,.216) 12%, rgba(0,0,0,.352) 16%, rgba(0,0,0,.5) 20%,
-      rgba(0,0,0,.648) 24%, rgba(0,0,0,.784) 28%, rgba(0,0,0,.896) 32%,
-      rgba(0,0,0,.972) 36%, #000 40%),
-    linear-gradient(to bottom,
-      rgba(0,0,0,0) 0%, rgba(0,0,0,.156) 2.25%, rgba(0,0,0,.5) 4.5%,
-      rgba(0,0,0,.844) 6.75%, #000 9%,
-      #000 90%, rgba(0,0,0,.844) 92.5%, rgba(0,0,0,.5) 95%,
-      rgba(0,0,0,.156) 97.5%, rgba(0,0,0,0) 100%);
-  mask-image:
-    linear-gradient(to right,
-      rgba(0,0,0,0) 0%, rgba(0,0,0,.028) 4%, rgba(0,0,0,.104) 8%,
-      rgba(0,0,0,.216) 12%, rgba(0,0,0,.352) 16%, rgba(0,0,0,.5) 20%,
-      rgba(0,0,0,.648) 24%, rgba(0,0,0,.784) 28%, rgba(0,0,0,.896) 32%,
-      rgba(0,0,0,.972) 36%, #000 40%),
-    linear-gradient(to bottom,
-      rgba(0,0,0,0) 0%, rgba(0,0,0,.156) 2.25%, rgba(0,0,0,.5) 4.5%,
-      rgba(0,0,0,.844) 6.75%, #000 9%,
-      #000 90%, rgba(0,0,0,.844) 92.5%, rgba(0,0,0,.5) 95%,
-      rgba(0,0,0,.156) 97.5%, rgba(0,0,0,0) 100%);
-  -webkit-mask-composite:source-in;
-  mask-composite:intersect;
 }
 
 /* --------------------------------------------------------------------------
@@ -1349,18 +1353,21 @@ a{ text-decoration:none; }
      blurred echo behind the copy is no longer needed. */
   .hero-section::before{ display:none; }
 
+  /* Back in the flow as a normal image, so the frame gives up both the mask
+     and the drift headroom the absolute layout needed. */
   .hero-visual-col{
     position:static;
     width:100%;
     overflow:visible;
+    -webkit-mask-image:none;
+    mask-image:none;
   }
 
   .hero-visual-img{
     height:auto;
+    top:0;
     aspect-ratio:16 / 10;
     border-radius:var(--r-media);
-    -webkit-mask-image:none;
-    mask-image:none;
   }
 
   .hero-heading{ font-size:48px; }
