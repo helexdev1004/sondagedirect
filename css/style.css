@@ -732,10 +732,10 @@ a{ text-decoration:none; }
   line-height:1.5;
 }
 
-.stat--customers{ --accent:#0874FC; --glow:rgba(8,116,252,.15); }
-.stat--surveys  { --accent:#2B7FFF; --glow:rgba(43,127,255,.15); }
-.stat--responses{ --accent:#10B981; --glow:rgba(16,185,129,.15); }
-.stat--uptime   { --accent:#F59E0B; --glow:rgba(245,158,11,.17); }
+.stat--members{ --accent:#0874FC; --glow:rgba(8,116,252,.15); }
+.stat--surveys{ --accent:#2B7FFF; --glow:rgba(43,127,255,.15); }
+.stat--answers{ --accent:#10B981; --glow:rgba(16,185,129,.15); }
+.stat--free   { --accent:#F59E0B; --glow:rgba(245,158,11,.17); }
 
 /* --------------------------------------------------------------------------
    Testimonials
