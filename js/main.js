@@ -27,11 +27,15 @@
   // Bootstrap's own ScrollSpy marks the nav link for the section in view. It
   // handles the cases a hand-rolled observer gets wrong — resize, refresh,
   // and the last section being too short to ever reach the trigger line.
+  // Marking is all it is asked to do: its smoothScroll option would bind a
+  // second handler to the same nav anchors the animation layer already drives
+  // through Lenis, and the two scroll to different places. Without Lenis the
+  // browser does the jump, on the scroll-behavior and [id]{scroll-margin-top}
+  // in the stylesheet.
   if (hasBootstrap && document.querySelector('.primary-nav')) {
     new bootstrap.ScrollSpy(document.body, {
       target: '.primary-nav',
-      rootMargin: '-88px 0px -40%',   // clear the sticky header, aim above the fold
-      smoothScroll: true
+      rootMargin: '-88px 0px -40%'   // clear the sticky header, aim above the fold
     });
   }
 
@@ -66,7 +70,14 @@
     toggleToTop();
     window.addEventListener('scroll', toggleToTop, { passive: true });
     toTop.addEventListener('click', function () {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Read at click time, not on load: the animation layer publishes it
+      // after this file runs. When it is there it owns the scroll position,
+      // and a native smooth scrollTo would fight it for the same value.
+      if (window.__lenis) {
+        window.__lenis.scrollTo(0);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
   }
 

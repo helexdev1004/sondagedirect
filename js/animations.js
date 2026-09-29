@@ -1,12 +1,22 @@
 /* Scroll and entrance animation.
  *
- * Everything is additive and fails visible. gsap.from() paired with
- * ScrollTrigger normally applies its start state as soon as the tween is
- * built and only clears it when the trigger fires, so anything that stops the
- * trigger firing leaves the content blank. Every reveal below goes through
- * reveal(), which holds that start state back until the animation actually
- * begins — if GSAP never loads or a trigger never fires, the page just sits
- * there fully rendered.
+ * The motion here is scroll-linked rather than triggered. A trigger that plays
+ * on the way down and rewinds on the way up makes content vanish the moment
+ * you nudge the wheel backwards, which reads as flicker. Everything below is
+ * scrubbed instead: the tween's position is the scroll position, so it tracks
+ * the wheel continuously in both directions and never jumps.
+ *
+ * It is additive and fails visible, but through the guard at the top rather
+ * than through immediateRender. Nothing below runs unless both gsap and
+ * ScrollTrigger are actually present, so if either script fails to load no
+ * element is ever hidden and the page renders as plain HTML.
+ *
+ * Holding the start state back with immediateRender:false — the obvious way
+ * to fail visible — is wrong specifically for scrubbed tweens. The start
+ * state then lands on the tween's first render, and scrub defers that by its
+ * own catch-up time, so the element blinks from its natural state to its
+ * hidden one a few hundred pixels after it is already on screen. Applying it
+ * up front is what makes the reveal continuous.
  */
 (function () {
   'use strict';
@@ -21,18 +31,75 @@
     return [].slice.call((root || document).querySelectorAll(sel));
   };
 
-  /* Plays coming down, rewinds going back up, and plays again on the next
-     pass — so the page keeps its life however you move through it. */
-  var reveal = function (targets, vars, trigger, start) {
-    if (!targets || targets.length === 0) return;
-    if (!hasST) return;
-    vars.immediateRender = false;
-    vars.scrollTrigger = {
-      trigger: trigger,
-      start: start || 'top 86%',
-      toggleActions: 'play none none reverse'
-    };
-    gsap.from(targets, vars);
+  /* ---------- smooth scrolling ---------- */
+
+  /* A wheel notch is a jump, not a glide, and scrubbed animation driven
+     straight off it looks stepped. Lenis interpolates the scroll position and
+     GSAP's ticker drives it, so one clock runs both. Optional: without it
+     everything below still works, just on raw wheel steps. */
+  var lenis = null;
+
+  if (typeof window.Lenis !== 'undefined' && hasST) {
+    lenis = new Lenis({
+      duration: 1.05,
+      easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+      smoothWheel: true,
+      touchMultiplier: 1.6
+    });
+
+    // Published so main.js can send the back-to-top button through Lenis
+    // instead of a native scrollTo, which would fight it for the position.
+    window.__lenis = lenis;
+
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+
+    /* Lenis owns the scroll position, so anchors cannot be left to the
+       browser. No offset here on purpose: Lenis reads the same
+       [id]{scroll-margin-top} the stylesheet uses for the no-Lenis path, so
+       both routes land in the same place. Passing the header height again
+       would subtract it twice. */
+    q('a[href^="#"]').forEach(function (link) {
+      var href = link.getAttribute('href');
+      if (href === '#') return;
+      var target = document.querySelector(href);
+      if (!target) return;
+      link.addEventListener('click', function (event) {
+        event.preventDefault();
+        lenis.scrollTo(target);
+      });
+    });
+  }
+
+  /* ---------- the reveal ---------- */
+
+  /* Scrubbed over a range that ends well above the middle of the screen, so a
+     reveal is finished long before you are actually reading it. Scrolling back
+     up unwinds it at exactly the rate you scroll.
+
+     The range starts at 'top bottom', so the element is already at its hidden
+     state before it can be seen and every pixel of the reveal happens on
+     screen. Only how far up it finishes is worth varying, so opts carries
+     end, not start.
+
+     Note the absent immediateRender:false — see the header. from() applies
+     the start state as it is built, which is exactly what a scrubbed reveal
+     needs. */
+  var reveal = function (targets, vars, trigger, opts) {
+    if (!hasST || !targets) return;
+    if (targets.length === 0) return;
+    opts = opts || {};
+
+    gsap.from(targets, Object.assign({
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: trigger,
+        start: 'top bottom',
+        end: opts.end || 'top 62%',
+        scrub: opts.scrub === undefined ? 0.8 : opts.scrub
+      }
+    }, vars));
   };
 
   /* ---------- hero ---------- */
@@ -67,8 +134,6 @@
       node.parentNode.replaceChild(frag, node);
     });
 
-    /* The accented span is already one word — give it the same two layers by
-       moving its contents into an inner element. */
     var accent = heading.querySelector('.text-accent');
     if (accent) {
       var inner = document.createElement('span');
@@ -84,26 +149,27 @@
     });
   }
 
+  /* The hero is an entrance, not a scroll effect, so it stays a timeline. */
   var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   tl.from('.hero-copy-col .eyebrow', { y: 16, opacity: 0, duration: 0.5 });
 
   if (headingWords.length) {
     tl.from(headingWords, {
-      yPercent: 110, opacity: 0, duration: 0.8, stagger: 0.055, ease: 'power4.out'
+      yPercent: 115, opacity: 0, duration: 0.9, stagger: 0.06, ease: 'power4.out'
     }, '-=0.25');
   }
 
-  tl.from('.hero-sub', { y: 18, opacity: 0, duration: 0.6 }, '-=0.45')
-    .from('.hero-cta-row .btn', { y: 18, opacity: 0, duration: 0.5, stagger: 0.1 }, '-=0.35')
-    .from('.hero-point', { y: 14, opacity: 0, duration: 0.45, stagger: 0.08 }, '-=0.3')
-    .from('.hero-visual-col', { xPercent: 6, opacity: 0, duration: 1.1, ease: 'power2.out' }, 0.1);
+  tl.from('.hero-sub', { y: 18, opacity: 0, duration: 0.6 }, '-=0.5')
+    .from('.hero-cta-row .btn', { y: 20, opacity: 0, duration: 0.55, stagger: 0.09 }, '-=0.4')
+    .from('.hero-point', { y: 14, opacity: 0, duration: 0.45, stagger: 0.07 }, '-=0.35')
+    .from('.hero-visual-col', { xPercent: 5, opacity: 0, duration: 1.2, ease: 'power2.out' }, 0.1);
 
   /* The hero is the one timeline that starts on load rather than on scroll, so
-     its from() tweens hide their targets the moment they are built. That is
-     fine while the ticker is running, but the hero is the worst thing on the
-     page to leave blank — so if it has not finished long after it should have,
-     jump it to the end. A no-op in the normal case. */
+     its from() tweens hide their targets the moment they are built. If the
+     ticker ever stalls, the most important thing on the page would stay blank —
+     so jump it to the end if it has not finished long after it should have.
+     A no-op in the normal case. */
   window.setTimeout(function () {
     if (tl.progress() < 1) tl.progress(1);
   }, 4000);
@@ -116,58 +182,59 @@
   if (bar) {
     gsap.to(bar, {
       scaleX: 1, ease: 'none',
-      scrollTrigger: { start: 0, end: 'max', scrub: 0.3 }
+      scrollTrigger: { start: 0, end: 'max', scrub: 0.25 }
     });
   }
 
-  /* ---------- scroll-linked drift ---------- */
+  /* ---------- parallax ---------- */
 
-  gsap.utils.toArray('.hero-visual-col').forEach(function (el) {
-    gsap.to(el, {
-      yPercent: 9, ease: 'none',
-      scrollTrigger: { trigger: '.hero-section', start: 'top top', end: 'bottom top', scrub: 0.7 }
-    });
-  });
-
-  var howVisual = document.querySelector('.how-visual-col');
-  if (howVisual) {
-    gsap.fromTo(howVisual, { y: 42 }, {
-      y: -42, ease: 'none',
-      scrollTrigger: { trigger: '.how-section', start: 'top bottom', end: 'bottom top', scrub: 0.8 }
-    });
-  }
-
-  /* The closing band's wave layers slide at different rates. */
-  [['.cta-shape-1', -70], ['.cta-shape-2', 45], ['.cta-shape-3', 90]].forEach(function (pair) {
-    var el = document.querySelector(pair[0]);
+  /* Layers that move at their own rate as the page goes past. All scrubbed,
+     so they are pinned to the wheel rather than playing on their own clock. */
+  var drift = function (sel, from, to, trigger, scrub) {
+    var el = document.querySelector(sel);
     if (!el) return;
-    gsap.fromTo(el, { xPercent: -pair[1] / 12 }, {
-      xPercent: pair[1] / 12, ease: 'none',
-      scrollTrigger: { trigger: '.cta-band', start: 'top bottom', end: 'bottom top', scrub: 1 }
-    });
+    gsap.fromTo(el, from, Object.assign({
+      ease: 'none',
+      scrollTrigger: {
+        trigger: trigger || sel,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: scrub === undefined ? 0.9 : scrub
+      }
+    }, to));
+  };
+
+  drift('.hero-visual-col', { yPercent: 0 }, { yPercent: 10 }, '.hero-section', 0.7);
+  drift('.how-visual-col', { yPercent: 7 }, { yPercent: -7 }, '.how-section', 0.9);
+
+  /* The closing band's wave layers, each at a different rate. */
+  [['.cta-shape-1', -6], ['.cta-shape-2', 4], ['.cta-shape-3', 8]].forEach(function (pair) {
+    drift(pair[0], { xPercent: -pair[1] }, { xPercent: pair[1] }, '.cta-band', 1);
   });
 
   /* ---------- section headings ---------- */
 
   q('.section-head').forEach(function (head) {
-    reveal(head.children, { y: 26, opacity: 0, duration: 0.65, stagger: 0.09, ease: 'power3.out' },
-           head, 'top 84%');
+    reveal(head.children, { y: 34, opacity: 0, stagger: 0.12 }, head, { end: 'top 64%' });
   });
 
   /* ---------- grids ---------- */
 
+  /* Cards reveal on yPercent, never y. The pointer lift below writes y, and
+     GSAP sums the two rather than letting them overwrite each other — the old
+     version used y for both, so hovering a card mid-scroll made it jump. */
   var grids = [
-    { sel: '.reward-card',      vars: { y: 26, opacity: 0, scale: 0.9, ease: 'back.out(1.7)' }, stagger: 0.05 },
-    { sel: '.usecase-card',     vars: { y: 40, opacity: 0, ease: 'power3.out' },                stagger: 0.1 },
-    { sel: '.stat',             vars: { y: 34, opacity: 0, scale: 0.95, ease: 'back.out(1.4)' },stagger: 0.09 },
-    { sel: '.testimonial-card', vars: { y: 40, opacity: 0, ease: 'power3.out' },                stagger: 0.12 },
-    { sel: '.faq-item',         vars: { y: 18, opacity: 0, ease: 'power2.out' },                stagger: 0.07 }
+    { sel: '.reward-card',      vars: { yPercent: 32, opacity: 0, scale: 0.94, stagger: 0.06 } },
+    { sel: '.usecase-card',     vars: { yPercent: 26, opacity: 0, stagger: 0.09 } },
+    { sel: '.stat',             vars: { yPercent: 30, opacity: 0, scale: 0.96, stagger: 0.08 } },
+    { sel: '.testimonial-card', vars: { yPercent: 24, opacity: 0, stagger: 0.1 } },
+    { sel: '.faq-item',         vars: { y: 22, opacity: 0, stagger: 0.06 } }
   ];
 
   grids.forEach(function (g) {
     var items = q(g.sel);
     if (!items.length) return;
-    reveal(items, Object.assign({ duration: 0.7, stagger: g.stagger }, g.vars), items[0].parentNode);
+    reveal(items, g.vars, items[0].parentNode);
   });
 
   /* ---------- how it works ---------- */
@@ -176,20 +243,20 @@
   if (howCopy) {
     reveal(
       [howCopy.querySelector('.eyebrow'), howCopy.querySelector('.how-title'), howCopy.querySelector('.how-sub')].filter(Boolean),
-      { y: 26, opacity: 0, duration: 0.6, stagger: 0.09, ease: 'power3.out' },
-      howCopy, 'top 82%'
+      { y: 30, opacity: 0, stagger: 0.1 },
+      howCopy, { end: 'top 60%' }
     );
   }
 
-  q('.step').forEach(function (step, i) {
-    reveal(step, { x: -26, opacity: 0, duration: 0.6, ease: 'power3.out', delay: i * 0.1 }, step, 'top 90%');
+  q('.step').forEach(function (step) {
+    reveal(step, { x: -34, opacity: 0 }, step, { end: 'top 70%' });
     var num = step.querySelector('.step-num');
     if (num) {
-      reveal(num, { scale: 0, rotate: -120, duration: 0.6, ease: 'back.out(2)', delay: i * 0.1 }, step, 'top 90%');
+      reveal(num, { scale: 0.2, rotate: -90, opacity: 0 }, step, { end: 'top 72%' });
     }
   });
 
-  /* ---------- the figures, counting both ways ---------- */
+  /* ---------- the figures, counting with the wheel ---------- */
 
   q('.stat-value').forEach(function (el) {
     var raw = el.textContent.trim();
@@ -203,12 +270,17 @@
 
     gsap.fromTo(counter, { n: 0 }, {
       n: target,
-      duration: 1.1,
-      ease: 'power1.out',
-      immediateRender: false,
-      scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none reverse' },
-      onUpdate: function () { el.textContent = counter.n.toFixed(decimals) + suffix; },
-      onComplete: function () { el.textContent = raw; }   // never leave a rounding artefact
+      ease: 'none',
+      // Rendered up front like the reveals, so the figure reads zero from the
+      // start rather than dropping to it once the counter is already in view.
+      scrollTrigger: { trigger: el, start: 'top bottom', end: 'top 68%', scrub: 0.6 },
+      onUpdate: function () {
+        // Write the original string back at the top so no rounding artefact
+        // can survive, and so "10K+" keeps its shape rather than "10.0K+".
+        el.textContent = Math.abs(counter.n - target) < 0.005
+          ? raw
+          : counter.n.toFixed(decimals) + suffix;
+      }
     });
   });
 
@@ -216,8 +288,8 @@
 
   var ctaInner = document.querySelector('.cta-inner');
   if (ctaInner) {
-    reveal(ctaInner.children, { y: 30, opacity: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out' },
-           '.cta-band', 'top 88%');
+    reveal(ctaInner.children, { y: 36, opacity: 0, stagger: 0.12 }, '.cta-band',
+           { end: 'top 58%' });
   }
 
   /* ---------- the answers, sliding ---------- */
@@ -248,7 +320,7 @@
         gsap.fromTo(body,
           { height: 0, paddingBottom: 0, opacity: 0, overflow: 'hidden' },
           { height: 'auto', paddingBottom: pad, opacity: 1,
-            duration: 0.4, ease: 'power2.out', onComplete: settle });
+            duration: 0.42, ease: 'power2.out', onComplete: settle });
       } else {
         gsap.to(body, {
           height: 0, paddingBottom: 0, opacity: 0, overflow: 'hidden',
@@ -277,23 +349,23 @@
 
   /* ---------- pointer play ---------- */
 
-  /* Cards tilt very slightly towards the cursor. Capped at a couple of
-     degrees — enough to feel alive, not enough to read as a gimmick. */
   var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   if (canHover) {
+    /* Cards lean towards the cursor. The lift uses y while the scroll reveal
+       above uses yPercent, so the two compose instead of overwriting. */
     q('.reward-card, .stat, .usecase-card').forEach(function (card) {
-      var move = gsap.quickTo(card, 'rotateY', { duration: 0.5, ease: 'power2.out' });
-      var moveX = gsap.quickTo(card, 'rotateX', { duration: 0.5, ease: 'power2.out' });
-      var lift = gsap.quickTo(card, 'y', { duration: 0.4, ease: 'power2.out' });
+      var rotY = gsap.quickTo(card, 'rotateY', { duration: 0.5, ease: 'power2.out' });
+      var rotX = gsap.quickTo(card, 'rotateX', { duration: 0.5, ease: 'power2.out' });
+      var lift = gsap.quickTo(card, 'y', { duration: 0.45, ease: 'power2.out' });
 
       card.addEventListener('pointermove', function (e) {
         var r = card.getBoundingClientRect();
-        move(((e.clientX - r.left) / r.width - 0.5) * 5);
-        moveX(((e.clientY - r.top) / r.height - 0.5) * -5);
+        rotY(((e.clientX - r.left) / r.width - 0.5) * 6);
+        rotX(((e.clientY - r.top) / r.height - 0.5) * -6);
       });
-      card.addEventListener('pointerenter', function () { lift(-5); });
-      card.addEventListener('pointerleave', function () { move(0); moveX(0); lift(0); });
+      card.addEventListener('pointerenter', function () { lift(-6); });
+      card.addEventListener('pointerleave', function () { rotY(0); rotX(0); lift(0); });
     });
 
     /* Primary buttons lean towards the pointer. */

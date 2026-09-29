@@ -642,6 +642,10 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- Interpolates the scroll position so the scrubbed animation tracks a glide
+     rather than wheel notches. Must come before animations.js, which picks it
+     up if it is there and runs on raw scroll if it is not. -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
 <script src="js/main.js"></script>
 <script src="js/animations.js"></script>
 </body>

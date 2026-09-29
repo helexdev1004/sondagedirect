@@ -25,7 +25,21 @@
 *::before,
 *::after{ box-sizing:border-box; }
 
+/* The fallback path: if Lenis never loads, anchor jumps still glide, and
+   [id]{scroll-margin-top} below keeps them clear of the sticky header. */
 html{ scroll-behavior:smooth; }
+
+/* Lenis puts .lenis on <html> once it takes over the scroll position. Native
+   smooth scrolling has to be off while it does, or the two animate the same
+   value against each other. Keyed off .lenis alone rather than the
+   .lenis-smooth this build never sets. */
+html.lenis{ scroll-behavior:auto !important; }
+html.lenis,
+html.lenis body{ height:auto; }
+
+.lenis.lenis-stopped{ overflow:hidden; }
+.lenis [data-lenis-prevent]{ overscroll-behavior:contain; }
+.lenis iframe{ pointer-events:none; }
 
 body{
   font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
