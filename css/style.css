@@ -997,21 +997,29 @@ a{ text-decoration:none; }
 .cta-band{
   position:relative;
   overflow:hidden;
-  min-height:300px;
+  min-height:340px;
   display:flex;
   align-items:center;
-  padding:64px 0 70px;
+  /* Deep at the foot on purpose: it is the room the waves travel in. With
+     the old padding the copy filled the band top to bottom and there was
+     nowhere for them to be that was not behind a line of text. */
+  padding:66px 0 148px;
   background:linear-gradient(120deg,#0874FC 0%,#1F5EF0 52%,#005FE0 100%);
 }
 
 /* The layer the shapes live in. It is what leans toward the pointer, so the
    shapes inside are free to keep their own drift without the two fighting
    over the same transform. */
+/* No will-change anywhere in here, deliberately. Promoting these to their own
+   compositor layers sounds like the right thing for something that moves every
+   frame, and measured it was the opposite: three layers this size cost about
+   forty-five percent of the frames during a pointer sweep, against two percent
+   without. They are a couple of thousand pixels wide — too big to be worth
+   holding separately. */
 .cta-shapes{
   position:absolute;
   inset:0;
   pointer-events:none;
-  will-change:transform;
 }
 
 /* No transform here any more. Centring used to be translateX(-50%) in CSS,
@@ -1019,48 +1027,29 @@ a{ text-decoration:none; }
    -50% and pushed every shape about half its width to the right, so the band
    only ever had anything happening down one side. The centring is xPercent:-50
    in the script now, where the drift is added to it rather than replacing it. */
+/* max-width has to be turned off here. The global img{max-width:100%} was
+   clamping these to exactly the band's width, so they had no overhang at all
+   — and the moment the drift moved one even a couple of pixels its own edge
+   came into view as a hard vertical line down the band. The width below is
+   what gives the motion room to happen off-screen. */
 .cta-shape{
   position:absolute;
   left:50%;
-  width:130%;
-  min-width:1200px;
+  width:128%;
+  min-width:1360px;
+  max-width:none;
+  /* No height, and nothing stretched. The waves are drawn at the band's own
+     proportions — 2880 by 360, several crests across — so they scale to about
+     450px tall at this width and keep their shape. Stretching a squarer
+     drawing to this width flattened every curve into a long straight
+     diagonal, which is what read as the band having been cut. */
   pointer-events:none;
-  will-change:transform;
 }
 
-/* A soft light that follows the cursor across the band. The position comes
-   from two custom properties the script writes, so tracking the pointer costs
-   a style update rather than a layout. */
-.cta-glow{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .4s ease;
-  background:radial-gradient(420px circle at var(--gx,50%) var(--gy,50%),
-             rgba(255,255,255,.22) 0%, rgba(255,255,255,.08) 35%, rgba(255,255,255,0) 70%);
-}
-
-.cta-band:hover .cta-glow{ opacity:1; }
-
-@media (prefers-reduced-motion:reduce){
-  .cta-glow{ display:none; }
-}
-
-.cta-shape-1{
-  top:-6%;
-  opacity:.14;
-}
-
-.cta-shape-2{
-  bottom:-18%;
-  opacity:.18;
-}
-
-.cta-shape-3{
-  bottom:-34%;
-  opacity:.55;
-}
+/* The waves travel underneath this, so the copy carries a soft shadow of its
+   own rather than relying on whatever happens to be behind it at the time. */
+.cta-title,
+.cta-text{ text-shadow:0 1px 14px rgba(6,32,86,.28); }
 
 .cta-inner{
   position:relative;

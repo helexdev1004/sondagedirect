@@ -476,52 +476,53 @@
 
   /* ------------------------------------------------------------ closing band */
 
-  /* Three things happen to the wave layers behind the closing band, and they
-     are kept on separate properties so none of them can overwrite another.
+  /* The waves behind the closing band. Four things move them, each on its own
+     property so none can overwrite another — GSAP keeps px and percent offsets
+     apart, which is what lets two of them share an axis:
 
-       xPercent  the -50% that centres each shape, plus the scroll drift
-       x and y   a slow drift of their own that runs whether or not the page
-                 is moving, so the band is never completely still
-       the layer the shapes sit in leans toward the pointer
+       xPercent   the -50% that centres each wave, plus the scroll drift
+       x, y       a long swell of its own, running whether or not you scroll
+       scaleY     that same swell breathing the wave taller and shorter
+       yPercent   the pointer, pushing each layer by a different amount
 
-     GSAP keeps px and percent offsets apart, which is what makes the first
-     two able to share an axis. The lean is on the wrapper rather than the
-     shapes for the same reason — it needs an element of its own to write to. */
+     The centring has to live here rather than in the stylesheet: a CSS
+     transform would be thrown away by the first of these to be written. */
   function initCtaBand() {
     var band = document.querySelector('.cta-band');
     if (!band) return;
 
     var layer = band.querySelector('.cta-shapes');
-    var glow = band.querySelector('.cta-glow');
     var shapes = [].slice.call(band.querySelectorAll('.cta-shape'));
     if (!shapes.length) return;
 
-    /* The centring the stylesheet used to do. It has to live here now, because
-       anything this file writes to transform would throw a CSS one away. */
     gsap.set(shapes, { xPercent: -50 });
 
-    /* Its own drift. Long, uneven periods and sine easing, so the three never
-       line up into a pulse — it reads as the surface moving rather than as an
-       animation repeating. */
-    var OWN = [
-      { x: 30, y: 16, time: 11 },
-      { x: -38, y: -12, time: 14 },
-      { x: 22, y: 20, time: 17 }
+    /* Each wave swells on its own, deliberately mismatched — different
+       distances, different periods, none a multiple of another — so the three
+       never come back into step and repeat as a pulse.
+
+       Translation only, no scaling. Moving a layer is handed to the compositor
+       and costs nothing; scaling one forces the browser to redraw it, and
+       these are three and a half thousand pixels wide. Breathing their heights
+       looked better and spent a third of the frame budget doing it. */
+    var SWELL = [
+      { x:  58, y:  26, time: 13 },
+      { x: -74, y: -20, time: 17 },
+      { x:  44, y:  34, time: 21 }
     ];
     shapes.forEach(function (el, i) {
-      var m = OWN[i % OWN.length];
+      var m = SWELL[i % SWELL.length];
       gsap.to(el, {
         x: m.x, y: m.y,
         duration: m.time,
         ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
-        delay: i * 1.3
+        repeat: -1, yoyo: true,
+        delay: i * 1.7
       });
     });
 
     /* The scroll drift, added to the centring rather than replacing it. */
-    [-5, 3, 7].forEach(function (amt, i) {
+    [-3.5, 2, 4].forEach(function (amt, i) {
       if (!shapes[i]) return;
       gsap.fromTo(shapes[i], { xPercent: -50 - amt }, {
         xPercent: -50 + amt, ease: 'none',
@@ -531,25 +532,40 @@
 
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-    /* The pointer. The glow is moved by writing two custom properties, which
-       costs a style recalculation rather than a layout, and the layer leans a
-       few pixels the other way so the shapes seem to sit behind the light. */
-    var setGX = glow ? gsap.quickSetter(glow, '--gx') : null;
-    var setGY = glow ? gsap.quickSetter(glow, '--gy') : null;
-    var leanX = layer ? gsap.quickTo(layer, 'x', { duration: 0.9, ease: 'power3.out' }) : null;
-    var leanY = layer ? gsap.quickTo(layer, 'y', { duration: 0.9, ease: 'power3.out' }) : null;
+    /* The pointer moves the waves rather than lighting them. The whole layer
+       leans after the cursor, and on top of that each wave is pushed a
+       different distance — the front one nearly three times the back one — so
+       moving across the band opens the gaps between them and closes them
+       again. Depth you cause, rather than a highlight you drag around. */
+    var leanX = layer ? gsap.quickTo(layer, 'x', { duration: 1, ease: 'power3.out' }) : null;
+    var leanY = layer ? gsap.quickTo(layer, 'y', { duration: 1, ease: 'power3.out' }) : null;
+    var DEPTH = [1.6, 3.2, 4.6];
+    var push = shapes.map(function (el) {
+      return gsap.quickTo(el, 'yPercent', { duration: 1.1, ease: 'power3.out' });
+    });
+
+    /* The band's box is measured when it changes, not on every mouse move.
+       Reading it inside the handler forces a layout on each event, and a
+       pointer sweep fires those faster than a frame — which was costing about
+       a fifth of the frames outright. */
+    var box = null;
+    function measure() { box = band.getBoundingClientRect(); }
+    measure();
+    window.addEventListener('resize', measure);
+    window.addEventListener('scroll', measure, { passive: true });
+    ScrollTrigger.addEventListener('refresh', measure);
 
     band.addEventListener('pointermove', function (e) {
-      var b = band.getBoundingClientRect();
-      if (!b.width) return;
-      var px = (e.clientX - b.left) / b.width;
-      var py = (e.clientY - b.top) / b.height;
-      if (setGX) { setGX((px * 100).toFixed(2) + '%'); setGY((py * 100).toFixed(2) + '%'); }
-      if (leanX) { leanX((px - 0.5) * -26); leanY((py - 0.5) * -14); }
+      if (!box || !box.width) return;
+      var px = (e.clientX - box.left) / box.width - 0.5;
+      var py = (e.clientY - box.top) / box.height - 0.5;
+      if (leanX) { leanX(px * -36); leanY(py * -26); }
+      push.forEach(function (set, i) { set(py * (DEPTH[i % DEPTH.length]) * -1); });
     });
 
     band.addEventListener('pointerleave', function () {
       if (leanX) { leanX(0); leanY(0); }
+      push.forEach(function (set) { set(0); });
     });
   }
 

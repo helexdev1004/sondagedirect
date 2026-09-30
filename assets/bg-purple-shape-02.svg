@@ -1,3 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="320" viewBox="0 0 1024 320">
-  <path d="M0 260C180 80 380 20 580 140s260 110 444-20v200H0z" fill="#BBD8FF"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="2880" height="760" viewBox="0 0 2880 760">
+  <!-- Deliberately tall. The wave rides near the top and everything below
+       it is solid, so the bottom of this image is always far past the
+       bottom of the band. A shorter one ended partway down and its own
+       edge showed as a hard horizontal line across the band.
+       The crest fades out so the wave dissolves rather than starting on
+       an edge — baked in here because a CSS mask over something this size
+       cost half the frame rate. -->
+  <defs>
+    <linearGradient id="w2" x1="0" y1="142" x2="0" y2="414" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#BBD8FF" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#BBD8FF" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#BBD8FF" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <path d="M-473 210 C-318 142 -198 142 -43 210 C112 278 232 278 387 210 C542 142 662 142 817 210 C972 278 1092 278 1247 210 C1402 142 1522 142 1677 210 C1832 278 1952 278 2107 210 C2262 142 2382 142 2537 210 C2692 278 2812 278 2967 210 C3122 142 3242 142 3397 210 C3552 278 3672 278 3827 210 V760 H-473 Z" fill="url(#w2)"/>
 </svg>
