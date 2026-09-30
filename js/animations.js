@@ -1,37 +1,38 @@
 /* Scroll and entrance animation.
  *
- * One rule, learned the hard way: nothing that carries meaning is ever partly
- * or conditionally invisible. Text, figures and cards either have arrived or
- * are still below the fold — there is no third state.
+ * ONE SYSTEM. Everything on this page is built from four numbers and two
+ * gestures, and that constraint is the whole design. What was here before had
+ * six easing curves, eight durations, five stagger values and three different
+ * hover behaviours, arrived at one section at a time — which is why no two
+ * parts of the page felt like the same website.
  *
- * Three earlier versions each broke that rule a different way.
+ * The four numbers are below. The two gestures are these, and which one a
+ * thing gets is decided by what it IS, never by which section it lives in:
  *
- *   Scrubbing reveals tied their progress to the scroll position, so stopping
- *   mid-range left cards at 94% scale and 45px down for as long as you stopped
- *   there. A scrubbed tween has no notion of being finished.
+ *   A SURFACE — a card, a tile, a badge, anything with an edge — opens from
+ *   closed. It scales up into its own footprint and never moves. Nothing
+ *   translating is what lets a grid of ten arrive as ten cards opening rather
+ *   than as ten tiles at ten different offsets bubbling into line.
  *
- *   Reversing them on the way back up — play none none reverse — looked fine
- *   in a clean sweep and was unusable in practice: six small nudges of the
- *   wheel near a trigger line produced twelve visibility flips, a whole grid
- *   of cards strobing while you read.
+ *   TEXT resolves. Opacity alone, no movement and no scale. Type that slides
+ *   or swells draws the eye to the motion instead of to the words.
  *
- *   Scrubbing the hero copy's opacity left the headline sitting at 0.48 of
- *   full wherever you happened to stop.
+ * Nothing overshoots. A bounce at the end of a reveal — back.out was doing
+ * the arriving here on three different settings — is the single thing that
+ * dates this kind of motion fastest.
  *
- * So reveals here fire once, run on their own clock, and stay. The trigger
- * retires the moment it fires, which is what makes jitter a non-event: there
- * is no line left to waver across.
+ * Nothing reverses either. Reveals fire once and the trigger retires with
+ * them, so there is no line left to waver across: scrolling back and forth
+ * near a boundary used to strobe a whole grid off and on.
  *
- * Motion that genuinely does run both ways is still here — the progress bar
- * and the parallax layers are scrubbed frame-for-frame to the wheel. Those are
- * safe to scrub precisely because they carry no meaning: a decorative layer
- * parked at some offset is just a layer at an offset, and the bar is supposed
- * to read as "this far down".
+ * Scrub is reserved for the two things that genuinely are a function of
+ * scroll position — the reading bar and the parallax layers. Those carry no
+ * meaning, so a tween of theirs sitting part-way is a resting state rather
+ * than a broken one.
  *
- * It fails visible twice. Nothing runs unless gsap and ScrollTrigger both
- * loaded, so a dead CDN leaves plain, fully rendered HTML. And since a from()
- * hides its target as it is built, every reveal is registered with a backstop
- * that finishes anything still hidden once the page has settled.
+ * It fails visible twice: nothing runs unless gsap and ScrollTrigger both
+ * loaded, and every reveal is registered with a backstop that finishes
+ * anything still hidden once the page has settled.
  */
 (function () {
   'use strict';
@@ -46,23 +47,59 @@
     return [].slice.call((root || document).querySelectorAll(sel));
   };
 
-  var pending = [];        // every reveal, for the backstop at the foot of the file
+  /* ---------- the four numbers ---------- */
+
+  var EASE     = 'power3.out';   // one curve everywhere, and it does not overshoot
+  var DURATION = 0.6;
+  var STAGGER  = 0.06;
+  var START    = 'top 86%';      // one trigger line for every reveal on the page
+  var SCRUB    = 0.8;            // one catch-up for everything scroll-linked
+
+  var pending = [];              // every reveal, for the backstop at the foot of the file
+
+  /* ---------- the two gestures ---------- */
+
+  var play = function (targets, vars, trigger) {
+    if (!targets || targets.length === 0) return;
+    pending.push(gsap.from(targets, Object.assign({
+      duration: DURATION,
+      ease: EASE,
+      stagger: STAGGER,
+      clearProps: 'transform',
+      scrollTrigger: { trigger: trigger, start: START, once: true }
+    }, vars)));
+  };
+
+  /* A surface opens from closed. */
+  var surface = function (targets, trigger, vars) {
+    play(targets, Object.assign({ scale: 0.94, opacity: 0 }, vars || {}), trigger);
+  };
+
+  /* Text simply resolves. */
+  var text = function (targets, trigger, vars) {
+    play(targets, Object.assign({ opacity: 0 }, vars || {}), trigger);
+  };
 
   /* ---------- hero ---------- */
 
   /* The headline arrives a word at a time, each word rising out of its own
-     clipped box. That needs two elements per word: an outer .word that clips
-     and an inner .word-i that moves. Splitting only text nodes leaves the <br>
-     and the accented span where the copy put them, so the line breaks survive. */
+     clipped box. This is the one place anything translates, and it is
+     deliberate: the hero is a single moment on load rather than one of a
+     dozen reveals you meet while reading, so it is allowed a gesture of its
+     own. Everything else in the hero resolves like the rest of the page.
+
+     Two elements per word: an outer .word that clips and an inner .word-i
+     that moves. Splitting only text nodes leaves the <br> and the accented
+     span where the copy put them, so the line breaks survive. */
   var heading = document.querySelector('.hero-heading');
   var headingWords = [];
 
-  var wrapWord = function (text) {
+  var wrapWord = function (word) {
     var outer = document.createElement('span');
     var inner = document.createElement('span');
     outer.className = 'word';
     inner.className = 'word-i';
-    inner.textContent = text;
+    inner.textContent = word;
     outer.appendChild(inner);
     headingWords.push(inner);
     return outer;
@@ -94,95 +131,65 @@
     });
   }
 
-  var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  var tl = gsap.timeline({ defaults: { ease: EASE, duration: DURATION } });
 
-  tl.from('.hero-copy-col .eyebrow', { y: 16, opacity: 0, duration: 0.5 });
+  tl.from('.hero-copy-col .eyebrow', { opacity: 0 });
 
   if (headingWords.length) {
     tl.from(headingWords, {
-      yPercent: 110, opacity: 0, duration: 0.8, stagger: 0.05, ease: 'power4.out'
-    }, '-=0.25');
+      yPercent: 110, opacity: 0, duration: DURATION * 1.35, stagger: STAGGER * 0.8
+    }, '-=0.3');
   }
 
-  tl.from('.hero-sub', { y: 18, opacity: 0, duration: 0.55 }, '-=0.45')
-    .from('.hero-cta-row .btn', { y: 18, opacity: 0, duration: 0.5, stagger: 0.08 }, '-=0.35')
-    .from('.hero-point', { y: 14, opacity: 0, duration: 0.45, stagger: 0.07 }, '-=0.3')
-    /* Opacity only. The frame carries the mask now, so scaling it would scale
-       the dissolve along with it and the soft edge would visibly swell. */
-    .from('.hero-visual-col', { opacity: 0, duration: 1.1, ease: 'power2.out' }, 0.15);
+  tl.from('.hero-sub', { opacity: 0 }, '-=0.45')
+    .from('.hero-cta-row .btn', { opacity: 0 }, '-=0.35')
+    .from('.hero-point', { opacity: 0 }, '-=0.3')
+    .from('.hero-visual-col', { opacity: 0, duration: DURATION * 1.8 }, 0.15);
 
   /* The hero runs on load, so its from() tweens hide their targets the moment
-     they are built. If the ticker ever stalls, the most important thing on the
-     page would stay blank — so jump to the end if it has not finished long
-     after it should have. A no-op normally. */
+     they are built. If the ticker ever stalls, the most important thing on
+     the page would stay blank — so jump to the end if it has not finished
+     long after it should have. A no-op normally. */
   window.setTimeout(function () {
     if (tl.progress() < 1) tl.progress(1);
   }, 4000);
 
   if (!hasST) return;
 
-  /* ---------- the reveal ---------- */
+  /* ---------- the two scrubbed things ---------- */
 
-  /* Timed, so it always reaches an end, and once, so the trigger retires as it
-     fires. Nothing to waver across afterwards, nothing to strobe.
-
-     start is 'top 86%' — low enough that the element is properly on screen
-     when it goes, high enough that you are not watching a gap wait for it. */
-  var reveal = function (targets, vars, trigger) {
-    if (!targets || targets.length === 0) return;
-
-    pending.push(gsap.from(targets, Object.assign({
-      y: 28,
-      opacity: 0,
-      duration: 0.7,
-      ease: 'power3.out',
-      clearProps: 'transform',
-      scrollTrigger: { trigger: trigger, start: 'top 86%', once: true }
-    }, vars)));
-  };
-
-  /* ---------- the two things that do run both ways ---------- */
-
-  /* The bar IS how far down you are, so it is scrubbed straight off the
-     scrollbar and tracks the wheel in either direction. */
+  /* The bar IS how far down you are. */
   var bar = document.getElementById('scrollProgress');
   if (bar) {
     gsap.to(bar, {
       scaleX: 1, ease: 'none',
-      scrollTrigger: { start: 0, end: 'max', scrub: 0.3 }
+      scrollTrigger: { start: 0, end: 'max', scrub: SCRUB }
     });
   }
 
-  /* Decorative layers drifting at their own rate as the page travels past,
-     also scrubbed and also bidirectional. Safe to scrub because they carry no
-     meaning — parked at an offset, they are simply at an offset. Kept small:
-     this is depth, not a ride. */
+  /* Decorative layers drifting at their own rate as the page travels past.
+     Safe to scrub because they carry no meaning: parked at an offset, they
+     are simply at an offset. Kept small — this is depth, not a ride. */
   var drift = function (sel, from, to, trigger) {
     var el = document.querySelector(sel);
     if (!el) return;
     gsap.fromTo(el, from, Object.assign({
       ease: 'none',
-      scrollTrigger: { trigger: trigger || sel, start: 'top bottom', end: 'bottom top', scrub: 0.8 }
+      scrollTrigger: { trigger: trigger || sel, start: 'top bottom', end: 'bottom top', scrub: SCRUB }
     }, to));
   };
 
-  /* The hero drifts the <img> inside its frame, never the frame. Moving the
-     column moved the mask with it, which dragged the bottom fade below the
-     section's overflow:hidden and ended the photograph on a hard sliced edge.
-     It also starts at 'top top' rather than 'top bottom': the hero is already
-     on screen at load, so a range beginning at the bottom of the viewport is
-     half spent before the page has been scrolled at all, and the picture sat
-     24px out of place on the very first frame. */
+  /* The hero drifts the <img> inside its frame, never the frame: the frame
+     carries the dissolve, and moving it dragged the bottom fade below the
+     section's overflow and ended the photograph on a hard sliced edge. It
+     starts at 'top top' because the hero is already on screen at load — a
+     range beginning at the bottom of the viewport is half spent before the
+     page has been scrolled at all. */
   var heroImg = document.querySelector('.hero-visual-img');
   if (heroImg) {
     gsap.fromTo(heroImg, { yPercent: 0 }, {
       yPercent: 5, ease: 'none',
-      scrollTrigger: {
-        trigger: '.hero-section',
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 0.8
-      }
+      scrollTrigger: { trigger: '.hero-section', start: 'top top', end: 'bottom top', scrub: SCRUB }
     });
   }
 
@@ -194,49 +201,34 @@
 
   /* ---------- everything that reveals ---------- */
 
-  q('.section-head').forEach(function (head) {
-    reveal(head.children, { stagger: 0.08 }, head);
-  });
-
-  /* Each grid goes as one group, triggered on its container, so a row arrives
-     together rather than each card waiting for its own line. */
-  [
-    /* Opens in place. y stays at zero on purpose: rising the cards up into
-       position meant ten of them arriving on ten slightly different offsets,
-       and a grid where every tile is a few pixels out and settling reads as
-       the whole block bubbling rather than as ten cards appearing. Scaling
-       up from closed keeps every tile exactly where the grid put it, so the
-       only thing that changes is the card opening. */
-    ['.reward-card',      { y: 0, scale: 0.84, stagger: 0.04, duration: 0.5, ease: 'back.out(1.7)' }],
-    ['.usecase-card',     { y: 30, stagger: 0.08 }],
-    ['.stat',             { y: 26, scale: 0.97, stagger: 0.07, ease: 'back.out(1.3)' }],
-    ['.testimonial-card', { y: 28, stagger: 0.09 }],
-    ['.faq-item',         { y: 16, stagger: 0.05, duration: 0.55 }]
-  ].forEach(function (pair) {
-    var items = q(pair[0]);
-    if (!items.length) return;
-    reveal(items, pair[1], items[0].parentNode);
-  });
+  /* Headings, copy, list items — text, so they resolve. */
+  q('.section-head').forEach(function (head) { text(head.children, head); });
 
   var howCopy = document.querySelector('.how-copy-col');
   if (howCopy) {
-    reveal(
-      [howCopy.querySelector('.eyebrow'), howCopy.querySelector('.how-title'), howCopy.querySelector('.how-sub')].filter(Boolean),
-      { stagger: 0.08 },
-      howCopy
-    );
+    text([howCopy.querySelector('.eyebrow'),
+          howCopy.querySelector('.how-title'),
+          howCopy.querySelector('.how-sub')].filter(Boolean), howCopy);
   }
 
-  q('.step').forEach(function (step, i) {
-    reveal(step, { x: -26, y: 0, delay: i * 0.08 }, step);
-    var num = step.querySelector('.step-num');
-    if (num) {
-      reveal(num, { y: 0, scale: 0.4, duration: 0.55, delay: i * 0.08 + 0.1, ease: 'back.out(2)' }, step);
-    }
+  var ctaInner = document.querySelector('.cta-inner');
+  if (ctaInner) text(ctaInner.children, '.cta-band');
+
+  /* Cards and tiles — surfaces, so they open. Each grid is triggered on its
+     container so a row arrives together rather than each card waiting for its
+     own line to be crossed. */
+  ['.reward-card', '.usecase-card', '.stat', '.testimonial-card', '.faq-item'].forEach(function (sel) {
+    var items = q(sel);
+    if (items.length) surface(items, items[0].parentNode);
   });
 
-  var ctaInner = document.querySelector('.cta-inner');
-  if (ctaInner) reveal(ctaInner.children, { stagger: 0.09 }, '.cta-band');
+  /* A step is a numbered badge beside a line of copy: the badge is a surface,
+     the copy is text. Same two gestures, no third one invented for this row. */
+  q('.step').forEach(function (step, i) {
+    text(step, step, { delay: i * STAGGER });
+    var num = step.querySelector('.step-num');
+    if (num) surface(num, step, { delay: i * STAGGER });
+  });
 
   /* ---------- the figures ---------- */
 
@@ -257,12 +249,10 @@
 
     pending.push(gsap.to(counter, {
       n: target,
-      duration: 1.2,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: el, start: 'top 86%', once: true },
-      onUpdate: function () {
-        el.textContent = counter.n.toFixed(decimals) + suffix;
-      },
+      duration: DURATION * 2,
+      ease: EASE,
+      scrollTrigger: { trigger: el, start: START, once: true },
+      onUpdate: function () { el.textContent = counter.n.toFixed(decimals) + suffix; },
       onComplete: function () { el.textContent = raw; }   // never a rounding artefact
     }));
   });
@@ -294,11 +284,11 @@
         gsap.fromTo(body,
           { height: 0, paddingBottom: 0, opacity: 0, overflow: 'hidden' },
           { height: 'auto', paddingBottom: pad, opacity: 1,
-            duration: 0.4, ease: 'power2.out', onComplete: settle });
+            duration: DURATION * 0.7, ease: EASE, onComplete: settle });
       } else {
         gsap.to(body, {
           height: 0, paddingBottom: 0, opacity: 0, overflow: 'hidden',
-          duration: 0.3, ease: 'power2.in',
+          duration: DURATION * 0.5, ease: EASE,
           onComplete: function () { item.open = false; settle(); }
         });
       }
@@ -321,41 +311,15 @@
     });
   }
 
-  /* ---------- pointer play ---------- */
+  /* ---------- hover ---------- */
 
-  /* Cards tilt very slightly towards the cursor — a few degrees, enough to
-     feel alive and not enough to read as a gimmick. */
-  /* The reward cards are deliberately absent here. Their hover is the hold in
-     the stylesheet and nothing else: the tilt wrote rotateY/rotateX and the
-     lift wrote y, so a card under the cursor was being moved by three things
-     at once on top of a CSS hover that also moved it. */
-  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    q('.stat, .usecase-card').forEach(function (card) {
-      var rotY = gsap.quickTo(card, 'rotateY', { duration: 0.5, ease: 'power2.out' });
-      var rotX = gsap.quickTo(card, 'rotateX', { duration: 0.5, ease: 'power2.out' });
-      var lift = gsap.quickTo(card, 'y', { duration: 0.45, ease: 'power2.out' });
-
-      card.addEventListener('pointermove', function (e) {
-        var r = card.getBoundingClientRect();
-        rotY(((e.clientX - r.left) / r.width - 0.5) * 5);
-        rotX(((e.clientY - r.top) / r.height - 0.5) * -5);
-      });
-      card.addEventListener('pointerenter', function () { lift(-5); });
-      card.addEventListener('pointerleave', function () { rotY(0); rotX(0); lift(0); });
-    });
-
-    q('.btn-brand, .btn-white-cta').forEach(function (btn) {
-      var x = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3.out' });
-      var y = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3.out' });
-
-      btn.addEventListener('pointermove', function (e) {
-        var r = btn.getBoundingClientRect();
-        x((e.clientX - r.left - r.width / 2) * 0.2);
-        y((e.clientY - r.top - r.height / 2) * 0.28);
-      });
-      btn.addEventListener('pointerleave', function () { x(0); y(0); });
-    });
-  }
+  /* There is no hover code here any more, and that is the point. Hover is one
+     gesture — the hold in the stylesheet, scale(1.03) on every card alike —
+     and the stylesheet is the right place for it.
+     What was here was a 3D tilt writing rotateY/rotateX, a lift writing y,
+     and magnetic buttons writing x/y, each on its own duration and curve, on
+     top of CSS hovers that were also moving the same elements. Four systems
+     moving three kinds of element in two different languages. */
 
   /* ---------- the backstop ---------- */
 

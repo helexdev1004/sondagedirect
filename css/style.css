@@ -499,11 +499,13 @@ a{ text-decoration:none; }
   transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
-/* Held, not lifted. The card stays exactly where it sits in the grid and only
-   firms up very slightly under the cursor — a card being picked up off the
-   page rather than one jumping out of its row. */
+/* Held, not lifted — and the same hold on every card on the page. A surface
+   under the cursor stays exactly where the grid put it and only firms up
+   slightly, rather than jumping out of its row. This used to be three
+   different things: a lift here, a different lift there, and a 3D tilt on
+   top of both. */
 .reward-card:hover{
-  transform:scale(1.035);
+  transform:scale(1.03);
   border-color:#BBDCF7;
   box-shadow:0 16px 36px rgba(28,82,160,.12);
 }
@@ -664,7 +666,7 @@ a{ text-decoration:none; }
 }
 
 .usecase-card:hover{
-  transform:translateY(-4px);
+  transform:scale(1.03);
   box-shadow:var(--shadow-soft);
 }
 
@@ -740,7 +742,7 @@ a{ text-decoration:none; }
 .stat:hover{
   border-color:var(--accent);
   box-shadow:0 20px 44px rgba(28,82,160,.14);
-  transform:translateY(-3px);
+  transform:scale(1.03);
 }
 
 .stat-icon{
