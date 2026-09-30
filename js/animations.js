@@ -111,6 +111,26 @@
   // top of the document, so ScrollTrigger never sees an "enter" transition for it and
   // the tween would sit at its start state forever. After building, every trigger that
   // is already active is played by hand.
+  /* ScrollTrigger measures by scrolling the document to the top, reading every
+     trigger's position, and scrolling back. The stylesheet sets
+     html{scroll-behavior:smooth} so anchor links glide — which makes both of
+     those jumps ANIMATE. Refresh then measures while the page is still on its
+     way, and every position comes out short by roughly the current scroll.
+     Measured on this page: the closing band's trigger, correctly at 4671,
+     came back as 284. Everything below the fold was then treated as long
+     since passed, reversed to hidden, and never announced again — which is
+     how opening an answer emptied the closing band.
+
+     Every refresh goes through here instead. Inline style beats the rule in
+     the stylesheet, so the measuring jumps are instant, and smooth anchor
+     scrolling is handed straight back afterwards. */
+  function safeRefresh() {
+    var prev = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    ScrollTrigger.refresh();
+    root.style.scrollBehavior = prev;
+  }
+
   // Re-asserts anything that should be showing. A refresh winds every tween
   // back to its start, so this has to put them back — and it cannot trust
   // isActive to do it: immediately after ScrollTrigger.refresh() every trigger
@@ -498,7 +518,7 @@
       function settle() {
         gsap.set(body, { clearProps: 'height,paddingBottom,opacity,overflow' });
         requestAnimationFrame(function () {
-          ScrollTrigger.refresh();
+          safeRefresh();
           ScrollTrigger.update();
         });
       }
@@ -507,10 +527,27 @@
 
       if (open) {
         item.open = true;
+
+        // Measured here rather than handed to GSAP as height:'auto'. Animating
+        // to 'auto' makes GSAP set the element to auto for one frame to read
+        // it, which paints the whole answer at full size and then snaps it
+        // back to nothing — a single-frame flash of the finished panel right
+        // at the start. Measuring it ourselves and animating to a number
+        // never shows that frame.
+        gsap.set(body, { height: 'auto', paddingBottom: pad });
+        var full = body.offsetHeight;
+
         gsap.fromTo(body,
           { height: 0, paddingBottom: 0, opacity: 0, overflow: 'hidden' },
-          { height: 'auto', paddingBottom: pad, opacity: 1,
-            duration: 0.4, ease: 'power2.out', onComplete: settle });
+          { height: full, opacity: 1, duration: 0.4, ease: 'power2.out', onComplete: settle });
+
+        // The padding is given its own, much shorter tween. On one tween with
+        // the height it arrives only as the panel finishes, so for most of the
+        // open the last line of the answer sits flush against the bottom of
+        // the card and is sliced by it. Front-loading it puts the gap there
+        // before the text ever reaches the edge.
+        gsap.fromTo(body, { paddingBottom: 0 },
+          { paddingBottom: pad, duration: 0.16, ease: 'power2.out' });
       } else {
         gsap.to(body, {
           height: 0, paddingBottom: 0, opacity: 0, overflow: 'hidden',
@@ -548,7 +585,7 @@
 
     root.classList.add('sd-anim-ready');
     root.classList.remove('sd-anim');
-    ScrollTrigger.refresh();
+    safeRefresh();
     playActive();
   }
 
@@ -557,11 +594,38 @@
   // A refresh re-evaluates every trigger, and in doing so winds anything
   // already in view back to its start. Re-assert those afterwards, or the hero
   // would empty itself the moment the webfonts land or the window is resized.
+  /* A refresh recalculates every trigger and, in doing so, winds every tween
+     back to its start. That is fine when the page is scrolling — the next
+     update puts things right — and wrong the rest of the time: opening an
+     answer or resizing the window refreshes with the page standing still, and
+     whatever was on screen is left hidden, or replayed from nothing over its
+     full duration, which is the flicker at the end of opening a question.
+
+     Playing them again is not the answer, because a reveal that had already
+     finished should not run a second time. So the progress of every tween is
+     taken before the refresh and put straight back afterwards — set, not
+     animated. A refresh then costs nothing visible at all. */
+  var snapshot = null;
+
+  ScrollTrigger.addEventListener('refreshInit', function () {
+    snapshot = tweens.map(function (t) { return t ? t.progress() : -1; });
+  });
+
   ScrollTrigger.addEventListener('refresh', function () {
     ScrollTrigger.update();   // isActive is stale until something updates
+    if (snapshot) {
+      tweens.forEach(function (t, i) {
+        // Only what had actually got somewhere. Restoring a tween that was
+        // still at zero pins it to its hidden start state, and its trigger
+        // then has nothing left to announce when you finally scroll to it —
+        // which is how clicking a question left the closing band empty.
+        if (t && snapshot[i] > 0) t.progress(snapshot[i]);
+      });
+      snapshot = null;
+    }
     playActive();
   });
 
-  window.addEventListener('load', function () { ScrollTrigger.refresh(); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+  window.addEventListener('load', safeRefresh);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(safeRefresh);
 })();
