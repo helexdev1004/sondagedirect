@@ -64,7 +64,11 @@
     // which puts the last card in a row over the edge of the page.
     flip:  { rotateY: -34, y: 24, transformOrigin: '50% 50%' },
     // Dropped and rocked upright on its base.
-    swing: { rotate: -5, y: 54, scale: 0.94, transformOrigin: '50% 100%' }
+    swing: { rotate: -5, y: 54, scale: 0.94, transformOrigin: '50% 100%' },
+    // Struck. Arrives oversized and lands hard on its own spot — the same
+    // gesture the headline's letters use, so the whole first screen is hit
+    // into place rather than half of it being hit and half drifting in.
+    stamp: { scale: 1.55, y: -14 }
   };
 
   // What each animated property has to be put back to. `to` is built from whatever the
@@ -270,37 +274,49 @@
          spot, one after another, and stops dead — power4.in accelerates the
          whole way into the landing, so the speed is highest at the moment it
          arrives. An ease that slowed on approach, or an overshoot that let it
-         wobble afterwards, would read as floating down rather than as being
-         struck. The stagger is wide enough that they are clearly separate
-         hits and not a ripple.
+         wobble afterwards, would read as floating down rather than struck.
+
+         It carries its own motion blur, which is what keeps this from looking
+         like a letter that simply got smaller: it is smeared while it is
+         moving and snaps sharp on the hit. Only three or four are ever in
+         flight at once, so the blur costs almost nothing.
 
          A small random tilt on the way in that snaps to zero on impact keeps
-         the line from looking mechanical — each letter is set slightly
+         the line from looking mechanical — each letter set slightly
          differently, the way a hand-set one would be. */
       var tl = gsap.timeline({ paused: true });
+      var STRIKE = 0.15;      // how long one letter takes to land
+      var GAP = 0.034;        // and how long before the next one does
 
       tl.fromTo(chars,
         {
-          scale: 2.6,
+          scale: 2.4,
           opacity: 0,
+          filter: 'blur(13px)',
           rotate: function () { return gsap.utils.random(-11, 11); }
         },
         {
           scale: 1,
           opacity: 1,
+          filter: 'blur(0px)',
           rotate: 0,
-          duration: 0.17,
+          duration: STRIKE,
           ease: 'power4.in',
-          stagger: 0.048,
+          stagger: GAP,
           delay: parseFloat(el.getAttribute('data-anim-delay')) || 0.06
         });
 
-      /* The coloured run is struck harder: it starts larger, so it comes in
-         faster over the same time and hits with more behind it. */
+      /* The coloured run is struck harder: it starts larger and more smeared,
+         so over the same time it comes in faster and hits with more behind
+         it. */
       var accent = [].slice.call(el.querySelectorAll('.text-accent .char'));
       if (accent.length) {
-        tl.fromTo(accent, { scale: 3.4 }, { scale: 1, duration: 0.17, ease: 'power4.in', stagger: 0.048 },
-                  chars.length ? (chars.length - accent.length) * 0.048 + (parseFloat(el.getAttribute('data-anim-delay')) || 0.06) : 0);
+        var at = (chars.length - accent.length) * GAP
+               + (parseFloat(el.getAttribute('data-anim-delay')) || 0.06);
+        tl.fromTo(accent,
+          { scale: 3.2, filter: 'blur(20px)' },
+          { scale: 1, filter: 'blur(0px)', duration: STRIKE, ease: 'power4.in', stagger: GAP },
+          at);
       }
 
       var tween = tl;
@@ -377,7 +393,11 @@
     // when a fast scroll arrives at it - the reader meets an empty block. Easing out
     // puts most of the reveal in the first few frames.
     mask:  { duration: 0.68, ease: 'power2.out' },
-    zoom:  { duration: 0.75, ease: 'back.out(1.2)' }
+    zoom:  { duration: 0.75, ease: 'back.out(1.2)' },
+    // power4.in for the same reason the letters use it: it accelerates the
+    // whole way in, so the thing is moving fastest at the moment it arrives.
+    // Anything that slows on approach reads as landing, not as being struck.
+    stamp: { duration: 0.3, ease: 'power4.in' }
   };
 
   function initReveals() {
