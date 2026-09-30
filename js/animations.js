@@ -266,39 +266,41 @@
       // to be taken out of the hidden start state by hand.
       gsap.set(el, { autoAlpha: 1 });
 
-      // The letters do not simply drop in. Each one starts lying flat, face
-      // down and below its line, and swings up onto its feet — rotateX about
-      // its own baseline, against the perspective the stylesheet puts on the
-      // heading. Against one vanishing point for the whole line, the letters
-      // at either end lean in towards the middle as they come up.
+      /* Stamped. Each letter comes in oversized and lands hard on its own
+         spot, one after another, and stops dead — power4.in accelerates the
+         whole way into the landing, so the speed is highest at the moment it
+         arrives. An ease that slowed on approach, or an overshoot that let it
+         wobble afterwards, would read as floating down rather than as being
+         struck. The stagger is wide enough that they are clearly separate
+         hits and not a ripple.
+
+         A small random tilt on the way in that snaps to zero on impact keeps
+         the line from looking mechanical — each letter is set slightly
+         differently, the way a hand-set one would be. */
       var tl = gsap.timeline({ paused: true });
 
       tl.fromTo(chars,
-        { yPercent: -118, rotateX: -92, scaleY: 0.72, opacity: 0 },
         {
-          yPercent: 0,
-          rotateX: 0,
-          scaleY: 1,
+          scale: 2.6,
+          opacity: 0,
+          rotate: function () { return gsap.utils.random(-11, 11); }
+        },
+        {
+          scale: 1,
           opacity: 1,
-          duration: 0.92,
-          // Overshoots and settles, so each letter lands rather than slides.
-          ease: 'back.out(2.2)',
-          stagger: { each: 0.035, from: 'start' },
+          rotate: 0,
+          duration: 0.17,
+          ease: 'power4.in',
+          stagger: 0.048,
           delay: parseFloat(el.getAttribute('data-anim-delay')) || 0.06
         });
 
-      /* The accented run gets the last word, literally: once the line is up,
-         the coloured part gives a short kick of its own so the eye finishes on
-         the promise rather than on the full stop. */
+      /* The coloured run is struck harder: it starts larger, so it comes in
+         faster over the same time and hits with more behind it. */
       var accent = [].slice.call(el.querySelectorAll('.text-accent .char'));
       if (accent.length) {
-        tl.fromTo(accent,
-          { scale: 1 },
-          { scale: 1.14, duration: 0.22, ease: 'power2.out',
-            stagger: { each: 0.022, from: 'start' } }, '-=0.28')
-          .to(accent,
-            { scale: 1, duration: 0.42, ease: 'elastic.out(1, 0.45)',
-              stagger: { each: 0.022, from: 'start' } }, '-=0.12');
+        tl.fromTo(accent, { scale: 3.4 }, { scale: 1, duration: 0.17, ease: 'power4.in', stagger: 0.048 },
+                  chars.length ? (chars.length - accent.length) * 0.048 + (parseFloat(el.getAttribute('data-anim-delay')) || 0.06) : 0);
       }
 
       var tween = tl;

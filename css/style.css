@@ -373,11 +373,6 @@ a{ text-decoration:none; }
   line-height:1.03;
   margin:24px 0 22px;
   letter-spacing:-.03em;
-  /* A camera, so the letters tumbling up read as depth rather than as a
-     vertical squash. Set here rather than on the words: one vanishing point
-     for the whole line means the letters at each end lean towards the middle,
-     which is what makes it look like a line rather than a row of tiles. */
-  perspective:900px;
 }
 
 .hero-sub{
@@ -1379,13 +1374,15 @@ a{ text-decoration:none; }
    its own line. The padding gives the mask room for ascenders and descenders,
    and the matching negative margin takes that room back out of the layout, so
    the heading sets exactly as it did before it was split. */
+/* The stamp brings each letter in oversized, and a box that clips would cut
+   the corners off it on the way down — so the clipping only applies once the
+   line has landed, when there is nothing left to clip. */
 .word{
   display:inline-block;
-  overflow:hidden;
+  overflow:visible;
   vertical-align:top;
   padding:.16em .04em .18em;
   margin:-.16em -.04em -.18em;
-  transform-style:preserve-3d;
 }
 
 .char{
