@@ -853,13 +853,6 @@ a{ text-decoration:none; }
   line-height:1.3;
 }
 
-.person-role{
-  font-size:13px;
-  color:var(--body);
-  line-height:1.4;
-  margin-top:2px;
-}
-
 /* What they actually walked away with — the point of the whole page. */
 .redeemed-chip{
   display:inline-flex;
@@ -894,35 +887,6 @@ a{ text-decoration:none; }
 
 .testimonials-section .section-title{ font-size:46px; }
 .testimonials-section .section-sub{ font-size:16.5px; }
-
-.testimonial-dots{
-  display:flex;
-  justify-content:center;
-  gap:11px;
-  margin-top:34px;
-}
-
-.dot{
-  width:10px;
-  height:10px;
-  padding:0;
-  border:0;
-  border-radius:50%;
-  background:#BFD9F2;
-  cursor:pointer;
-  transition:background-color .2s ease, transform .2s ease;
-}
-
-.dot.is-active{
-  background:var(--blue);
-  transform:scale(1.25);
-}
-
-/* All three cards are already on screen at desktop width, so the dots read
-   as the design's indicator rather than a control that does nothing. */
-@media (min-width:992px){
-  .testimonial-dots{ pointer-events:none; }
-}
 
 /* --------------------------------------------------------------------------
    FAQ
@@ -1407,8 +1371,6 @@ a{ text-decoration:none; }
     flex:0 0 min(420px, 86%);
     scroll-snap-align:center;
   }
-
-  .testimonial-dots{ display:flex; }
 
   .cta-band{ min-height:0; padding:60px 0 64px; }
   .site-footer{ padding:60px 0 30px; }

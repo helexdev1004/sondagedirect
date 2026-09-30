@@ -70,47 +70,6 @@
     });
   }
 
-  var track = document.getElementById('testimonialTrack');
-  var dotWrap = document.getElementById('testimonialDots');
-
-  if (track && dotWrap) {
-    var dots = [].slice.call(dotWrap.querySelectorAll('.dot'));
-    var cards = [].slice.call(track.children);
-
-    var activeIndex = function () {
-      var middle = track.scrollLeft + track.clientWidth / 2;
-      var best = 0;
-      var bestGap = Infinity;
-      cards.forEach(function (card, i) {
-        var gap = Math.abs(card.offsetLeft + card.offsetWidth / 2 - middle);
-        if (gap < bestGap) { bestGap = gap; best = i; }
-      });
-      return best;
-    };
-
-    var syncDots = function () {
-      var i = activeIndex();
-      dots.forEach(function (dot, n) { dot.classList.toggle('is-active', n === i); });
-    };
-
-    dots.forEach(function (dot, i) {
-      dot.addEventListener('click', function () {
-        var card = cards[i];
-        track.scrollTo({
-          left: card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2,
-          behavior: 'smooth'
-        });
-      });
-    });
-
-    track.addEventListener('scroll', function () {
-      window.clearTimeout(track._t);
-      track._t = window.setTimeout(syncDots, 80);
-    }, { passive: true });
-
-    syncDots();
-  }
-
   // Only one answer open at a time, so the list never runs away down the page.
   // If the animation layer loaded it drives the accordion itself, sliding the
   // panels rather than snapping them, and this stays out of the way.
