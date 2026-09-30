@@ -1073,194 +1073,44 @@ a{ text-decoration:none; }
    Footer
    -------------------------------------------------------------------------- */
 
+/* One line: who the site belongs to, and the two documents that have to be
+   reachable from every page. The newsletter form, the three columns of links,
+   the social icons and the language button are gone — none of them led
+   anywhere, and a footer full of dead links is worse than a short one. */
 .site-footer{
   background:var(--white);
   border-top:1px solid var(--border);
-  padding:62px 0 28px;
+  padding:26px 0;
 }
 
-.footer-top{
-  display:flex;
-  justify-content:space-between;
-  gap:64px;
-}
-
-.footer-brand-col{
-  flex:0 1 380px;
-  min-width:0;
-}
-
-.footer-nav{
-  display:flex;
-  gap:96px;
-}
-
-.footer-lockup{
-  margin-bottom:16px;
-}
-
-.footer-lockup .brand-mark{ width:28px; height:28px; }
-.footer-lockup .brand-name{ font-size:18px; }
-
-.footer-about{
-  color:var(--body);
-  font-size:13.5px;
-  line-height:1.75;
-  max-width:280px;
-  margin-bottom:26px;
-}
-
-.social-row{
-  display:flex;
-  gap:10px;
-}
-
-.social-row a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:32px;
-  height:32px;
-  border-radius:50%;
-  border:1px solid var(--border);
-  transition:border-color .2s ease, background-color .2s ease;
-}
-
-.social-row a:hover{
-  border-color:#BBDCF7;
-  background:var(--tint);
-}
-
-.social-row img{
-  width:15px;
-  height:15px;
-  display:block;
-}
-
-.footer-heading{
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-  color:var(--navy);
-  margin-bottom:18px;
-}
-
-.footer-links li + li{ margin-top:12px; }
-
-.footer-links a{
-  color:var(--body);
-  font-size:14px;
-  transition:color .2s ease;
-}
-
-.footer-links a:hover{ color:var(--blue); }
-
-.newsletter-form{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  max-width:330px;
-}
-
-.newsletter-input{
-  flex:1 1 auto;
-  min-width:0;
-  border:1px solid var(--border);
-  border-radius:11px;
-  outline:0;
-  font-size:14px;
-  font-family:inherit;
-  color:var(--navy);
-  background:var(--white);
-  padding:11px 14px;
-  transition:border-color .2s ease, box-shadow .2s ease;
-}
-
-.newsletter-input::placeholder{ color:#93A2BC; }
-
-.newsletter-input:focus{
-  border-color:#A7CFF7;
-  box-shadow:0 0 0 3px rgba(8,116,252,.12);
-}
-
-.newsletter-btn{
-  flex:none;
-  border:0;
-  border-radius:11px;
-  background:var(--blue);
-  color:var(--white);
-  font-family:inherit;
-  font-size:14px;
-  font-weight:600;
-  padding:11px 18px;
-  cursor:pointer;
-  transition:background-color .2s ease;
-}
-
-.newsletter-btn:hover{ background:var(--blue-deep); }
-
-.newsletter-msg{
-  font-size:12.5px;
-  color:var(--blue);
-  margin-top:10px;
-  min-height:16px;
-}
-
-.footer-divider{
-  height:1px;
-  background:var(--border);
-  margin:48px 0 22px;
-}
-
-.footer-bottom{
+.footer-bar{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:20px 32px;
+  gap:16px 32px;
   flex-wrap:wrap;
 }
 
-.copyright{
+.footer-copy{
   color:var(--body);
-  font-size:13px;
+  font-size:14px;
+  line-height:1.6;
 }
 
 .footer-legal{
   display:flex;
-  gap:24px;
-  margin:0;
+  align-items:center;
+  gap:26px;
 }
 
 .footer-legal a{
   color:var(--body);
-  font-size:13px;
+  font-size:14px;
   transition:color .2s ease;
 }
 
-.footer-legal a:hover{ color:var(--blue); }
-
-.footer-meta{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-
-.lang-select{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  padding:0;
-  border:0;
-  background:none;
-  font-family:inherit;
-  color:var(--body);
-  font-size:13px;
-  cursor:pointer;
-  transition:color .2s ease;
-}
-
-.lang-select:hover{ color:var(--blue); }
+.footer-legal a:hover,
+.footer-legal a:focus-visible{ color:var(--blue); }
 
 /* --------------------------------------------------------------------------
    Responsive — large desktop
@@ -1396,13 +1246,6 @@ a{ text-decoration:none; }
   }
 
   .cta-band{ min-height:0; padding:60px 0 64px; }
-  .site-footer{ padding:60px 0 30px; }
-  .footer-divider{ margin:40px 0 22px; }
-
-  /* The brand block and the link columns no longer fit on one line. */
-  .footer-top{ flex-direction:column; gap:44px; }
-  .footer-brand-col{ flex:1 1 auto; }
-  .footer-nav{ gap:0; justify-content:space-between; max-width:560px; }
 }
 
 /* --------------------------------------------------------------------------
@@ -1459,12 +1302,8 @@ a{ text-decoration:none; }
   .cta-text br{ display:none; }
   .cta-inner .btn{ width:100%; max-width:320px; }
 
-  .site-footer{ padding:52px 0 26px; }
-  .footer-about{ max-width:100%; }
-  .newsletter-form{ max-width:100%; }
-  .footer-nav{ gap:28px; max-width:none; }
-  .footer-bottom{ justify-content:flex-start; gap:16px 24px; }
-  .footer-meta{ width:100%; justify-content:space-between; }
+  /* Stacked, so the line about the company is not squeezed against the links. */
+  .footer-bar{ flex-direction:column; align-items:flex-start; gap:14px; }
 }
 
 @media (max-width:575.98px){
@@ -1472,8 +1311,6 @@ a{ text-decoration:none; }
   .hero-heading{ font-size:34px; }
   .hero-heading br{ display:none; }
   .section-title{ font-size:27px; }
-  .footer-nav{ flex-wrap:wrap; gap:32px 40px; }
-  .footer-col{ flex:1 1 40%; }
 }
 
 /* ============ ANIMATION SUPPORT ============ */

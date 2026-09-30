@@ -50,10 +50,6 @@
         container: 'body'      // out of the grid, so no ancestor can clip it
       });
     });
-
-    document.querySelectorAll('.social-row a[aria-label]').forEach(function (link) {
-      new bootstrap.Tooltip(link, { placement: 'top', trigger: 'hover focus', container: 'body' });
-    });
   }
 
   // Back to the top, once there is a page behind you.
@@ -85,21 +81,4 @@
     });
   });
 
-  var form = document.querySelector('.newsletter-form');
-
-  if (form) {
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      var input = form.querySelector('.newsletter-input');
-      var message = document.querySelector('.newsletter-msg');
-      if (!message) return;
-
-      if (input.checkValidity()) {
-        message.textContent = 'Thanks — check your inbox to confirm.';
-        form.reset();
-      } else {
-        message.textContent = 'Please enter a valid email address.';
-      }
-    });
-  }
 })();
