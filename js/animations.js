@@ -1,38 +1,43 @@
 /* Scroll and entrance animation.
  *
- * BIDIRECTIONAL. Every reveal on this page is scrubbed — its progress IS the
- * scroll position, so it runs forwards as you go down and backwards as you
- * come up, tracking the wheel continuously in both directions.
+ * BIDIRECTIONAL, and scrubbed: every reveal's progress IS the scroll
+ * position, so it runs forward going down and backward coming up, joined to
+ * the wheel in both directions.
  *
- * Getting there took two wrong turns worth recording, because the difference
- * between them and this is only the range.
+ * Three things had to be true at once, and each earlier attempt got two.
  *
- * Reversing on a trigger (play/none/none/reverse) is bidirectional in the
- * wrong way. A trigger is a LINE, and a line can be crossed repeatedly: six
- * small nudges of the wheel near one produced twelve visibility flips, a
- * whole grid strobing while you read. Scrubbing has no line to cross, only a
- * position to map, so jitter is just slow tracking.
+ *   It must not strobe. Reversing on a trigger is bidirectional in the wrong
+ *   way: a trigger is a LINE, and a line can be re-crossed — six small nudges
+ *   near one produced twelve visibility flips. Scrubbing maps a position
+ *   rather than crossing a line, so the same six nudges produce none.
  *
- * The first scrub attempt ran to 'top 62%', which meant an element could sit
- * half-resolved in the middle of the screen for as long as you stopped there
- * — a card at 94% scale beside neighbours at 100%. That is what made scrub
- * look broken, and it was the range, not the technique.
+ *   It must not strand anything. A scrub has no notion of finished, so
+ *   whatever it animates has to look deliberate at EVERY value, not just at
+ *   the ends. That rules out anything which changes an element's footprint
+ *   relative to its neighbours — a card stopped at 92% scale beside one at
+ *   100% reads as broken layout. So the gestures here only touch opacity and
+ *   blur, which leave the box exactly where the grid put it, plus a scale so
+ *   slight (1.5%) it cannot read as misalignment.
  *
- * So the range here ends at 'top 82%': a reveal is finished while the element
- * is still in the bottom fifth of the screen. Everything above that line is
- * always fully resolved, so no partial state ever appears where you are
- * reading. The only place you see motion is at the bottom edge, where content
- * is arriving — which is exactly where it belongs.
+ *   It must be visible. The previous range ran to 'top 82%' — 162px of
+ *   scroll, under two wheel notches, all of it in the bottom eighth of the
+ *   screen. Nothing strands there because nothing is seen there either; the
+ *   content simply appeared. This range runs to 'top 55%', 404px, about four
+ *   notches, so the motion is actually watchable.
  *
- * Triggers are per element, not per container. Cards sharing a row share a
- * height and so arrive together, and the stagger down the page comes from the
- * layout itself rather than from a stagger value.
+ * Those last two only reconcile because the curve is front-loaded. power3.out
+ * puts most of the change early: by the time an element's top reaches 70% of
+ * the viewport it is 96% resolved, and 99.9% by 60%. So the range is long
+ * enough to see and effectively finished before anything is in reading
+ * position — the tail is what extends into the screen, not the substance.
  *
- * Two gestures, chosen by what a thing IS. A SURFACE — card, tile, badge —
- * opens from closed, scaling into its own footprint without moving; nothing
- * translating is what stops a grid bubbling. TEXT resolves on opacity alone.
- * Both look correct at every intermediate value, which is the property a
- * scrubbed animation actually needs.
+ * Blur is also the gesture doing the aesthetic work. A thing coming into
+ * focus reads as intentional at any value in a way that a half-scaled box
+ * never does.
+ *
+ * Triggers are per element, so cards sharing a row share a height and arrive
+ * together; the sequence down the page comes from the layout rather than a
+ * stagger value.
  *
  * Hover is separate and lives in the stylesheet: one hold, scale(1.03), the
  * same on every card.
@@ -59,22 +64,33 @@
   var DURATION = 0.6;            // the hero, which runs on load rather than on scroll
   var STAGGER  = 0.06;
 
-  /* The reveal range. It begins as the element's top touches the bottom of
-     the viewport and is COMPLETE by the time that top reaches 82% — still in
-     the bottom fifth of the screen. Everything higher is fully resolved, so
-     a partial state can never appear in reading position. */
+  /* The reveal range: from the element's top touching the bottom of the
+     viewport to that top reaching 55%. Long enough to watch — 404px at a
+     900px viewport, about four wheel notches — while the front-loaded curve
+     keeps it 96% resolved by 70% and 99.9% by 60%, so what reaches reading
+     position is the tail rather than the substance. */
   var FROM     = 'top bottom';
-  var TO       = 'top 82%';
+  var TO       = 'top 55%';
 
-  var SCRUB    = 0.45;           // tight enough to feel joined to the wheel
+  var SCRUB    = 0.5;            // tight enough to feel joined to the wheel
+
+  /* Type comes into focus; surfaces do not. Blur reads as intentional at
+     every intermediate value, which is exactly what a scrub needs, but it is
+     not free: measured over a full scroll, blurring the cards as well took
+     the 90th-percentile frame from 16.7ms to 33.3ms and multiplied the frames
+     over 20ms by ten. Cards are large and numerous, which is where that cost
+     lives. Headings and copy are small, few, and the place the effect reads
+     best anyway, so the blur stays there and the cards settle on opacity and
+     a scale too slight to register as misalignment. */
+  var BLUR_TEXT = 6;
 
   var pending = [];              // every reveal, for the backstop at the foot of the file
 
   /* ---------- the two gestures ---------- */
 
-  var play = function (el, vars) {
+  var play = function (el, from, to) {
     if (!el) return;
-    pending.push(gsap.from(el, Object.assign({
+    pending.push(gsap.fromTo(el, from, Object.assign({
       ease: EASE,
       scrollTrigger: {
         trigger: el,          // its own position, so a row arrives as a row
@@ -82,19 +98,30 @@
         end: TO,
         scrub: SCRUB
       }
-    }, vars)));
+    }, to)));
   };
 
-  /* A surface opens from closed. */
+  var each = function (targets, fn) {
+    if (!targets) return;
+    (targets.length === undefined ? [targets] : [].slice.call(targets)).forEach(fn);
+  };
+
+  /* A surface settles into its own footprint. The scale is 1.5% — enough to
+     read as arriving, far too little to look out of line with a neighbour
+     that has already finished. */
   var surface = function (targets) {
-    (targets.length === undefined ? [targets] : [].slice.call(targets))
-      .forEach(function (el) { play(el, { scale: 0.92, opacity: 0 }); });
+    each(targets, function (el) {
+      play(el, { opacity: 0, scale: 0.985 }, { opacity: 1, scale: 1 });
+    });
   };
 
-  /* Text simply resolves. */
+  /* Text comes into focus and nothing else. */
   var text = function (targets) {
-    (targets.length === undefined ? [targets] : [].slice.call(targets))
-      .forEach(function (el) { play(el, { opacity: 0 }); });
+    each(targets, function (el) {
+      play(el,
+        { opacity: 0, filter: 'blur(' + BLUR_TEXT + 'px)' },
+        { opacity: 1, filter: 'blur(0px)' });
+    });
   };
 
   /* ---------- hero ---------- */
