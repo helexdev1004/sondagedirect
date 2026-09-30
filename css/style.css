@@ -463,15 +463,10 @@ a{ text-decoration:none; }
   padding:78px 0 84px;
 }
 
-.rewards-section .section-head{ margin-bottom:34px; }
-
-.rewards-trusted{
-  text-align:center;
-  color:var(--navy);
-  font-size:15px;
-  font-weight:600;
-  margin-bottom:34px;
-}
+/* The trusted line used to sit between the head and the cards and carried
+   the gap below it. With that line gone the head owns the spacing, so it
+   matches every other section rather than crowding the grid. */
+.rewards-section .section-head{ margin-bottom:56px; }
 
 .rewards-grid{
   display:grid;
