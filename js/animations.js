@@ -1,46 +1,44 @@
 /* Scroll and entrance animation.
  *
- * BIDIRECTIONAL, and scrubbed: every reveal's progress IS the scroll
- * position, so it runs forward going down and backward coming up, joined to
- * the wheel in both directions.
+ * BIDIRECTIONAL and scrubbed: a reveal's progress IS the scroll position, so
+ * it runs forward going down and backward coming up, joined to the wheel.
  *
- * Three things had to be true at once, and each earlier attempt got two.
+ * The thing that took longest to get right was not the mechanism but WHERE on
+ * the screen the change happens, and it is worth writing down because every
+ * earlier version failed on it.
  *
- *   It must not strobe. Reversing on a trigger is bidirectional in the wrong
- *   way: a trigger is a LINE, and a line can be re-crossed — six small nudges
- *   near one produced twelve visibility flips. Scrubbing maps a position
- *   rather than crossing a line, so the same six nudges produce none.
+ * A scrub can only be watched in the part of the screen you are looking at.
+ * The previous range ran to 'top 55%' on a front-loaded curve, which sounds
+ * generous and was not: power3.out crams most of the change into the start of
+ * the range, so 70% of every fade was finished before the element had cleared
+ * the bottom 15% of the screen, and only 30% of it was left for the whole
+ * comfortable viewing band. That is why it read as no animation at all. It
+ * was animating perfectly, just nowhere anyone was looking.
  *
- *   It must not strand anything. A scrub has no notion of finished, so
- *   whatever it animates has to look deliberate at EVERY value, not just at
- *   the ends. That rules out anything which changes an element's footprint
- *   relative to its neighbours — a card stopped at 92% scale beside one at
- *   100% reads as broken layout. So the gestures here only touch opacity and
- *   blur, which leave the box exactly where the grid put it, plus a scale so
- *   slight (1.5%) it cannot read as misalignment.
+ * So the range is 'top 92%' to 'top 45%' and the curve is LINEAR. Change is
+ * spread evenly — about 11% of the fade for every 5% of screen the element
+ * travels — across the middle of the viewport, where it can be seen. 85% of
+ * each reveal now happens in the band between 40% and 85% of the screen,
+ * against 30% before.
  *
- *   It must be visible. The previous range ran to 'top 82%' — 162px of
- *   scroll, under two wheel notches, all of it in the bottom eighth of the
- *   screen. Nothing strands there because nothing is seen there either; the
- *   content simply appeared. This range runs to 'top 55%', 404px, about four
- *   notches, so the motion is actually watchable.
+ * That means things ARE partly revealed higher up the screen, which earlier
+ * versions treated as a defect. It is not, and the distinction matters: what
+ * looked broken before was a card stranded at 94% scale and 45px out of
+ * place, because a wrong SIZE or POSITION reads as broken layout against the
+ * neighbour beside it. A wrong OPACITY does not — a half-faded card reads as
+ * arriving. So nothing here animates size or position. Opacity and blur only,
+ * both of which leave the box exactly where the grid put it, and both of
+ * which look deliberate at every value in between.
  *
- * Those last two only reconcile because the curve is front-loaded. power3.out
- * puts most of the change early: by the time an element's top reaches 70% of
- * the viewport it is 96% resolved, and 99.9% by 60%. So the range is long
- * enough to see and effectively finished before anything is in reading
- * position — the tail is what extends into the screen, not the substance.
+ * Blur is also what makes it feel like something rather than a plain fade:
+ * type and tiles come into focus as they climb the page.
  *
- * Blur is also the gesture doing the aesthetic work. A thing coming into
- * focus reads as intentional at any value in a way that a half-scaled box
- * never does.
+ * Triggers are per element, so cards sharing a row share a height and resolve
+ * together; the sequence down the page comes from the layout rather than from
+ * a stagger value. Jitter cannot strobe, because a scrub maps a position
+ * rather than crossing a line.
  *
- * Triggers are per element, so cards sharing a row share a height and arrive
- * together; the sequence down the page comes from the layout rather than a
- * stagger value.
- *
- * Hover is separate and lives in the stylesheet: one hold, scale(1.03), the
- * same on every card.
+ * Hover is separate and lives in the stylesheet: one hold, scale(1.03).
  *
  * It fails visible: nothing runs unless gsap and ScrollTrigger both loaded,
  * and a backstop finishes anything still hidden once the page has settled.
@@ -64,25 +62,28 @@
   var DURATION = 0.6;            // the hero, which runs on load rather than on scroll
   var STAGGER  = 0.06;
 
-  /* The reveal range: from the element's top touching the bottom of the
-     viewport to that top reaching 55%. Long enough to watch — 404px at a
-     900px viewport, about four wheel notches — while the front-loaded curve
-     keeps it 96% resolved by 70% and 99.9% by 60%, so what reaches reading
-     position is the tail rather than the substance. */
-  var FROM     = 'top bottom';
-  var TO       = 'top 55%';
+  /* The reveal range, and the curve that spreads change across it. LINEAR is
+     deliberate: an eased scrub front-loads the change into the bottom of the
+     screen where nobody is looking. Flat means roughly a ninth of the fade
+     for every 5% of screen the element climbs, all the way up. */
+  /* clamp() keeps both ends inside the page's own scroll range. Without it
+     anything near the bottom — the closing band, and the last of the answers
+     — can never finish, because the page runs out of scroll before those
+     elements climb to 45% of the viewport, and they sit part-faded for good.
+     The longer the range, the further up an element has to travel, so a range
+     wide enough to be watchable is exactly the one that needs this. */
+  var FROM       = 'clamp(top 92%)';
+  var TO         = 'clamp(top 45%)';
+  var SCRUB_EASE = 'none';
 
   var SCRUB    = 0.5;            // tight enough to feel joined to the wheel
 
-  /* Type comes into focus; surfaces do not. Blur reads as intentional at
-     every intermediate value, which is exactly what a scrub needs, but it is
-     not free: measured over a full scroll, blurring the cards as well took
-     the 90th-percentile frame from 16.7ms to 33.3ms and multiplied the frames
-     over 20ms by ten. Cards are large and numerous, which is where that cost
-     lives. Headings and copy are small, few, and the place the effect reads
-     best anyway, so the blur stays there and the cards settle on opacity and
-     a scale too slight to register as misalignment. */
-  var BLUR_TEXT = 6;
+  /* Coming into focus is what makes this read as an effect rather than a
+     plain fade. Blur is not free — it is the one thing here that costs
+     frames — so the surface radius is kept low, where it buys the look
+     without the cost. */
+  var BLUR_SURFACE = 5;
+  var BLUR_TEXT    = 8;
 
   var pending = [];              // every reveal, for the backstop at the foot of the file
 
@@ -91,7 +92,7 @@
   var play = function (el, from, to) {
     if (!el) return;
     pending.push(gsap.fromTo(el, from, Object.assign({
-      ease: EASE,
+      ease: SCRUB_EASE,
       scrollTrigger: {
         trigger: el,          // its own position, so a row arrives as a row
         start: FROM,
@@ -106,12 +107,15 @@
     (targets.length === undefined ? [targets] : [].slice.call(targets)).forEach(fn);
   };
 
-  /* A surface settles into its own footprint. The scale is 1.5% — enough to
-     read as arriving, far too little to look out of line with a neighbour
-     that has already finished. */
+  /* A surface comes into focus. No scale and no movement: a box at the wrong
+     SIZE or in the wrong PLACE reads as broken layout beside a neighbour that
+     has finished, which is what made an earlier version look stranded. A box
+     at the wrong opacity simply reads as arriving. */
   var surface = function (targets) {
     each(targets, function (el) {
-      play(el, { opacity: 0, scale: 0.985 }, { opacity: 1, scale: 1 });
+      play(el,
+        { opacity: 0, filter: 'blur(' + BLUR_SURFACE + 'px)' },
+        { opacity: 1, filter: 'blur(0px)' });
     });
   };
 
@@ -377,15 +381,21 @@
        trigger positions measured a moment ago are stale. */
     ScrollTrigger.refresh();
 
-    /* Then: anything still holding its start state while sitting in or above
-       the viewport never got its trigger and would otherwise stay invisible.
-       Finish it. Normally this finds nothing. */
+    /* Then the safety net, which has to be narrower than it looks. The risk
+       is ScrollTrigger failing to compute at all and leaving from()-hidden
+       elements invisible for good. The temptation is to finish anything
+       sitting at zero inside the viewport — but with a scrub, zero inside the
+       viewport is a perfectly legitimate state: it is an element that has
+       just entered and not started climbing yet. Forcing those wrecks the
+       reveal for anyone who scrolls in the first few seconds.
+       So this only finishes what the scroll position says should ALREADY be
+       finished: past its own end, yet still unrendered. Normally none. */
     window.setTimeout(function () {
       pending.forEach(function (tween) {
-        if (tween.progress() > 0) return;
-        var trigger = tween.scrollTrigger && tween.scrollTrigger.trigger;
-        if (!trigger) return;
-        if (trigger.getBoundingClientRect().top > window.innerHeight) return;
+        var st = tween.scrollTrigger;
+        if (!st) return;
+        if (tween.progress() >= 1) return;
+        if (window.scrollY < st.end) return;
         tween.progress(1);
       });
     }, 2500);
