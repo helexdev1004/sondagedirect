@@ -1,38 +1,44 @@
 /* Scroll and entrance animation.
  *
- * ONE SYSTEM. Everything on this page is built from four numbers and two
- * gestures, and that constraint is the whole design. What was here before had
- * six easing curves, eight durations, five stagger values and three different
- * hover behaviours, arrived at one section at a time — which is why no two
- * parts of the page felt like the same website.
+ * BIDIRECTIONAL. Every reveal on this page is scrubbed — its progress IS the
+ * scroll position, so it runs forwards as you go down and backwards as you
+ * come up, tracking the wheel continuously in both directions.
  *
- * The four numbers are below. The two gestures are these, and which one a
- * thing gets is decided by what it IS, never by which section it lives in:
+ * Getting there took two wrong turns worth recording, because the difference
+ * between them and this is only the range.
  *
- *   A SURFACE — a card, a tile, a badge, anything with an edge — opens from
- *   closed. It scales up into its own footprint and never moves. Nothing
- *   translating is what lets a grid of ten arrive as ten cards opening rather
- *   than as ten tiles at ten different offsets bubbling into line.
+ * Reversing on a trigger (play/none/none/reverse) is bidirectional in the
+ * wrong way. A trigger is a LINE, and a line can be crossed repeatedly: six
+ * small nudges of the wheel near one produced twelve visibility flips, a
+ * whole grid strobing while you read. Scrubbing has no line to cross, only a
+ * position to map, so jitter is just slow tracking.
  *
- *   TEXT resolves. Opacity alone, no movement and no scale. Type that slides
- *   or swells draws the eye to the motion instead of to the words.
+ * The first scrub attempt ran to 'top 62%', which meant an element could sit
+ * half-resolved in the middle of the screen for as long as you stopped there
+ * — a card at 94% scale beside neighbours at 100%. That is what made scrub
+ * look broken, and it was the range, not the technique.
  *
- * Nothing overshoots. A bounce at the end of a reveal — back.out was doing
- * the arriving here on three different settings — is the single thing that
- * dates this kind of motion fastest.
+ * So the range here ends at 'top 82%': a reveal is finished while the element
+ * is still in the bottom fifth of the screen. Everything above that line is
+ * always fully resolved, so no partial state ever appears where you are
+ * reading. The only place you see motion is at the bottom edge, where content
+ * is arriving — which is exactly where it belongs.
  *
- * Nothing reverses either. Reveals fire once and the trigger retires with
- * them, so there is no line left to waver across: scrolling back and forth
- * near a boundary used to strobe a whole grid off and on.
+ * Triggers are per element, not per container. Cards sharing a row share a
+ * height and so arrive together, and the stagger down the page comes from the
+ * layout itself rather than from a stagger value.
  *
- * Scrub is reserved for the two things that genuinely are a function of
- * scroll position — the reading bar and the parallax layers. Those carry no
- * meaning, so a tween of theirs sitting part-way is a resting state rather
- * than a broken one.
+ * Two gestures, chosen by what a thing IS. A SURFACE — card, tile, badge —
+ * opens from closed, scaling into its own footprint without moving; nothing
+ * translating is what stops a grid bubbling. TEXT resolves on opacity alone.
+ * Both look correct at every intermediate value, which is the property a
+ * scrubbed animation actually needs.
  *
- * It fails visible twice: nothing runs unless gsap and ScrollTrigger both
- * loaded, and every reveal is registered with a backstop that finishes
- * anything still hidden once the page has settled.
+ * Hover is separate and lives in the stylesheet: one hold, scale(1.03), the
+ * same on every card.
+ *
+ * It fails visible: nothing runs unless gsap and ScrollTrigger both loaded,
+ * and a backstop finishes anything still hidden once the page has settled.
  */
 (function () {
   'use strict';
@@ -50,34 +56,45 @@
   /* ---------- the four numbers ---------- */
 
   var EASE     = 'power3.out';   // one curve everywhere, and it does not overshoot
-  var DURATION = 0.6;
+  var DURATION = 0.6;            // the hero, which runs on load rather than on scroll
   var STAGGER  = 0.06;
-  var START    = 'top 86%';      // one trigger line for every reveal on the page
-  var SCRUB    = 0.8;            // one catch-up for everything scroll-linked
+
+  /* The reveal range. It begins as the element's top touches the bottom of
+     the viewport and is COMPLETE by the time that top reaches 82% — still in
+     the bottom fifth of the screen. Everything higher is fully resolved, so
+     a partial state can never appear in reading position. */
+  var FROM     = 'top bottom';
+  var TO       = 'top 82%';
+
+  var SCRUB    = 0.45;           // tight enough to feel joined to the wheel
 
   var pending = [];              // every reveal, for the backstop at the foot of the file
 
   /* ---------- the two gestures ---------- */
 
-  var play = function (targets, vars, trigger) {
-    if (!targets || targets.length === 0) return;
-    pending.push(gsap.from(targets, Object.assign({
-      duration: DURATION,
+  var play = function (el, vars) {
+    if (!el) return;
+    pending.push(gsap.from(el, Object.assign({
       ease: EASE,
-      stagger: STAGGER,
-      clearProps: 'transform',
-      scrollTrigger: { trigger: trigger, start: START, once: true }
+      scrollTrigger: {
+        trigger: el,          // its own position, so a row arrives as a row
+        start: FROM,
+        end: TO,
+        scrub: SCRUB
+      }
     }, vars)));
   };
 
   /* A surface opens from closed. */
-  var surface = function (targets, trigger, vars) {
-    play(targets, Object.assign({ scale: 0.94, opacity: 0 }, vars || {}), trigger);
+  var surface = function (targets) {
+    (targets.length === undefined ? [targets] : [].slice.call(targets))
+      .forEach(function (el) { play(el, { scale: 0.92, opacity: 0 }); });
   };
 
   /* Text simply resolves. */
-  var text = function (targets, trigger, vars) {
-    play(targets, Object.assign({ opacity: 0 }, vars || {}), trigger);
+  var text = function (targets) {
+    (targets.length === undefined ? [targets] : [].slice.call(targets))
+      .forEach(function (el) { play(el, { opacity: 0 }); });
   };
 
   /* ---------- hero ---------- */
@@ -202,39 +219,40 @@
   /* ---------- everything that reveals ---------- */
 
   /* Headings, copy, list items — text, so they resolve. */
-  q('.section-head').forEach(function (head) { text(head.children, head); });
+  q('.section-head').forEach(function (head) { text(head.children); });
 
   var howCopy = document.querySelector('.how-copy-col');
   if (howCopy) {
     text([howCopy.querySelector('.eyebrow'),
           howCopy.querySelector('.how-title'),
-          howCopy.querySelector('.how-sub')].filter(Boolean), howCopy);
+          howCopy.querySelector('.how-sub')].filter(Boolean));
   }
 
   var ctaInner = document.querySelector('.cta-inner');
-  if (ctaInner) text(ctaInner.children, '.cta-band');
+  if (ctaInner) text(ctaInner.children);
 
-  /* Cards and tiles — surfaces, so they open. Each grid is triggered on its
-     container so a row arrives together rather than each card waiting for its
-     own line to be crossed. */
+  /* Cards and tiles — surfaces, so they open. Each is triggered on itself, so
+     the ones sharing a row share a height and arrive together; the sequence
+     down the page falls out of the layout rather than a stagger value. */
   ['.reward-card', '.usecase-card', '.stat', '.testimonial-card', '.faq-item'].forEach(function (sel) {
-    var items = q(sel);
-    if (items.length) surface(items, items[0].parentNode);
+    surface(q(sel));
   });
 
   /* A step is a numbered badge beside a line of copy: the badge is a surface,
      the copy is text. Same two gestures, no third one invented for this row. */
-  q('.step').forEach(function (step, i) {
-    text(step, step, { delay: i * STAGGER });
+  q('.step').forEach(function (step) {
+    text(step);
     var num = step.querySelector('.step-num');
-    if (num) surface(num, step, { delay: i * STAGGER });
+    if (num) surface(num);
   });
 
   /* ---------- the figures ---------- */
 
-  /* Counts up once, on its own duration. Seeded to zero at build so a figure
-     never shows its real value and then snaps back to zero when the trigger
-     fires; the backstop restores the real value if the trigger never comes. */
+  /* Counts with the wheel, like everything else: scrubbed over the same range,
+     so it runs up as the figure arrives and back down if you scroll away. It
+     reaches its real value while the tile is still low on the screen, so the
+     number you read is always the true one. Seeded to zero at build so it
+     never shows the real figure and then snaps back to zero. */
   q('.stat-value').forEach(function (el) {
     var raw = el.textContent.trim();
     var match = raw.match(/^([\d.]+)(.*)$/);
@@ -249,11 +267,15 @@
 
     pending.push(gsap.to(counter, {
       n: target,
-      duration: DURATION * 2,
       ease: EASE,
-      scrollTrigger: { trigger: el, start: START, once: true },
-      onUpdate: function () { el.textContent = counter.n.toFixed(decimals) + suffix; },
-      onComplete: function () { el.textContent = raw; }   // never a rounding artefact
+      scrollTrigger: { trigger: el, start: FROM, end: TO, scrub: SCRUB },
+      onUpdate: function () {
+        /* Write the original string back at the top so no rounding artefact
+           can survive, and so "10K+" keeps its shape rather than "10.0K+". */
+        el.textContent = Math.abs(counter.n - target) < 0.005
+          ? raw
+          : counter.n.toFixed(decimals) + suffix;
+      }
     }));
   });
 
