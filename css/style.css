@@ -1073,44 +1073,76 @@ a{ text-decoration:none; }
    Footer
    -------------------------------------------------------------------------- */
 
-/* One line: who the site belongs to, and the two documents that have to be
-   reachable from every page. The newsletter form, the three columns of links,
-   the social icons and the language button are gone — none of them led
-   anywhere, and a footer full of dead links is worse than a short one. */
+/* Built on the shape VivaPoll's footer uses — brand, a list of links, and a
+   third column, on a tinted wash rather than plain white. The differences are
+   deliberate: no app badges, because there is no app, and the third column
+   carries the company rather than social icons, which were asked to go. */
 .site-footer{
-  background:var(--white);
+  background:linear-gradient(180deg, rgba(232,244,253,.55) 0%, rgba(232,244,253,.9) 100%);
   border-top:1px solid var(--border);
-  padding:26px 0;
+  padding:56px 0 48px;
 }
 
-.footer-bar{
+.footer-row{
   display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px 32px;
-  flex-wrap:wrap;
+  align-items:flex-start;
+  gap:48px;
 }
 
-.footer-copy{
+.footer-brand{ flex:0 0 34%; }
+
+.footer-lockup .brand-mark{ width:28px; height:28px; }
+.footer-lockup .brand-name{ font-size:18px; }
+
+.footer-tagline{
+  margin-top:12px;
   color:var(--body);
-  font-size:14px;
+  font-size:15px;
   line-height:1.6;
 }
 
-.footer-legal{
-  display:flex;
-  align-items:center;
-  gap:26px;
+/* The rule down the left is the detail that makes this read as one footer
+   rather than three stacked blocks. */
+.footer-nav{
+  flex:1 1 auto;
+  padding-left:56px;
+  border-left:1px solid var(--border);
 }
 
-.footer-legal a{
+.footer-nav li{ line-height:2.1; }
+
+.footer-nav a{
   color:var(--body);
-  font-size:14px;
+  font-size:14.5px;
   transition:color .2s ease;
 }
 
-.footer-legal a:hover,
-.footer-legal a:focus-visible{ color:var(--blue); }
+.footer-nav a:hover,
+.footer-nav a:focus-visible{ color:var(--blue); }
+
+.footer-company{
+  flex:0 0 24%;
+  text-align:right;
+}
+
+.footer-company-line{
+  color:var(--body);
+  font-size:13.5px;
+  line-height:1.6;
+}
+
+.footer-company-name{
+  margin-top:2px;
+  color:var(--navy);
+  font-size:15px;
+  font-weight:600;
+}
+
+.footer-company-year{
+  margin-top:14px;
+  color:var(--body);
+  font-size:13.5px;
+}
 
 /* --------------------------------------------------------------------------
    Responsive — large desktop
@@ -1302,8 +1334,14 @@ a{ text-decoration:none; }
   .cta-text br{ display:none; }
   .cta-inner .btn{ width:100%; max-width:320px; }
 
-  /* Stacked, so the line about the company is not squeezed against the links. */
-  .footer-bar{ flex-direction:column; align-items:flex-start; gap:14px; }
+  /* Centred and stacked, the way the reference does it at this width: the
+     rule down the side of the links only makes sense beside something. */
+  .site-footer{ padding:46px 0 40px; text-align:center; }
+  .footer-row{ flex-direction:column; align-items:center; gap:30px; }
+  .footer-brand,
+  .footer-company{ flex:1 1 auto; text-align:center; }
+  .footer-lockup{ justify-content:center; }
+  .footer-nav{ padding-left:0; border-left:0; }
 }
 
 @media (max-width:575.98px){
