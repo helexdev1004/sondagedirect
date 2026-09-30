@@ -505,10 +505,13 @@
        and costs nothing; scaling one forces the browser to redraw it, and
        these are three and a half thousand pixels wide. Breathing their heights
        looked better and spent a third of the frame budget doing it. */
+    /* Ribbons can travel far further than the filled waves could: they taper
+       to nothing at both ends, so there is no edge to bring into view however
+       far they go. That is what lets the flow actually read as flow. */
     var SWELL = [
-      { x:  58, y:  26, time: 13 },
-      { x: -74, y: -20, time: 17 },
-      { x:  44, y:  34, time: 21 }
+      { x:  210, y:  34, time: 16 },
+      { x: -264, y: -26, time: 21 },
+      { x:  168, y:  44, time: 27 }
     ];
     shapes.forEach(function (el, i) {
       var m = SWELL[i % SWELL.length];
@@ -522,7 +525,7 @@
     });
 
     /* The scroll drift, added to the centring rather than replacing it. */
-    [-3.5, 2, 4].forEach(function (amt, i) {
+    [-6, 4, 8].forEach(function (amt, i) {
       if (!shapes[i]) return;
       gsap.fromTo(shapes[i], { xPercent: -50 - amt }, {
         xPercent: -50 + amt, ease: 'none',
@@ -539,7 +542,7 @@
        again. Depth you cause, rather than a highlight you drag around. */
     var leanX = layer ? gsap.quickTo(layer, 'x', { duration: 1, ease: 'power3.out' }) : null;
     var leanY = layer ? gsap.quickTo(layer, 'y', { duration: 1, ease: 'power3.out' }) : null;
-    var DEPTH = [1.6, 3.2, 4.6];
+    var DEPTH = [2.4, 4.6, 6.8];
     var push = shapes.map(function (el) {
       return gsap.quickTo(el, 'yPercent', { duration: 1.1, ease: 'power3.out' });
     });
@@ -559,7 +562,7 @@
       if (!box || !box.width) return;
       var px = (e.clientX - box.left) / box.width - 0.5;
       var py = (e.clientY - box.top) / box.height - 0.5;
-      if (leanX) { leanX(px * -36); leanY(py * -26); }
+      if (leanX) { leanX(px * -62); leanY(py * -30); }
       push.forEach(function (set, i) { set(py * (DEPTH[i % DEPTH.length]) * -1); });
     });
 

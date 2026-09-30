@@ -1027,29 +1027,34 @@ a{ text-decoration:none; }
    -50% and pushed every shape about half its width to the right, so the band
    only ever had anything happening down one side. The centring is xPercent:-50
    in the script now, where the drift is added to it rather than replacing it. */
-/* max-width has to be turned off here. The global img{max-width:100%} was
-   clamping these to exactly the band's width, so they had no overhang at all
-   — and the moment the drift moved one even a couple of pixels its own edge
-   came into view as a hard vertical line down the band. The width below is
-   what gives the motion room to happen off-screen. */
+/* max-width off, or the global img{max-width:100%} clamps these to the band's
+   own width. The width is modest on purpose: each of these is composited every
+   frame, and at 168% the three of them together cost about forty percent of
+   the frames. Ribbons can afford it where the filled waves could not — they
+   fade to nothing at both ends, so there is no edge to bring into view however
+   far they travel. */
 .cta-shape{
   position:absolute;
   left:50%;
-  width:128%;
-  min-width:1360px;
+  width:126%;
+  min-width:1340px;
   max-width:none;
-  /* No height, and nothing stretched. The waves are drawn at the band's own
-     proportions — 2880 by 360, several crests across — so they scale to about
-     450px tall at this width and keep their shape. Stretching a squarer
-     drawing to this width flattened every curve into a long straight
-     diagonal, which is what read as the band having been cut. */
   pointer-events:none;
 }
 
-/* The waves travel underneath this, so the copy carries a soft shadow of its
-   own rather than relying on whatever happens to be behind it at the time. */
-.cta-title,
-.cta-text{ text-shadow:0 1px 14px rgba(6,32,86,.28); }
+/* Two planes, nine ribbons between them. Two rather than three because each
+   is a translucent layer the compositor reblends on every frame, and that
+   count is what costs — not what is drawn inside them. */
+.cta-shape-1{
+  top:-4%;
+  opacity:.95;
+}
+
+.cta-shape-2{
+  bottom:-16%;
+  opacity:.9;
+}
+
 
 .cta-inner{
   position:relative;
