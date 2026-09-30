@@ -1,334 +1,486 @@
 /* Scroll and entrance animation.
  *
- * BIDIRECTIONAL and scrubbed: a reveal's progress IS the scroll position, so
- * it runs forward going down and backward coming up, joined to the wheel.
+ * The VivaPoll engine, ported so the two sites move the same way. Same
+ * vocabulary, same mechanics, adapted to this page's markup and sections.
  *
- * The thing that took longest to get right was not the mechanism but WHERE on
- * the screen the change happens, and it is worth writing down because every
- * earlier version failed on it.
+ * Reveals are declared in the HTML rather than listed here: data-anim="mask"
+ * on an element, data-anim-group on a parent to animate its children instead,
+ * plus data-anim-delay and data-anim-stagger for sequencing. Adding a section
+ * to the page needs nothing in this file.
  *
- * A scrub can only be watched in the part of the screen you are looking at.
- * The previous range ran to 'top 55%' on a front-loaded curve, which sounds
- * generous and was not: power3.out crams most of the change into the start of
- * the range, so 70% of every fade was finished before the element had cleared
- * the bottom 15% of the screen, and only 30% of it was left for the whole
- * comfortable viewing band. That is why it read as no animation at all. It
- * was animating perfectly, just nowhere anyone was looking.
+ * They are TIMED tweens, built paused and driven by hand from the four
+ * ScrollTrigger crossings: play going in, reverse going out, play again coming
+ * back. That is what bidirectional means here — a reveal runs on its own clock
+ * so it always lands, and un-runs when the element leaves. It is deliberately
+ * NOT scrubbed: scrubbing ties progress to the scrollbar, which smears a
+ * reveal out and leaves elements part-finished wherever you stop, which is
+ * what every earlier attempt on this page got wrong.
  *
- * So the range is 'top 92%' to 'top 45%' and the curve is LINEAR. Change is
- * spread evenly — about 11% of the fade for every 5% of screen the element
- * travels — across the middle of the viewport, where it can be seen. 85% of
- * each reveal now happens in the band between 40% and 85% of the screen,
- * against 30% before.
- *
- * That means things ARE partly revealed higher up the screen, which earlier
- * versions treated as a defect. It is not, and the distinction matters: what
- * looked broken before was a card stranded at 94% scale and 45px out of
- * place, because a wrong SIZE or POSITION reads as broken layout against the
- * neighbour beside it. A wrong OPACITY does not — a half-faded card reads as
- * arriving. So nothing here animates size or position. Opacity and blur only,
- * both of which leave the box exactly where the grid put it, and both of
- * which look deliberate at every value in between.
- *
- * Blur is also what makes it feel like something rather than a plain fade:
- * type and tiles come into focus as they climb the page.
- *
- * Triggers are per element, so cards sharing a row share a height and resolve
- * together; the sequence down the page comes from the layout rather than from
- * a stagger value. Jitter cannot strobe, because a scrub maps a position
- * rather than crossing a line.
- *
- * Hover is separate and lives in the stylesheet: one hold, scale(1.03).
- *
- * It fails visible: nothing runs unless gsap and ScrollTrigger both loaded,
- * and a backstop finishes anything still hidden once the page has settled.
+ * The start state lives in CSS behind html.sd-anim, added by a small script in
+ * the head and removed the instant this file takes over — and dropped by a
+ * 2.5s failsafe if it never does, so the page renders normally either way.
  */
 (function () {
   'use strict';
 
-  if (typeof window.gsap === 'undefined') return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var root = document.documentElement;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var hasST = typeof window.ScrollTrigger !== 'undefined';
-  if (hasST) gsap.registerPlugin(ScrollTrigger);
+  if (!window.gsap || !window.ScrollTrigger || reduced) {
+    root.classList.remove('sd-anim');
+    return;
+  }
 
-  var q = function (sel, root) {
-    return [].slice.call((root || document).querySelectorAll(sel));
+  gsap.registerPlugin(ScrollTrigger);
+
+  var narrow = window.matchMedia('(max-width: 767.98px)');
+  var desktop = window.matchMedia('(min-width: 992px)');
+  // Only the reveals, headings and counters are tracked here. The parallax and the
+  // progress rail are built once and left alone, since a language change does not
+  // affect them.
+  var triggers = [];
+  var tweens = [];
+
+  /* ---------------------------------------------------------------- helpers */
+
+  var DIST = 46;
+  var FROM = {
+    up:    { y: DIST },
+    down:  { y: -DIST },
+    left:  { x: -DIST },
+    right: { x: DIST },
+    zoom:  { scale: 0.9 },
+    fade:  {},
+    // Hinged along its own top edge, so the card swings up out of the page.
+    tilt:  { y: 38, rotateX: -32, transformOrigin: '50% 0%' },
+
+    // Wiped in from its own bottom edge. The element is not moving into place behind a
+    // hole in the page - it is being uncovered, which is why the inner shift is small.
+    mask:  { yPercent: 6, clipPath: 'inset(100% 0% 0% 0%)' },
+    // Arrives out of focus and slightly too large, the way a camera settles onto it.
+    focus: { scale: 1.07, y: 26, filter: 'blur(16px)' },
+    // Turned on its own vertical axis, seen at an angle. Rotated about its centre and
+    // with no sideways offset on purpose: hinging on the left edge swings the right edge
+    // toward the viewer, and perspective then projects it wider than its own column -
+    // which puts the last card in a row over the edge of the page.
+    flip:  { rotateY: -34, y: 24, transformOrigin: '50% 50%' },
+    // Dropped and rocked upright on its base.
+    swing: { rotate: -5, y: 54, scale: 0.94, transformOrigin: '50% 100%' }
   };
 
-  /* ---------- the four numbers ---------- */
-
-  var EASE     = 'power3.out';   // one curve everywhere, and it does not overshoot
-  var DURATION = 0.6;            // the hero, which runs on load rather than on scroll
-  var STAGGER  = 0.06;
-
-  /* The reveal range, and the curve that spreads change across it. LINEAR is
-     deliberate: an eased scrub front-loads the change into the bottom of the
-     screen where nobody is looking. Flat means roughly a ninth of the fade
-     for every 5% of screen the element climbs, all the way up. */
-  /* clamp() keeps both ends inside the page's own scroll range. Without it
-     anything near the bottom — the closing band, and the last of the answers
-     — can never finish, because the page runs out of scroll before those
-     elements climb to 45% of the viewport, and they sit part-faded for good.
-     The longer the range, the further up an element has to travel, so a range
-     wide enough to be watchable is exactly the one that needs this. */
-  var FROM       = 'clamp(top 92%)';
-  var TO         = 'clamp(top 45%)';
-  var SCRUB_EASE = 'none';
-
-  var SCRUB    = 0.5;            // tight enough to feel joined to the wheel
-
-  /* Coming into focus is what makes this read as an effect rather than a
-     plain fade. Blur is not free — it is the one thing here that costs
-     frames — so the surface radius is kept low, where it buys the look
-     without the cost. */
-  var BLUR_SURFACE = 5;
-  var BLUR_TEXT    = 8;
-
-  var pending = [];              // every reveal, for the backstop at the foot of the file
-
-  /* ---------- the two gestures ---------- */
-
-  var play = function (el, from, to) {
-    if (!el) return;
-    pending.push(gsap.fromTo(el, from, Object.assign({
-      ease: SCRUB_EASE,
-      scrollTrigger: {
-        trigger: el,          // its own position, so a row arrives as a row
-        start: FROM,
-        end: TO,
-        scrub: SCRUB
-      }
-    }, to)));
+  // What each animated property has to be put back to. `to` is built from whatever the
+  // preset actually touched, so a new preset needs no changes anywhere else.
+  var NEUTRAL = {
+    x: 0, y: 0, yPercent: 0, xPercent: 0,
+    scale: 1, rotate: 0, rotateX: 0, rotateY: 0,
+    clipPath: 'inset(0% 0% 0% 0%)',
+    filter: 'blur(0px)'
   };
 
-  var each = function (targets, fn) {
-    if (!targets) return;
-    (targets.length === undefined ? [targets] : [].slice.call(targets)).forEach(fn);
-  };
+  function startVars(name) {
+    var preset = FROM[name] || FROM.up;
+    var vars = { autoAlpha: 0 };
+    for (var k in preset) vars[k] = preset[k];
+    return vars;
+  }
 
-  /* A surface comes into focus. No scale and no movement: a box at the wrong
-     SIZE or in the wrong PLACE reads as broken layout beside a neighbour that
-     has finished, which is what made an earlier version look stranded. A box
-     at the wrong opacity simply reads as arriving. */
-  var surface = function (targets) {
-    each(targets, function (el) {
-      play(el,
-        { opacity: 0, filter: 'blur(' + BLUR_SURFACE + 'px)' },
-        { opacity: 1, filter: 'blur(0px)' });
+  function endVars(name) {
+    var preset = FROM[name] || FROM.up;
+    var vars = { autoAlpha: 1 };
+    for (var k in preset) {
+      if (k === 'transformOrigin') continue;      // carried over, not reset
+      if (k in NEUTRAL) vars[k] = NEUTRAL[k];
+    }
+    return vars;
+  }
+
+  // Narrow screens get the plain rise instead of anything sideways or three-dimensional:
+  // a horizontal offset pushes a full-width column off the edge, and perspective effects
+  // are wasted on a phone. Blur is dropped too - it is the most expensive of these to
+  // paint, and least worth it at that size.
+  function forWidth(name) {
+    if (!narrow.matches) return name;
+    if (name === 'left' || name === 'right' || name === 'tilt' ||
+        name === 'flip' || name === 'focus') return 'up';
+    return name;
+  }
+
+  // Built paused and driven from the four callbacks by hand. `toggleActions` on a
+  // `.from()` tween would not resume once reversed, stranding elements invisible.
+  // Anything sitting in the viewport when the page loads has a start position above the
+  // top of the document, so ScrollTrigger never sees an "enter" transition for it and
+  // the tween would sit at its start state forever. After building, every trigger that
+  // is already active is played by hand.
+  function playActive() {
+    triggers.forEach(function (trigger, i) {
+      if (trigger.isActive && tweens[i]) tweens[i].play();
     });
-  };
+  }
 
-  /* Text comes into focus and nothing else. */
-  var text = function (targets) {
-    each(targets, function (el) {
-      play(el,
-        { opacity: 0, filter: 'blur(' + BLUR_TEXT + 'px)' },
-        { opacity: 1, filter: 'blur(0px)' });
-    });
-  };
-
-  /* ---------- hero ---------- */
-
-  /* The headline arrives a word at a time, each word rising out of its own
-     clipped box. This is the one place anything translates, and it is
-     deliberate: the hero is a single moment on load rather than one of a
-     dozen reveals you meet while reading, so it is allowed a gesture of its
-     own. Everything else in the hero resolves like the rest of the page.
-
-     Two elements per word: an outer .word that clips and an inner .word-i
-     that moves. Splitting only text nodes leaves the <br> and the accented
-     span where the copy put them, so the line breaks survive. */
-  var heading = document.querySelector('.hero-heading');
-  var headingWords = [];
-
-  var wrapWord = function (word) {
-    var outer = document.createElement('span');
-    var inner = document.createElement('span');
-    outer.className = 'word';
-    inner.className = 'word-i';
-    inner.textContent = word;
-    outer.appendChild(inner);
-    headingWords.push(inner);
-    return outer;
-  };
-
-  if (heading) {
-    [].slice.call(heading.childNodes).forEach(function (node) {
-      if (node.nodeType !== 3) return;                       // text nodes only
-      if (!node.textContent.trim()) return;
-      var frag = document.createDocumentFragment();
-      node.textContent.split(/(\s+)/).forEach(function (chunk) {
-        frag.appendChild(chunk.trim() ? wrapWord(chunk) : document.createTextNode(chunk));
-      });
-      node.parentNode.replaceChild(frag, node);
-    });
-
-    var accent = heading.querySelector('.text-accent');
-    if (accent) {
-      var inner = document.createElement('span');
-      inner.className = 'word-i';
-      while (accent.firstChild) inner.appendChild(accent.firstChild);
-      accent.appendChild(inner);
-      accent.classList.add('word');
-      headingWords.push(inner);
+  function scrollPlay(tween, trigger, start, end) {
+    // Anything already on screen when the page opens is choreography, not scrolling:
+    // play it once and keep it out of ScrollTrigger entirely. Otherwise its start point
+    // sits above the top of the document, where every refresh - webfonts arriving, a
+    // resize - winds it back and the hero empties itself.
+    var box = trigger.getBoundingClientRect();
+    if (window.scrollY < 4 && box.top < window.innerHeight * 0.92) {
+      tween.play();
+      return;
     }
 
-    headingWords.sort(function (a, b) {
-      return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+    // `data-anim-once` reveals the element a single time and then leaves it alone. The
+    // legal pages use it throughout: a paragraph that faded itself out again as the
+    // reader scrolled past would be fighting them, not helping.
+    var once = !!(trigger.hasAttribute && trigger.hasAttribute('data-anim-once'));
+    var play = function () { tween.play(); };
+
+    tweens.push(tween);
+
+    if (once) {
+      // All four crossings reveal it, and none of them rewind. Replaying a tween that
+      // has already finished costs nothing, and covering every crossing is what makes
+      // this safe: a short paragraph can be cleared entirely between two frames when
+      // somebody scrolls quickly or follows a link into the middle of the document, and
+      // ScrollTrigger then reports only the leave. Waiting for `onEnter` alone left
+      // those sections blank until something else happened to nudge them.
+      triggers.push(ScrollTrigger.create({
+        trigger: trigger,
+        // Started as the element clears the bottom edge rather than at 88%, so it is
+        // already most of the way in by the time the reader's eye reaches it. On a long
+        // document that difference is what stops a quick scroll finding empty blocks.
+        start: start || 'top 99%',
+        end: end || 'bottom top',
+        onEnter: play,
+        onEnterBack: play,
+        onLeave: play,
+        onLeaveBack: play
+      }));
+      // Already scrolled past before this was even built - a reload partway down the
+      // page, or a deep link.
+      if (trigger.getBoundingClientRect().top < window.innerHeight * 0.99) tween.play();
+      return;
+    }
+
+    triggers.push(ScrollTrigger.create({
+      trigger: trigger,
+      start: start || 'top 88%',
+      // `bottom top` and not a percentage: short elements would otherwise rewind while
+      // still on screen.
+      end: end || 'bottom top',
+      onEnter: play,
+      onEnterBack: play,
+      onLeave: function () { tween.reverse(); },
+      onLeaveBack: function () { tween.reverse(); }
+    }));
+  }
+
+  /* ------------------------------------------------------ falling letters */
+
+  // Each letter is wrapped in its own span, and each word in a box that hides whatever
+  // overflows it. The letters start above their word and drop in one after another, so
+  // they arrive through the top edge of the line rather than simply fading on.
+  //
+  // The wrapping walks the existing nodes rather than rebuilding from plain text, so the
+  // structure the markup relies on - the line break, the blue run - survives intact.
+  function wrapLetters(node, out) {
+    Array.prototype.slice.call(node.childNodes).forEach(function (child) {
+      if (child.nodeType === 1) { wrapLetters(child, out); return; }
+      if (child.nodeType !== 3) return;
+
+      child.nodeValue.split(/(\s+)/).forEach(function (piece) {
+        if (!piece) return;
+        if (/^\s+$/.test(piece)) {
+          node.insertBefore(document.createTextNode(' '), child);
+          return;
+        }
+        var word = document.createElement('span');
+        word.className = 'word';
+        for (var i = 0; i < piece.length; i++) {
+          var ch = document.createElement('span');
+          ch.className = 'char';
+          ch.textContent = piece.charAt(i);
+          word.appendChild(ch);
+          out.push(ch);
+        }
+        node.insertBefore(word, child);
+      });
+      node.removeChild(child);
     });
   }
 
-  var tl = gsap.timeline({ defaults: { ease: EASE, duration: DURATION } });
+  function initChars() {
+    document.querySelectorAll('[data-anim="chars"]').forEach(function (el) {
+      // This runs again on a language change. By then i18n has rewritten the heading, so
+      // the spans are already gone and the fresh translation is what gets split. If they
+      // are somehow still there, fall back to the markup stashed the first time round
+      // rather than splitting a split.
+      if (el.querySelector('.word')) {
+        el.innerHTML = el.getAttribute('data-split-src') || el.textContent;
+      } else {
+        el.setAttribute('data-split-src', el.innerHTML);
+      }
 
-  tl.from('.hero-copy-col .eyebrow', { opacity: 0 });
+      // A heading cut into single letters is read out letter by letter, so the whole
+      // line goes on the element as a label and the pieces are hidden from the tree.
+      el.setAttribute('aria-label', el.textContent.replace(/\s+/g, ' ').trim());
 
-  if (headingWords.length) {
-    tl.from(headingWords, {
-      yPercent: 110, opacity: 0, duration: DURATION * 1.35, stagger: STAGGER * 0.8
-    }, '-=0.3');
-  }
+      var chars = [];
+      wrapLetters(el, chars);
+      if (!chars.length) return;
+      Array.prototype.forEach.call(el.querySelectorAll('.word'), function (w) {
+        w.setAttribute('aria-hidden', 'true');
+      });
 
-  tl.from('.hero-sub', { opacity: 0 }, '-=0.45')
-    .from('.hero-cta-row .btn', { opacity: 0 }, '-=0.35')
-    .from('.hero-point', { opacity: 0 }, '-=0.3')
-    .from('.hero-visual-col', { opacity: 0, duration: DURATION * 1.8 }, 0.15);
+      // The heading itself carries no motion - only the letters inside it do - so it has
+      // to be taken out of the hidden start state by hand.
+      gsap.set(el, { autoAlpha: 1 });
 
-  /* The hero runs on load, so its from() tweens hide their targets the moment
-     they are built. If the ticker ever stalls, the most important thing on
-     the page would stay blank — so jump to the end if it has not finished
-     long after it should have. A no-op normally. */
-  window.setTimeout(function () {
-    if (tl.progress() < 1) tl.progress(1);
-  }, 4000);
+      var tween = gsap.fromTo(chars,
+        { yPercent: -128, rotate: -7, opacity: 0 },
+        {
+          yPercent: 0,
+          rotate: 0,
+          opacity: 1,
+          duration: 0.78,
+          // Overshoots a touch and settles, so each letter lands rather than slides.
+          ease: 'back.out(1.5)',
+          delay: parseFloat(el.getAttribute('data-anim-delay')) || 0.06,
+          stagger: 0.028,
+          paused: true
+        });
 
-  if (!hasST) return;
-
-  /* ---------- the two scrubbed things ---------- */
-
-  /* The bar IS how far down you are. */
-  var bar = document.getElementById('scrollProgress');
-  if (bar) {
-    gsap.to(bar, {
-      scaleX: 1, ease: 'none',
-      scrollTrigger: { start: 0, end: 'max', scrub: SCRUB }
+      scrollPlay(tween, el);
     });
   }
 
-  /* Decorative layers drifting at their own rate as the page travels past.
-     Safe to scrub because they carry no meaning: parked at an offset, they
-     are simply at an offset. Kept small — this is depth, not a ride. */
-  var drift = function (sel, from, to, trigger) {
-    var el = document.querySelector(sel);
-    if (!el) return;
-    gsap.fromTo(el, from, Object.assign({
-      ease: 'none',
-      scrollTrigger: { trigger: trigger || sel, start: 'top bottom', end: 'bottom top', scrub: SCRUB }
-    }, to));
+  /* ------------------------------------------------------- counting figures */
+
+  // "100K+" -> 100 with a "K+" tail, "4,8/5" -> 4.8 with a "/5" tail and a comma kept as
+  // the decimal mark. Anything with no number in it is left alone.
+  function parseFigure(text) {
+    var m = text.match(/^(\D*?)(\d+(?:[.,]\d+)?)(.*)$/);
+    if (!m) return null;
+    var raw = m[2];
+    var sep = raw.indexOf(',') > -1 ? ',' : '.';
+    var decimals = raw.split(/[.,]/)[1] ? raw.split(/[.,]/)[1].length : 0;
+    return { head: m[1], tail: m[3], value: parseFloat(raw.replace(',', '.')), sep: sep, decimals: decimals };
+  }
+
+  function renderFigure(figure, n) {
+    return figure.head + n.toFixed(figure.decimals).replace('.', figure.sep) + figure.tail;
+  }
+
+  function initCounters() {
+    document.querySelectorAll('[data-count]').forEach(function (el) {
+      // The figure to count TO is remembered on the element. Without this a rebuild
+      // would read back the zero this function itself wrote and animate 0 to 0 - which
+      // is exactly what happens on load, because the language engine announces its
+      // first pass after this file has already run once.
+      var source = el.getAttribute('data-count-value');
+      if (!source) {
+        source = el.textContent.trim();
+        el.setAttribute('data-count-value', source);
+      }
+      var figure = parseFigure(source);
+      if (!figure) return;
+
+      // The figure stays in the markup until the tween actually runs - its first frame
+      // writes the zero. That keeps the real value in the DOM for anything else reading
+      // it, and means a page with the animations disabled just shows the number.
+      var state = { n: 0 };
+      var tween = gsap.to(state, {
+        n: figure.value,
+        // Long enough to be read as it climbs rather than glimpsed. `power1.out` keeps
+        // most of that time in the middle of the run; a sharper ease spends it all
+        // crawling the last few units, which just reads as a number that has stopped.
+        duration: parseFloat(el.getAttribute('data-count-duration')) || 2.2,
+        ease: 'power1.out',
+        // Held back so each figure starts as its own card arrives, instead of all of
+        // them running while three of the cards are still on their way in.
+        delay: parseFloat(el.getAttribute('data-anim-delay')) || 0,
+        paused: true,
+        onUpdate: function () { el.textContent = renderFigure(figure, state.n); }
+      });
+
+      scrollPlay(tween, el.closest('.stat') || el);
+    });
+  }
+
+  /* -------------------------------------------------------- generic reveals */
+
+  // How long each one wants to take, and how it should feel arriving. The dimensional
+  // ones are given longer and allowed to overshoot; a wipe is given none, because a mask
+  // that springs past its own edge tears.
+  var SHAPE = {
+    tilt:  { duration: 0.85, ease: 'power3.out' },
+    flip:  { duration: 0.95, ease: 'power3.out' },
+    swing: { duration: 0.9,  ease: 'back.out(1.4)' },
+    focus: { duration: 0.85, ease: 'power2.out' },
+    // Front-loaded on purpose. An in-out ease looks better in isolation but holds the
+    // element near-blank for its first third, and on a long document that is exactly
+    // when a fast scroll arrives at it - the reader meets an empty block. Easing out
+    // puts most of the reveal in the first few frames.
+    mask:  { duration: 0.68, ease: 'power2.out' },
+    zoom:  { duration: 0.75, ease: 'back.out(1.2)' }
   };
 
-  /* The hero drifts the <img> inside its frame, never the frame: the frame
-     carries the dissolve, and moving it dragged the bottom fade below the
-     section's overflow and ended the photograph on a hard sliced edge. It
-     starts at 'top top' because the hero is already on screen at load — a
-     range beginning at the bottom of the viewport is half spent before the
-     page has been scrolled at all. */
-  var heroImg = document.querySelector('.hero-visual-img');
-  if (heroImg) {
-    gsap.fromTo(heroImg, { yPercent: 0 }, {
-      yPercent: 5, ease: 'none',
-      scrollTrigger: { trigger: '.hero-section', start: 'top top', end: 'bottom top', scrub: SCRUB }
+  function initReveals() {
+    document.querySelectorAll('[data-anim]').forEach(function (el) {
+      var name = el.getAttribute('data-anim') || 'up';
+      if (name === 'chars') return;   // initChars handles these, letter by letter
+      name = forWidth(name);
+
+      var delay = parseFloat(el.getAttribute('data-anim-delay')) || 0;
+      // A child that animates itself is left out of its parent's group. Two tweens on one
+      // element each reset only the properties their own preset touched, so the second to
+      // run leaves the first's behind - a heading inside a `mask` group that also asked
+      // for `up` came out fully clipped and stayed that way, invisible but at full
+      // opacity. Whichever reveal the child asked for by name wins.
+      var targets = el.hasAttribute('data-anim-group')
+        ? Array.prototype.slice.call(el.children).filter(function (c) {
+            return !c.hasAttribute('data-anim');
+          })
+        : [el];
+      if (!targets.length) return;
+
+      var shape = SHAPE[name] || { duration: 0.7, ease: 'power2.out' };
+      var to = endVars(name);
+      // `data-anim-duration` overrides the preset for one element, so a single section can
+      // be given longer without slowing every other use of the same preset.
+      to.duration = parseFloat(el.getAttribute('data-anim-duration')) || shape.duration;
+      to.ease = shape.ease;
+      to.delay = delay;
+      to.paused = true;
+      // A row of cards arrives one after another rather than all at once. `data-anim-stagger`
+      // overrides the gap where a particular group wants to be tighter or looser.
+      to.stagger = targets.length > 1
+        ? (parseFloat(el.getAttribute('data-anim-stagger')) || 0.1)
+        : 0;
+
+      gsap.killTweensOf(targets);   // this function runs again on a language change
+      var tween = gsap.fromTo(targets, startVars(name), to);
+
+      scrollPlay(tween, el);
     });
   }
 
-  drift('.how-visual-col', { yPercent: 5 }, { yPercent: -5 }, '.how-section');
+  /* ------------------------------------------------------------- depth layers */
 
-  [['.cta-shape-1', -5], ['.cta-shape-2', 3], ['.cta-shape-3', 7]].forEach(function (pair) {
-    drift(pair[0], { xPercent: -pair[1] }, { xPercent: pair[1] }, '.cta-band');
-  });
-
-  /* ---------- everything that reveals ---------- */
-
-  /* Headings, copy, list items — text, so they resolve. */
-  q('.section-head').forEach(function (head) { text(head.children); });
-
-  var howCopy = document.querySelector('.how-copy-col');
-  if (howCopy) {
-    text([howCopy.querySelector('.eyebrow'),
-          howCopy.querySelector('.how-title'),
-          howCopy.querySelector('.how-sub')].filter(Boolean));
+  // `data-parallax="-70"` ties an element's drift to the scrollbar itself rather than to
+  // a trigger that fires once, so it keeps moving the whole time it is on screen. That
+  // continuous link to the scroll is what separates this from a reveal.
+  //
+  // Never put this on the same element as `data-anim` - both write `y`, and the last one
+  // to run wins. Put the reveal on a wrapper and the drift on what is inside it.
+  function initDepth() {
+    if (narrow.matches) return;
+    document.querySelectorAll('[data-parallax]').forEach(function (el) {
+      var dist = parseFloat(el.getAttribute('data-parallax'));
+      if (!dist) return;
+      gsap.to(el, {
+        y: dist,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el.closest('section') || el,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 0.8
+        }
+      });
+    });
   }
 
-  var ctaInner = document.querySelector('.cta-inner');
-  if (ctaInner) text(ctaInner.children);
+  /* ------------------------------------------------------------ magnetic keys */
 
-  /* Cards and tiles — surfaces, so they open. Each is triggered on itself, so
-     the ones sharing a row share a height and arrive together; the sequence
-     down the page falls out of the layout rather than a stagger value. */
-  ['.reward-card', '.usecase-card', '.stat', '.testimonial-card', '.faq-item'].forEach(function (sel) {
-    surface(q(sel));
-  });
+  // The main call to action leans toward the pointer as it comes near, and springs back
+  // when it leaves. Mouse only - there is no hover on a touch screen to lean into.
+  function initMagnets() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-  /* A step is a numbered badge beside a line of copy: the badge is a surface,
-     the copy is text. Same two gestures, no third one invented for this row. */
-  q('.step').forEach(function (step) {
-    text(step);
-    var num = step.querySelector('.step-num');
-    if (num) surface(num);
-  });
+    document.querySelectorAll('.btn-brand, .btn-white-cta').forEach(function (el) {
+      var pull = 0.28;
+      el.addEventListener('mousemove', function (e) {
+        var b = el.getBoundingClientRect();
+        gsap.to(el, {
+          x: (e.clientX - (b.left + b.width / 2)) * pull,
+          y: (e.clientY - (b.top + b.height / 2)) * pull,
+          duration: 0.4,
+          ease: 'power3.out',
+          overwrite: 'auto'
+        });
+      });
+      el.addEventListener('mouseleave', function () {
+        gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)', overwrite: 'auto' });
+      });
+    });
+  }
 
-  /* ---------- the figures ---------- */
+  /* -------------------------------------------------------------- parallax */
 
-  /* Counts with the wheel, like everything else: scrubbed over the same range,
-     so it runs up as the figure arrives and back down if you scroll away. It
-     reaches its real value while the tile is still low on the screen, so the
-     number you read is always the true one. Seeded to zero at build so it
-     never shows the real figure and then snaps back to zero. */
-  q('.stat-value').forEach(function (el) {
-    var raw = el.textContent.trim();
-    var match = raw.match(/^([\d.]+)(.*)$/);
-    if (!match) return;
+  function initParallax() {
+    if (!desktop.matches) return;
 
-    var target = parseFloat(match[1]);
-    var suffix = match[2];
-    var decimals = (match[1].split('.')[1] || '').length;
-    var counter = { n: 0 };
+    // The photograph drifts inside its frame, never the frame itself: the
+    // frame carries the mask that dissolves it into the page, and moving that
+    // dragged the bottom fade below the section and left a hard sliced edge.
+    // 'top top' because the hero is already on screen when the page loads.
+    var heroImg = document.querySelector('.hero-visual-img');
+    if (heroImg) {
+      gsap.fromTo(heroImg, { yPercent: 0 }, {
+        yPercent: 5, ease: 'none',
+        scrollTrigger: { trigger: '.hero-section', start: 'top top', end: 'bottom top', scrub: 0.8 }
+      });
+    }
 
-    el.textContent = (0).toFixed(decimals) + suffix;
+    var howVisual = document.querySelector('.how-visual-col');
+    if (howVisual) {
+      gsap.fromTo(howVisual, { yPercent: 5 }, {
+        yPercent: -5, ease: 'none',
+        scrollTrigger: { trigger: '.how-section', start: 'top bottom', end: 'bottom top', scrub: 0.8 }
+      });
+    }
 
-    pending.push(gsap.to(counter, {
-      n: target,
-      ease: EASE,
-      scrollTrigger: { trigger: el, start: FROM, end: TO, scrub: SCRUB },
-      onUpdate: function () {
-        /* Write the original string back at the top so no rounding artefact
-           can survive, and so "10K+" keeps its shape rather than "10.0K+". */
-        el.textContent = Math.abs(counter.n - target) < 0.005
-          ? raw
-          : counter.n.toFixed(decimals) + suffix;
-      }
-    }));
-  });
+    // The closing band's wave layers, each at its own rate.
+    [['.cta-shape-1', -5], ['.cta-shape-2', 3], ['.cta-shape-3', 7]].forEach(function (pair) {
+      var el = document.querySelector(pair[0]);
+      if (!el) return;
+      gsap.fromTo(el, { xPercent: -pair[1] }, {
+        xPercent: pair[1], ease: 'none',
+        scrollTrigger: { trigger: '.cta-band', start: 'top bottom', end: 'bottom top', scrub: 1 }
+      });
+    });
+  }
 
-  /* ---------- the answers, sliding ---------- */
+  /* --------------------------------------------------------- progress rail */
 
-  /* <details> snaps. Taking over the summary click lets the answer slide, and
-     lets a closing panel finish before the element actually closes. main.js
-     keeps the plain version for when GSAP is not here, so it stands down. */
-  var faqItems = q('.faq-item');
+  function initProgress() {
+    var bar = document.getElementById('scrollProgress');
+    if (!bar) return;
+    gsap.to(bar, {
+      scaleX: 1, ease: 'none',
+      scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+    });
+  }
 
-  if (faqItems.length) {
+  /* ---------------------------------------------------- the answers, sliding */
+
+  // <details> snaps. Taking over the summary click lets the answer slide, and
+  // lets a closing panel finish before the element actually closes. main.js
+  // keeps the plain version for when GSAP is not here, so it stands down.
+  function initFaq() {
+    var items = Array.prototype.slice.call(document.querySelectorAll('.faq-item'));
+    if (!items.length) return;
     window.__faqAnimated = true;
 
-    var slide = function (item, open) {
+    function slide(item, open) {
       var body = item.querySelector('.faq-a');
       if (!body) { item.open = open; return; }
 
       var pad = parseFloat(window.getComputedStyle(body).paddingBottom) || 0;
-      var settle = function () {
+      function settle() {
         gsap.set(body, { clearProps: 'height,paddingBottom,opacity,overflow' });
         ScrollTrigger.refresh();     // the page just got taller or shorter
-      };
+      }
 
       gsap.killTweensOf(body);
 
@@ -337,67 +489,55 @@
         gsap.fromTo(body,
           { height: 0, paddingBottom: 0, opacity: 0, overflow: 'hidden' },
           { height: 'auto', paddingBottom: pad, opacity: 1,
-            duration: DURATION * 0.7, ease: EASE, onComplete: settle });
+            duration: 0.4, ease: 'power2.out', onComplete: settle });
       } else {
         gsap.to(body, {
           height: 0, paddingBottom: 0, opacity: 0, overflow: 'hidden',
-          duration: DURATION * 0.5, ease: EASE,
+          duration: 0.3, ease: 'power2.in',
           onComplete: function () { item.open = false; settle(); }
         });
       }
-    };
+    }
 
-    faqItems.forEach(function (item) {
+    items.forEach(function (item) {
       var summary = item.querySelector('.faq-q');
       if (!summary) return;
-
       summary.addEventListener('click', function (event) {
-        event.preventDefault();               // we drive the open state
+        event.preventDefault();                 // we drive the open state
         var wasOpen = item.open;
-
-        faqItems.forEach(function (other) {
+        items.forEach(function (other) {
           if (other !== item && other.open) slide(other, false);
         });
-
         slide(item, !wasOpen);
       });
     });
   }
 
-  /* ---------- hover ---------- */
+  /* ------------------------------------------------------------------ boot */
 
-  /* There is no hover code here any more, and that is the point. Hover is one
-     gesture — the hold in the stylesheet, scale(1.03) on every card alike —
-     and the stylesheet is the right place for it.
-     What was here was a 3D tilt writing rotateY/rotateX, a lift writing y,
-     and magnetic buttons writing x/y, each on its own duration and curve, on
-     top of CSS hovers that were also moving the same elements. Four systems
-     moving three kinds of element in two different languages. */
+  function build() {
+    initChars();
+    initCounters();
+    initReveals();
+    initParallax();
+    initDepth();
+    initMagnets();
+    initProgress();
+    initFaq();
 
-  /* ---------- the backstop ---------- */
-
-  window.addEventListener('load', function () {
-    /* Layout shifts once the webfont swaps and the photographs decode, so the
-       trigger positions measured a moment ago are stale. */
+    root.classList.add('sd-anim-ready');
+    root.classList.remove('sd-anim');
     ScrollTrigger.refresh();
+    playActive();
+  }
 
-    /* Then the safety net, which has to be narrower than it looks. The risk
-       is ScrollTrigger failing to compute at all and leaving from()-hidden
-       elements invisible for good. The temptation is to finish anything
-       sitting at zero inside the viewport — but with a scrub, zero inside the
-       viewport is a perfectly legitimate state: it is an element that has
-       just entered and not started climbing yet. Forcing those wrecks the
-       reveal for anyone who scrolls in the first few seconds.
-       So this only finishes what the scroll position says should ALREADY be
-       finished: past its own end, yet still unrendered. Normally none. */
-    window.setTimeout(function () {
-      pending.forEach(function (tween) {
-        var st = tween.scrollTrigger;
-        if (!st) return;
-        if (tween.progress() >= 1) return;
-        if (window.scrollY < st.end) return;
-        tween.progress(1);
-      });
-    }, 2500);
-  });
+  build();
+
+  // A refresh re-evaluates every trigger, and in doing so winds anything
+  // already in view back to its start. Re-assert those afterwards, or the hero
+  // would empty itself the moment the webfonts land or the window is resized.
+  ScrollTrigger.addEventListener('refresh', playActive);
+
+  window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
 })();

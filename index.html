@@ -11,6 +11,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<script>
+  /* Hides what is about to animate, before anything paints. animations.js
+     removes this the instant it takes over; if it never does — blocked CDN,
+     script error — the timeout drops it and the page renders as plain HTML. */
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var root = document.documentElement;
+    root.classList.add('sd-anim');
+    window.setTimeout(function () {
+      if (!root.classList.contains('sd-anim-ready')) root.classList.remove('sd-anim');
+    }, 2500);
+  })();
+</script>
 </head>
 <body>
 
@@ -55,19 +68,19 @@
     <div class="hero-row">
 
       <div class="hero-copy-col">
-        <span class="eyebrow">QUICK AND EASY REGISTRATION</span>
+        <span class="eyebrow" data-anim="up">QUICK AND EASY REGISTRATION</span>
 
-        <h1 class="hero-heading">
+        <h1 class="hero-heading" data-anim="chars">
           Share your opinion<br>
           and <span class="text-accent">win rewards</span>
         </h1>
 
-        <p class="hero-sub">
+        <p class="hero-sub" data-anim="mask" data-anim-delay="0.38">
           By taking part in surveys, you help researchers and organizations better
           understand what people think, need, and experience.
         </p>
 
-        <div class="hero-cta-row">
+        <div class="hero-cta-row" data-anim="up" data-anim-delay="0.52" data-anim-stagger="0.1" data-anim-group>
           <a href="#" class="btn btn-brand btn-lg-cta">Get started for free <span class="arrow" aria-hidden="true">→</span></a>
           <a href="#" class="btn btn-ghost btn-lg-cta">
             <span class="play-badge" aria-hidden="true">
@@ -80,7 +93,7 @@
           </a>
         </div>
 
-        <ul class="hero-points list-unstyled">
+        <ul class="hero-points list-unstyled" data-anim="up" data-anim-delay="0.66" data-anim-stagger="0.08" data-anim-group>
           <li class="hero-point">
             <span class="point-icon" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
@@ -113,7 +126,7 @@
         </ul>
       </div>
 
-      <div class="hero-visual-col" aria-hidden="true">
+      <div class="hero-visual-col" data-anim="fade" data-anim-delay="0.24" aria-hidden="true">
         <img src="assets/hero-main.jpg" alt="" class="hero-visual-img">
       </div>
 
@@ -124,7 +137,7 @@
 <!-- ============ REWARDS ============ -->
 <section class="rewards-section" id="rewards">
   <div class="container">
-    <div class="section-head text-center">
+    <div class="section-head text-center" data-anim="mask" data-anim-stagger="0.12" data-anim-group>
       <h2 class="section-title">Rewards</h2>
       <p class="section-sub">
         For each successfully completed survey you will earn survey points. You will be
@@ -135,7 +148,7 @@
 
     <p class="rewards-trusted">Trusted by the best companies around the world</p>
 
-    <ul class="rewards-grid list-unstyled">
+    <ul class="rewards-grid list-unstyled" data-anim="flip" data-anim-stagger="0.07" data-anim-group>
       <li class="reward-card">
         <span class="reward-logo">
           <svg class="reward-mark" viewBox="0 0 24 24" role="img" aria-label="Uber Eats"><path d="M0 2.8645v4.9972c0 1.8834 1.3315 3.1297 3.0835 3.1297a2.9652 2.9652 0 0 0 2.1502-.876v.7425H6.445V2.8645H5.223v4.9339c0 1.2642-.8696 2.1198-1.9954 2.122-1.1386-.0023-1.997-.834-1.997-2.122V2.8645zm7.3625 0v7.9934h1.163v-.7318a2.9915 2.9915 0 0 0 2.1177.876c1.714.048 3.1295-1.3283 3.1295-3.0429s-1.4155-3.091-3.1295-3.0429a2.9674 2.9674 0 0 0-2.107.876V2.8645zm9.8857 2.0561c-1.6752-.0074-3.0369 1.3492-3.0356 3.0245 0 1.7366 1.3732 3.0373 3.1537 3.0373a3.123 3.123 0 0 0 2.5578-1.2438l-.8495-.6177a2.0498 2.0498 0 0 1-1.7083.8585c-.9763.0126-1.8147-.6915-1.971-1.6553h4.818v-.379c0-1.734-1.254-3.0238-2.9638-3.0245zm6.1632.0667a1.5943 1.5943 0 0 0-1.376.7657v-.7186h-1.163v5.8235h1.1741V7.5465c0-.9023.5581-1.4847 1.3268-1.4847h.4949V4.9886c-.1576.0013-.3186-.0009-.4568-.0013zm-6.2034.944a1.844 1.844 0 0 1 1.8337 1.486H15.424a1.844 1.844 0 0 1 1.784-1.486zm-6.6589.0056c1.1223-.0084 2.0365.8992 2.0364 2.0215-.0026 1.1203-.914 2.0258-2.0343 2.021a2.0151 2.0151 0 0 1-1.4159-.5987A2.0152 2.0152 0 0 1 8.55 7.9592a2.0152 2.0152 0 0 1 .5838-1.422 2.0152 2.0152 0 0 1 1.4153-.6003zM0 12.9864v7.9716h5.7222v-1.3666H1.5458v-1.971h4.0647v-1.314H1.5458v-1.9556h4.1764v-1.3644zm14.5608.4097v1.6861h-1.1519v1.338h1.1545v3.143c0 .7927.5712 1.4209 1.6005 1.4209h1.6425L17.8 19.646h-1.1412c-.3482 0-.5714-.1509-.5714-.464v-2.7683H17.8v-1.3316h-1.7062v-1.686zm-5.2974 1.5275c-1.7348-.0103-3.141 1.4035-3.1214 3.1382.0196 1.7346 1.4575 3.1163 3.1915 3.0668a2.9915 2.9915 0 0 0 1.912-.6655v.532h1.5175v-5.9129h-1.509v.5257a3.0047 3.0047 0 0 0-1.9205-.6835c-.0244-.0007-.0492-.0006-.0701-.0008zm11.771.0077c-1.5855 0-2.7002.6437-2.7002 1.8854 0 .8607.6132 1.4213 1.936 1.695l1.4478.3286c.5694.1095.7224.2585.7224.4906 0 .3701-.438.6022-1.1279.6022-.876 0-1.3774-.1907-1.5723-.8477h-1.533c.219 1.2307 1.1563 2.05 3.0484 2.05h.0022c1.752 0 2.7422-.819 2.7422-1.9534 0-.8059-.5847-1.4084-1.8089-1.6668l-1.2943-.2605c-.7511-.1358-.988-.2738-.988-.5454 0-.357.3616-.5757 1.0295-.5757.7227 0 1.2527.1925 1.406.8473h1.5175c-.0854-1.2286-.9899-2.0497-2.8273-2.0497zM9.467 16.1815c1.0092.0096 1.8188.8369 1.8067 1.8461.0014 1.0046-.8198 1.816-1.8243 1.8025-1.0075-.0048-1.8203-.8256-1.8155-1.833.0048-1.0076.8255-1.8204 1.833-1.8156z" fill="#06C167"/></svg>
@@ -224,14 +237,14 @@
     <div class="how-row">
 
       <div class="how-copy-col">
-        <span class="eyebrow">HOW IT WORKS</span>
-        <h2 class="section-title how-title">3 steps</h2>
-        <p class="how-sub">
+        <span class="eyebrow" data-anim="up">HOW IT WORKS</span>
+        <h2 class="section-title how-title" data-anim="mask" data-anim-delay="0.1">3 steps</h2>
+        <p class="how-sub" data-anim="mask" data-anim-delay="0.2">
           No hidden costs, no complications — just sign up, share your opinion,
           and get rewarded.
         </p>
 
-        <ol class="steps list-unstyled">
+        <ol class="steps list-unstyled" data-anim="swing" data-anim-delay="0.16" data-anim-stagger="0.14" data-anim-group>
           <li class="step">
             <span class="step-num">1</span>
             <div class="step-body">
@@ -258,7 +271,7 @@
         <a href="#" class="btn btn-brand btn-lg-cta how-cta">Get started for free <span class="arrow" aria-hidden="true">→</span></a>
       </div>
 
-      <div class="how-visual-col">
+      <div class="how-visual-col" data-anim="focus" data-anim-delay="0.2">
         <div class="how-visual-wrap">
           <img src="assets/how-it-works-main.jpg" alt="A satisfaction survey open on a laptop, surrounded by floating analytics cards" class="how-main-img">
         </div>
@@ -271,7 +284,7 @@
 <!-- ============ SURVEY TOPICS ============ -->
 <section class="usecases-section" id="topics">
   <div class="container">
-    <div class="section-head text-center">
+    <div class="section-head text-center" data-anim="mask" data-anim-stagger="0.12" data-anim-group>
       <span class="eyebrow">SURVEY TOPICS</span>
       <h2 class="section-title">Questions on things you already know</h2>
       <p class="section-sub">
@@ -280,7 +293,7 @@
       </p>
     </div>
 
-    <div class="row g-4 usecase-grid">
+    <div class="row g-4 usecase-grid" data-anim="tilt" data-anim-stagger="0.1" data-anim-group>
       <div class="col-sm-6 col-lg-3">
         <article class="usecase-card">
           <div class="usecase-media">
@@ -332,38 +345,38 @@
 <!-- ============ IMPACT / METRICS ============ -->
 <section class="impact-section">
   <div class="container">
-    <div class="section-head text-center">
+    <div class="section-head text-center" data-anim="mask" data-anim-stagger="0.12" data-anim-group>
       <span class="eyebrow">OUR COMMUNITY</span>
       <h2 class="section-title">Thousands of members are already earning</h2>
       <p class="section-sub">Every survey you finish adds points to your balance. Here is what that comes to across the panel so far.</p>
     </div>
 
-    <ul class="row g-4 stats-row list-unstyled mb-0">
+    <ul class="row g-4 stats-row list-unstyled mb-0" data-anim="zoom" data-anim-stagger="0.12" data-anim-group>
       <li class="col-6 col-lg-3">
         <article class="stat stat--members">
           <img src="assets/icon-users.svg" alt="" class="stat-icon">
-          <strong class="stat-value">10K+</strong>
+          <strong class="stat-value" data-count>10K+</strong>
           <span class="stat-label">Members taking part</span>
         </article>
       </li>
       <li class="col-6 col-lg-3">
         <article class="stat stat--surveys">
           <img src="assets/icon-surveys.svg" alt="" class="stat-icon">
-          <strong class="stat-value">2M+</strong>
+          <strong class="stat-value" data-count>2M+</strong>
           <span class="stat-label">Surveys completed</span>
         </article>
       </li>
       <li class="col-6 col-lg-3">
         <article class="stat stat--answers">
           <img src="assets/icon-responses.svg" alt="" class="stat-icon">
-          <strong class="stat-value">50M+</strong>
+          <strong class="stat-value" data-count>50M+</strong>
           <span class="stat-label">Answers shared</span>
         </article>
       </li>
       <li class="col-6 col-lg-3">
         <article class="stat stat--free">
           <img src="assets/icon-uptime.svg" alt="" class="stat-icon">
-          <strong class="stat-value">100%</strong>
+          <strong class="stat-value" data-count>100%</strong>
           <span class="stat-label">Free to take part</span>
         </article>
       </li>
@@ -374,7 +387,7 @@
 <!-- ============ TESTIMONIALS ============ -->
 <section class="testimonials-section" id="testimonials">
   <div class="container">
-    <div class="section-head text-center">
+    <div class="section-head text-center" data-anim="mask" data-anim-stagger="0.12" data-anim-group>
       <span class="eyebrow">WHAT OUR MEMBERS SAY</span>
       <h2 class="section-title">Real people. <span class="text-accent">Real rewards.</span></h2>
       <p class="section-sub">
@@ -383,7 +396,7 @@
       </p>
     </div>
 
-    <div class="testimonial-track" id="testimonialTrack">
+    <div class="testimonial-track" data-anim="mask" data-anim-stagger="0.12" data-anim-group id="testimonialTrack">
       <article class="testimonial-card">
         <p class="stars" aria-label="Rated 5 out of 5">★★★★★</p>
         <blockquote class="testimonial-quote">I fill one in on the train home most evenings. Cashed out for the first time after about six weeks — the voucher landed in my inbox three days later.</blockquote>
@@ -450,13 +463,13 @@
 <!-- ============ FAQ ============ -->
 <section class="faq-section" id="faq">
   <div class="container">
-    <div class="section-head text-center">
+    <div class="section-head text-center" data-anim="mask" data-anim-stagger="0.12" data-anim-group>
       <span class="eyebrow">FAQ</span>
       <h2 class="section-title">Questions and answers</h2>
       <p class="section-sub">Everything you need to know before you start. Still stuck? Our support team is a message away.</p>
     </div>
 
-    <div class="faq-list">
+    <div class="faq-list" data-anim="up" data-anim-stagger="0.07" data-anim-group>
       <details class="faq-item">
         <summary class="faq-q">
           Does it really work?
@@ -536,7 +549,7 @@
     <img src="assets/bg-purple-shape-01.svg" alt="" class="cta-shape cta-shape-1">
     <img src="assets/bg-purple-shape-02.svg" alt="" class="cta-shape cta-shape-2">
     <img src="assets/bg-purple-shape-03.svg" alt="" class="cta-shape cta-shape-3">
-    <div class="container cta-inner text-center">
+    <div class="container cta-inner text-center" data-anim="mask" data-anim-stagger="0.12" data-anim-group>
       <h2 class="cta-title">Ready to start earning?</h2>
       <p class="cta-text">
         Join thousands of members turning a few spare minutes into gift cards and cash.<br>

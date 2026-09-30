@@ -1507,18 +1507,35 @@ a{ text-decoration:none; }
   pointer-events:none;
 }
 
-/* Split headline words. The outer box clips, the inner box moves. The padding
-   keeps descenders out of the clip; the matching negative margin means adding
-   it costs no line spacing. */
-.hero-heading .word{
-  display:inline-block;
-  vertical-align:top;
-  overflow:hidden;
-  padding-bottom:.14em;
-  margin-bottom:-.14em;
+/* The start state only applies while .sd-anim is on <html>, which the inline
+   script in the head adds and animations.js removes the instant it takes
+   over. If GSAP never arrives, a failsafe drops the class after 2.5s and the
+   page renders normally. */
+.sd-anim [data-anim]:not([data-anim-group]),
+.sd-anim [data-anim-group] > *{
+  opacity:0;
+  visibility:hidden;
 }
 
-.hero-heading .word-i{ display:inline-block; }
+/* Letters dropping into a headline. Each word is a box that hides what
+   overflows it, so a letter is invisible until it has fallen past the top of
+   its own line. The padding gives the mask room for ascenders and descenders,
+   and the matching negative margin takes that room back out of the layout, so
+   the heading sets exactly as it did before it was split. */
+.word{
+  display:inline-block;
+  overflow:hidden;
+  vertical-align:top;
+  padding:.16em .04em .18em;
+  margin:-.16em -.04em -.18em;
+}
+
+.char{ display:inline-block; will-change:transform; }
+
+/* A rotation only reads as a hinge rather than a squash if there is a camera
+   in front of it. */
+[data-anim="tilt"],
+[data-anim="flip"]{ perspective:1200px; }
 
 /* A card that leans as it arrives, and the pointer tilt, both only read as
    depth if the parent supplies a vanishing point. */
