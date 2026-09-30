@@ -472,14 +472,84 @@
       });
     }
 
-    // The closing band's wave layers, each at its own rate.
-    [['.cta-shape-1', -5], ['.cta-shape-2', 3], ['.cta-shape-3', 7]].forEach(function (pair) {
-      var el = document.querySelector(pair[0]);
-      if (!el) return;
-      gsap.fromTo(el, { xPercent: -pair[1] }, {
-        xPercent: pair[1], ease: 'none',
-        scrollTrigger: { trigger: '.cta-band', start: 'top bottom', end: 'bottom top', scrub: 1 }
+  }
+
+  /* ------------------------------------------------------------ closing band */
+
+  /* Three things happen to the wave layers behind the closing band, and they
+     are kept on separate properties so none of them can overwrite another.
+
+       xPercent  the -50% that centres each shape, plus the scroll drift
+       x and y   a slow drift of their own that runs whether or not the page
+                 is moving, so the band is never completely still
+       the layer the shapes sit in leans toward the pointer
+
+     GSAP keeps px and percent offsets apart, which is what makes the first
+     two able to share an axis. The lean is on the wrapper rather than the
+     shapes for the same reason — it needs an element of its own to write to. */
+  function initCtaBand() {
+    var band = document.querySelector('.cta-band');
+    if (!band) return;
+
+    var layer = band.querySelector('.cta-shapes');
+    var glow = band.querySelector('.cta-glow');
+    var shapes = [].slice.call(band.querySelectorAll('.cta-shape'));
+    if (!shapes.length) return;
+
+    /* The centring the stylesheet used to do. It has to live here now, because
+       anything this file writes to transform would throw a CSS one away. */
+    gsap.set(shapes, { xPercent: -50 });
+
+    /* Its own drift. Long, uneven periods and sine easing, so the three never
+       line up into a pulse — it reads as the surface moving rather than as an
+       animation repeating. */
+    var OWN = [
+      { x: 30, y: 16, time: 11 },
+      { x: -38, y: -12, time: 14 },
+      { x: 22, y: 20, time: 17 }
+    ];
+    shapes.forEach(function (el, i) {
+      var m = OWN[i % OWN.length];
+      gsap.to(el, {
+        x: m.x, y: m.y,
+        duration: m.time,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        delay: i * 1.3
       });
+    });
+
+    /* The scroll drift, added to the centring rather than replacing it. */
+    [-5, 3, 7].forEach(function (amt, i) {
+      if (!shapes[i]) return;
+      gsap.fromTo(shapes[i], { xPercent: -50 - amt }, {
+        xPercent: -50 + amt, ease: 'none',
+        scrollTrigger: { trigger: band, start: 'top bottom', end: 'bottom top', scrub: 1 }
+      });
+    });
+
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    /* The pointer. The glow is moved by writing two custom properties, which
+       costs a style recalculation rather than a layout, and the layer leans a
+       few pixels the other way so the shapes seem to sit behind the light. */
+    var setGX = glow ? gsap.quickSetter(glow, '--gx') : null;
+    var setGY = glow ? gsap.quickSetter(glow, '--gy') : null;
+    var leanX = layer ? gsap.quickTo(layer, 'x', { duration: 0.9, ease: 'power3.out' }) : null;
+    var leanY = layer ? gsap.quickTo(layer, 'y', { duration: 0.9, ease: 'power3.out' }) : null;
+
+    band.addEventListener('pointermove', function (e) {
+      var b = band.getBoundingClientRect();
+      if (!b.width) return;
+      var px = (e.clientX - b.left) / b.width;
+      var py = (e.clientY - b.top) / b.height;
+      if (setGX) { setGX((px * 100).toFixed(2) + '%'); setGY((py * 100).toFixed(2) + '%'); }
+      if (leanX) { leanX((px - 0.5) * -26); leanY((py - 0.5) * -14); }
+    });
+
+    band.addEventListener('pointerleave', function () {
+      if (leanX) { leanX(0); leanY(0); }
     });
   }
 
@@ -578,6 +648,7 @@
     initCounters();
     initReveals();
     initParallax();
+    initCtaBand();
     initDepth();
     initMagnets();
     initProgress();

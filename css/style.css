@@ -1004,13 +1004,47 @@ a{ text-decoration:none; }
   background:linear-gradient(120deg,#0874FC 0%,#1F5EF0 52%,#005FE0 100%);
 }
 
+/* The layer the shapes live in. It is what leans toward the pointer, so the
+   shapes inside are free to keep their own drift without the two fighting
+   over the same transform. */
+.cta-shapes{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  will-change:transform;
+}
+
+/* No transform here any more. Centring used to be translateX(-50%) in CSS,
+   and GSAP writing xPercent replaced that whole transform — which dropped the
+   -50% and pushed every shape about half its width to the right, so the band
+   only ever had anything happening down one side. The centring is xPercent:-50
+   in the script now, where the drift is added to it rather than replacing it. */
 .cta-shape{
   position:absolute;
   left:50%;
-  transform:translateX(-50%);
   width:130%;
   min-width:1200px;
   pointer-events:none;
+  will-change:transform;
+}
+
+/* A soft light that follows the cursor across the band. The position comes
+   from two custom properties the script writes, so tracking the pointer costs
+   a style update rather than a layout. */
+.cta-glow{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .4s ease;
+  background:radial-gradient(420px circle at var(--gx,50%) var(--gy,50%),
+             rgba(255,255,255,.22) 0%, rgba(255,255,255,.08) 35%, rgba(255,255,255,0) 70%);
+}
+
+.cta-band:hover .cta-glow{ opacity:1; }
+
+@media (prefers-reduced-motion:reduce){
+  .cta-glow{ display:none; }
 }
 
 .cta-shape-1{
