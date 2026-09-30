@@ -1358,19 +1358,6 @@ a{ text-decoration:none; }
 
 /* ============ ANIMATION SUPPORT ============ */
 
-/* Reading position, scrubbed straight off the scrollbar so it runs both ways.
-   It starts at zero width, so if GSAP never loads it simply never appears —
-   decoration should fail quiet. Above the header's 1030. */
-.scroll-progress{
-  position:fixed;
-  inset:0 0 auto 0;
-  height:3px;
-  z-index:1040;
-  background:linear-gradient(90deg, var(--blue), var(--blue-deep));
-  transform:scaleX(0);
-  transform-origin:0 50%;
-  pointer-events:none;
-}
 
 /* The start state only applies while .sd-anim is on <html>, which the inline
    script in the head adds and animations.js removes the instant it takes

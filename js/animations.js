@@ -35,9 +35,8 @@
 
   var narrow = window.matchMedia('(max-width: 767.98px)');
   var desktop = window.matchMedia('(min-width: 992px)');
-  // Only the reveals, headings and counters are tracked here. The parallax and the
-  // progress rail are built once and left alone, since a language change does not
-  // affect them.
+  // Only the reveals, headings and counters are tracked here. The parallax is
+  // built once and left alone.
   var triggers = [];
   var tweens = [];
 
@@ -572,17 +571,6 @@
     });
   }
 
-  /* --------------------------------------------------------- progress rail */
-
-  function initProgress() {
-    var bar = document.getElementById('scrollProgress');
-    if (!bar) return;
-    gsap.to(bar, {
-      scaleX: 1, ease: 'none',
-      scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.3 }
-    });
-  }
-
   /* ---------------------------------------------------- the answers, sliding */
 
   // <details> snaps. Taking over the summary click lets the answer slide, and
@@ -670,7 +658,6 @@
     initCtaBand();
     initDepth();
     initMagnets();
-    initProgress();
     initFaq();
 
     root.classList.add('sd-anim-ready');
