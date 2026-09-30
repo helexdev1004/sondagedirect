@@ -266,19 +266,42 @@
       // to be taken out of the hidden start state by hand.
       gsap.set(el, { autoAlpha: 1 });
 
-      var tween = gsap.fromTo(chars,
-        { yPercent: -128, rotate: -7, opacity: 0 },
+      // The letters do not simply drop in. Each one starts lying flat, face
+      // down and below its line, and swings up onto its feet — rotateX about
+      // its own baseline, against the perspective the stylesheet puts on the
+      // heading. Against one vanishing point for the whole line, the letters
+      // at either end lean in towards the middle as they come up.
+      var tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(chars,
+        { yPercent: -118, rotateX: -92, scaleY: 0.72, opacity: 0 },
         {
           yPercent: 0,
-          rotate: 0,
+          rotateX: 0,
+          scaleY: 1,
           opacity: 1,
-          duration: 0.78,
-          // Overshoots a touch and settles, so each letter lands rather than slides.
-          ease: 'back.out(1.5)',
-          delay: parseFloat(el.getAttribute('data-anim-delay')) || 0.06,
-          stagger: 0.028,
-          paused: true
+          duration: 0.92,
+          // Overshoots and settles, so each letter lands rather than slides.
+          ease: 'back.out(2.2)',
+          stagger: { each: 0.035, from: 'start' },
+          delay: parseFloat(el.getAttribute('data-anim-delay')) || 0.06
         });
+
+      /* The accented run gets the last word, literally: once the line is up,
+         the coloured part gives a short kick of its own so the eye finishes on
+         the promise rather than on the full stop. */
+      var accent = [].slice.call(el.querySelectorAll('.text-accent .char'));
+      if (accent.length) {
+        tl.fromTo(accent,
+          { scale: 1 },
+          { scale: 1.14, duration: 0.22, ease: 'power2.out',
+            stagger: { each: 0.022, from: 'start' } }, '-=0.28')
+          .to(accent,
+            { scale: 1, duration: 0.42, ease: 'elastic.out(1, 0.45)',
+              stagger: { each: 0.022, from: 'start' } }, '-=0.12');
+      }
+
+      var tween = tl;
 
       scrollPlay(tween, el);
     });

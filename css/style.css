@@ -373,6 +373,11 @@ a{ text-decoration:none; }
   line-height:1.03;
   margin:24px 0 22px;
   letter-spacing:-.03em;
+  /* A camera, so the letters tumbling up read as depth rather than as a
+     vertical squash. Set here rather than on the words: one vanishing point
+     for the whole line means the letters at each end lean towards the middle,
+     which is what makes it look like a line rather than a row of tiles. */
+  perspective:900px;
 }
 
 .hero-sub{
@@ -1380,9 +1385,14 @@ a{ text-decoration:none; }
   vertical-align:top;
   padding:.16em .04em .18em;
   margin:-.16em -.04em -.18em;
+  transform-style:preserve-3d;
 }
 
-.char{ display:inline-block; will-change:transform; }
+.char{
+  display:inline-block;
+  will-change:transform;
+  transform-origin:50% 100%;
+}
 
 /* A rotation only reads as a hinge rather than a squash if there is a camera
    in front of it. */
