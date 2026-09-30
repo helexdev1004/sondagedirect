@@ -111,9 +111,21 @@
   // top of the document, so ScrollTrigger never sees an "enter" transition for it and
   // the tween would sit at its start state forever. After building, every trigger that
   // is already active is played by hand.
+  // Re-asserts anything that should be showing. A refresh winds every tween
+  // back to its start, so this has to put them back — and it cannot trust
+  // isActive to do it: immediately after ScrollTrigger.refresh() every trigger
+  // reports inactive until something scrolls, so a refresh with the page
+  // sitting still (opening an answer, a resize) found nothing to re-assert and
+  // emptied whatever was on screen. Falling back to "is the element actually
+  // in the viewport" is what makes it safe.
   function playActive() {
     triggers.forEach(function (trigger, i) {
-      if (trigger.isActive && tweens[i]) tweens[i].play();
+      if (!tweens[i]) return;
+      if (trigger.isActive) { tweens[i].play(); return; }
+      var el = trigger.trigger;
+      if (!el) return;
+      var box = el.getBoundingClientRect();
+      if (box.bottom > 0 && box.top < window.innerHeight) tweens[i].play();
     });
   }
 
@@ -477,9 +489,18 @@
       if (!body) { item.open = open; return; }
 
       var pad = parseFloat(window.getComputedStyle(body).paddingBottom) || 0;
+      // The page just got taller or shorter, so every trigger below this
+      // answer is now measured against the wrong position. That refresh is
+      // needed — but it recalculates all of them, and doing it in the same
+      // frame the tween finishes lands a hitch right on the end of the
+      // movement, which is what made the toggle feel rough. One frame later
+      // costs nothing and the animation reads clean.
       function settle() {
         gsap.set(body, { clearProps: 'height,paddingBottom,opacity,overflow' });
-        ScrollTrigger.refresh();     // the page just got taller or shorter
+        requestAnimationFrame(function () {
+          ScrollTrigger.refresh();
+          ScrollTrigger.update();
+        });
       }
 
       gsap.killTweensOf(body);
@@ -536,7 +557,10 @@
   // A refresh re-evaluates every trigger, and in doing so winds anything
   // already in view back to its start. Re-assert those afterwards, or the hero
   // would empty itself the moment the webfonts land or the window is resized.
-  ScrollTrigger.addEventListener('refresh', playActive);
+  ScrollTrigger.addEventListener('refresh', function () {
+    ScrollTrigger.update();   // isActive is stale until something updates
+    playActive();
+  });
 
   window.addEventListener('load', function () { ScrollTrigger.refresh(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
