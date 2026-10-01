@@ -1002,44 +1002,34 @@ a{ text-decoration:none; }
   background:linear-gradient(120deg,#0874FC 0%,#1F5EF0 52%,#005FE0 100%);
 }
 
-/* The layer the shapes live in. It is what leans toward the pointer, so the
-   shapes inside are free to keep their own drift without the two fighting
-   over the same transform. */
-/* No will-change anywhere in here, deliberately. Promoting these to their own
-   compositor layers sounds like the right thing for something that moves every
-   frame, and measured it was the opposite: three layers this size cost about
-   forty-five percent of the frames during a pointer sweep, against two percent
-   without. They are a couple of thousand pixels wide — too big to be worth
-   holding separately. */
+/* The layer the shapes live in. Nothing animates in here, so nothing needs
+   promoting to a compositor layer of its own. */
 .cta-shapes{
   position:absolute;
   inset:0;
   pointer-events:none;
 }
 
-/* No transform here any more. Centring used to be translateX(-50%) in CSS,
-   and GSAP writing xPercent replaced that whole transform — which dropped the
-   -50% and pushed every shape about half its width to the right, so the band
-   only ever had anything happening down one side. The centring is xPercent:-50
-   in the script now, where the drift is added to it rather than replacing it. */
-/* max-width off, or the global img{max-width:100%} clamps these to the band's
-   own width. The width is modest on purpose: each of these is composited every
-   frame, and at 168% the three of them together cost about forty percent of
-   the frames. Ribbons can afford it where the filled waves could not — they
-   fade to nothing at both ends, so there is no edge to bring into view however
-   far they travel. */
+/* Centred here, in the stylesheet. That had to live in the script while the
+   ribbons were animated — anything GSAP wrote to transform threw a CSS one
+   away, which dropped the -50% and shoved every shape half its width to the
+   right. With them still it belongs back here.
+
+   max-width off, or the global img{max-width:100%} clamps these to the band's
+   own width. The extra width is what keeps the ribbons running past both
+   edges rather than ending inside the band. */
 .cta-shape{
   position:absolute;
   left:50%;
+  transform:translateX(-50%);
   width:126%;
   min-width:1340px;
   max-width:none;
   pointer-events:none;
 }
 
-/* Two planes, nine ribbons between them. Two rather than three because each
-   is a translucent layer the compositor reblends on every frame, and that
-   count is what costs — not what is drawn inside them. */
+/* Two planes, nine ribbons between them, crossing the band at different
+   heights so they read as one weave rather than two bands of five and four. */
 .cta-shape-1{
   top:-4%;
   opacity:.95;

@@ -518,104 +518,6 @@
 
   }
 
-  /* ------------------------------------------------------------ closing band */
-
-  /* The waves behind the closing band. Four things move them, each on its own
-     property so none can overwrite another — GSAP keeps px and percent offsets
-     apart, which is what lets two of them share an axis:
-
-       xPercent   the -50% that centres each wave, plus the scroll drift
-       x, y       a long swell of its own, running whether or not you scroll
-       scaleY     that same swell breathing the wave taller and shorter
-       yPercent   the pointer, pushing each layer by a different amount
-
-     The centring has to live here rather than in the stylesheet: a CSS
-     transform would be thrown away by the first of these to be written. */
-  function initCtaBand() {
-    var band = document.querySelector('.cta-band');
-    if (!band) return;
-
-    var layer = band.querySelector('.cta-shapes');
-    var shapes = [].slice.call(band.querySelectorAll('.cta-shape'));
-    if (!shapes.length) return;
-
-    gsap.set(shapes, { xPercent: -50 });
-
-    /* Each wave swells on its own, deliberately mismatched — different
-       distances, different periods, none a multiple of another — so the three
-       never come back into step and repeat as a pulse.
-
-       Translation only, no scaling. Moving a layer is handed to the compositor
-       and costs nothing; scaling one forces the browser to redraw it, and
-       these are three and a half thousand pixels wide. Breathing their heights
-       looked better and spent a third of the frame budget doing it. */
-    /* Ribbons can travel far further than the filled waves could: they taper
-       to nothing at both ends, so there is no edge to bring into view however
-       far they go. That is what lets the flow actually read as flow. */
-    var SWELL = [
-      { x:  210, y:  34, time: 16 },
-      { x: -264, y: -26, time: 21 },
-      { x:  168, y:  44, time: 27 }
-    ];
-    shapes.forEach(function (el, i) {
-      var m = SWELL[i % SWELL.length];
-      gsap.to(el, {
-        x: m.x, y: m.y,
-        duration: m.time,
-        ease: 'sine.inOut',
-        repeat: -1, yoyo: true,
-        delay: i * 1.7
-      });
-    });
-
-    /* The scroll drift, added to the centring rather than replacing it. */
-    [-6, 4, 8].forEach(function (amt, i) {
-      if (!shapes[i]) return;
-      gsap.fromTo(shapes[i], { xPercent: -50 - amt }, {
-        xPercent: -50 + amt, ease: 'none',
-        scrollTrigger: { trigger: band, start: 'top bottom', end: 'bottom top', scrub: 1 }
-      });
-    });
-
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-
-    /* The pointer moves the waves rather than lighting them. The whole layer
-       leans after the cursor, and on top of that each wave is pushed a
-       different distance — the front one nearly three times the back one — so
-       moving across the band opens the gaps between them and closes them
-       again. Depth you cause, rather than a highlight you drag around. */
-    var leanX = layer ? gsap.quickTo(layer, 'x', { duration: 1, ease: 'power3.out' }) : null;
-    var leanY = layer ? gsap.quickTo(layer, 'y', { duration: 1, ease: 'power3.out' }) : null;
-    var DEPTH = [2.4, 4.6, 6.8];
-    var push = shapes.map(function (el) {
-      return gsap.quickTo(el, 'yPercent', { duration: 1.1, ease: 'power3.out' });
-    });
-
-    /* The band's box is measured when it changes, not on every mouse move.
-       Reading it inside the handler forces a layout on each event, and a
-       pointer sweep fires those faster than a frame — which was costing about
-       a fifth of the frames outright. */
-    var box = null;
-    function measure() { box = band.getBoundingClientRect(); }
-    measure();
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, { passive: true });
-    ScrollTrigger.addEventListener('refresh', measure);
-
-    band.addEventListener('pointermove', function (e) {
-      if (!box || !box.width) return;
-      var px = (e.clientX - box.left) / box.width - 0.5;
-      var py = (e.clientY - box.top) / box.height - 0.5;
-      if (leanX) { leanX(px * -62); leanY(py * -30); }
-      push.forEach(function (set, i) { set(py * (DEPTH[i % DEPTH.length]) * -1); });
-    });
-
-    band.addEventListener('pointerleave', function () {
-      if (leanX) { leanX(0); leanY(0); }
-      push.forEach(function (set) { set(0); });
-    });
-  }
-
   /* ---------------------------------------------------- the answers, sliding */
 
   // <details> snaps. Taking over the summary click lets the answer slide, and
@@ -700,7 +602,6 @@
     initCounters();
     initReveals();
     initParallax();
-    initCtaBand();
     initDepth();
     initMagnets();
     initFaq();
