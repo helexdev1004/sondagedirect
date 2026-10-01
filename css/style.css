@@ -257,44 +257,61 @@ a{ text-decoration:none; }
   line-height:1;
 }
 
-.primary-nav{ gap:30px; }
+/* One indicator for the whole menu, which slides. Every link having its own
+   underline means five things that each fade in and out on their own and
+   nothing that connects them; one pill that travels from the link you left to
+   the link you are on makes the menu read as a single control. The gap is
+   small now because the links carry their own padding — the pill has to have
+   something to wrap. */
+.primary-nav{
+  position:relative;
+  gap:4px;
+}
 
 .primary-nav .nav-link{
   position:relative;
+  z-index:1;
   color:var(--body);
   font-size:14.5px;
   font-weight:500;
-  padding:6px 0;
+  padding:9px 15px;
+  border-radius:11px;
   transition:color .2s ease;
-}
-
-/* The rule grows from the centre, so it reads as the link waking up rather
-   than a block sliding in. */
-.primary-nav .nav-link::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:-2px;
-  height:2px;
-  border-radius:2px;
-  background:var(--blue);
-  transform:scaleX(0);
-  transition:transform .22s ease;
 }
 
 .primary-nav .nav-link:hover,
 .primary-nav .nav-link:focus-visible{ color:var(--navy); }
 
-.primary-nav .nav-link:hover::after{ transform:scaleX(.55); }
-
-/* .active is what Bootstrap's ScrollSpy sets. */
+/* .active is what main.js sets. */
 .primary-nav .nav-link.active{
   color:var(--navy);
   font-weight:600;
 }
 
-.primary-nav .nav-link.active::after{ transform:scaleX(1); }
+/* Built by main.js, so a page with no script gets no stray element. It is
+   sized and placed from whichever link it is following; everything here is
+   only how it looks and how it travels.
+
+   transform carries the position and width carries the size, rather than
+   animating left and right, so the trip across the menu is one compositor
+   property and one layout one instead of two layout ones. */
+.nav-pill{
+  position:absolute;
+  top:0;
+  left:0;
+  border-radius:11px;
+  background:rgba(8,116,252,.10);
+  opacity:0;
+  pointer-events:none;
+  z-index:0;
+  transition:transform .34s cubic-bezier(.22,.8,.3,1),
+             width .34s cubic-bezier(.22,.8,.3,1),
+             opacity .2s ease;
+}
+
+/* The first placement must not be animated, or the pill is seen flying in
+   from the corner on load. The class goes on once it has been put somewhere. */
+.primary-nav:not(.pill-ready) .nav-pill{ transition:none; }
 
 .header-actions{
   display:flex;
@@ -1218,7 +1235,11 @@ a{ text-decoration:none; }
   .section-title{ font-size:38px; }
   .how-title{ font-size:36px; }
   .cta-title{ font-size:34px; }
-  .primary-nav{ gap:26px; }
+  /* Tightened by closing the gap and the links' own padding, not by shrinking
+     the gap alone — most of the space between two links is their padding now,
+     so that is what has to give. */
+  .primary-nav{ gap:0; }
+  .primary-nav .nav-link{ padding-inline:11px; }
   .header-actions{ gap:18px; }
   .rewards-grid{ grid-template-columns:repeat(4,1fr); }
   .hero-points{ gap:22px; }
@@ -1238,7 +1259,14 @@ a{ text-decoration:none; }
     margin:0 0 18px !important;
   }
 
-  .primary-nav .nav-link{ padding:10px 0; font-size:16px; }
+  .primary-nav .nav-link{ padding:11px 14px; font-size:16px; }
+
+  /* Stacked, a pill that slides between rows would be travelling vertically
+     through a list rather than along a bar, which is not the same gesture at
+     all. Down here the current row just wears the tint itself. */
+  .nav-pill{ display:none; }
+
+  .primary-nav .nav-link.active{ background:rgba(8,116,252,.10); }
 
   .header-actions{
     gap:16px;

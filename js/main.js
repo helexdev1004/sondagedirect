@@ -89,6 +89,63 @@
     window.addEventListener('resize', markNav);
   }
 
+  // The indicator that follows the menu. It rests under whichever link is
+  // current and travels to whatever you point at, returning when you leave.
+  //
+  // Built here rather than written into the markup so a page with no script
+  // has no stray element to explain. It is an <li> because its parent is a
+  // <ul>, which may take nothing else.
+  var navList = document.querySelector('.primary-nav');
+
+  if (navList && navLinks.length) {
+    var pill = document.createElement('li');
+    pill.className = 'nav-pill';
+    pill.setAttribute('aria-hidden', 'true');
+    navList.appendChild(pill);
+
+    var sitOn = function (link) {
+      if (!link) { pill.style.opacity = '0'; return; }
+      var r = link.getBoundingClientRect();
+      var base = navList.getBoundingClientRect();
+      pill.style.width = r.width + 'px';
+      pill.style.height = r.height + 'px';
+      pill.style.transform =
+        'translate(' + (r.left - base.left) + 'px,' + (r.top - base.top) + 'px)';
+      pill.style.opacity = '1';
+    };
+
+    // Back to whichever link is current — which may be none of them, at the
+    // very top of the page, and then the pill has nowhere to be.
+    var settle = function () {
+      var current = null;
+      navLinks.forEach(function (l) { if (l.classList.contains('active')) current = l; });
+      sitOn(current);
+    };
+
+    navLinks.forEach(function (link) {
+      link.addEventListener('mouseenter', function () { sitOn(link); });
+      link.addEventListener('focus', function () { sitOn(link); });
+    });
+    navList.addEventListener('mouseleave', settle);
+    navList.addEventListener('focusout', settle);
+
+    settle();
+    // Only now may it animate: the first placement would otherwise be seen as
+    // a flight in from the corner.
+    requestAnimationFrame(function () { navList.classList.add('pill-ready'); });
+
+    // Inter arrives after first paint (the stylesheet asks for display:swap),
+    // and every link changes width when it does. Without this the pill keeps
+    // the fallback font's measurements and sits visibly off its link.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(settle);
+    }
+
+    window.addEventListener('resize', settle);
+    // markNav moves .active as you scroll; the pill has to follow it there too.
+    window.addEventListener('scroll', settle, { passive: true });
+  }
+
   // A reward card shows a logo and the words "Gift card", so the brand name is
   // only in the mark's aria-label. Sighted pointer users are the ones missing
   // it — screen readers already read the label, and the cards are not
