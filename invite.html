@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invite a friend — SondageDirect</title>
+<meta name="description" content="Share your SondageDirect link. When someone joins through it and finishes three surveys, you earn a euro.">
+<link rel="icon" href="assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/app.css">
+<script>
+  /* Hides what is about to animate, before anything paints. animations.js
+     removes this the instant it takes over; if it never does — blocked CDN,
+     script error — the timeout drops it and the page renders as plain HTML. */
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var root = document.documentElement;
+    root.classList.add('sd-anim');
+    window.setTimeout(function () {
+      if (!root.classList.contains('sd-anim-ready')) root.classList.remove('sd-anim');
+    }, 2500);
+  })();
+</script>
+</head>
+<body class="app-body">
+
+<!-- The app's icons, once per page. A sprite rather than an icon font: these
+     are drawn to the same 1.7 stroke as the ones on the marketing pages, which
+     no icon font would match, and <use> costs one element per icon. An
+     external sprite file would be tidier still but cannot be referenced from
+     file:// and needs CORS over http. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.2 12 3.6l8.5 6.6"/><path d="M5.6 9v10.4h12.8V9"/><path d="M9.7 19.4v-5.6h4.6v5.6"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7.6A2.2 2.2 0 0 1 5.6 5.4h11a1.8 1.8 0 0 1 1.8 1.8v1.2"/><rect x="3.4" y="7.6" width="17.2" height="11.2" rx="2.4"/><path d="M16.4 13.2h2.4"/></symbol>
+  <symbol id="i-invite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.4" cy="8.4" r="3.4"/><path d="M3.2 19.2c0-3.4 2.8-5.6 6.2-5.6 1.3 0 2.5.3 3.5.9"/><path d="M17.6 13.4v5.8M14.7 16.3h5.8"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 19.6c0-3.6 3.2-5.8 7.2-5.8s7.2 2.2 7.2 5.8"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4 10.2a5.6 5.6 0 0 1 11.2 0c0 4 1.6 5.4 1.6 5.4H4.8s1.6-1.4 1.6-5.4Z"/><path d="M10.2 18.6a2 2 0 0 0 3.6 0"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 4.6h7.4l4.2 4.2v10.6H6.2z"/><path d="M13.4 4.6v4.4h4.4"/><path d="M9 13h6M9 16h4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 7.4V12l3 1.8"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 4.3 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 10l5.4-.8z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m5.5 12.4 4.2 4.2 8.8-8.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8.4" y="8.4" width="11.2" height="11.2" rx="2.2"/><path d="M15.6 5.4H6.6a2.2 2.2 0 0 0-2.2 2.2v9"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 3.8 3.6 10.2l6.6 2.8 2.8 6.6z"/><path d="m10.2 13 4-4"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="9" width="16.8" height="4" rx="1.1"/><path d="M5.2 13v6.4h13.6V13M12 9v10.4"/><path d="M12 9S10.8 4 8.6 4a2 2 0 0 0 0 4M12 9s1.2-5 3.4-5a2 2 0 0 1 0 4"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.6" width="18" height="12.8" rx="2.4"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-cash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.4" width="18" height="11.2" rx="2.2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.4 9.6h.01M17.6 14.4h.01"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 15.6 5-5 3.4 3.4L20 6.4"/><path d="M15.4 6.4H20v4.6"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m9.6 5.6 6.4 6.4-6.4 6.4"/></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.4 5.6 8 12l6.4 6.4"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m5.6 9.4 6.4 6.4 6.4-6.4"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/><path d="M9.7 9.6a2.4 2.4 0 1 1 2.9 2.4v1.4"/><path d="M12.6 16.6h.01"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5.6H6.6v12.8H14"/><path d="M11.4 12h8.2M16.4 8.8 19.6 12l-3.2 3.2"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 12.6 6 5.4h12l2.4 7.2v6H3.6z"/><path d="M3.6 12.6h4.2l1 2.4h6.4l1-2.4h4.2"/></symbol>
+</defs></svg>
+
+<!-- ============ APP BAR ============ -->
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg p-0">
+      <a class="navbar-brand brand-lockup p-0 m-0" href="dashboard.html">
+        <img src="assets/logo-mark.png" alt="" class="brand-mark">
+        <span class="brand-name">SondageDirect</span>
+      </a>
+
+      <!-- Before the toggler in the document so that on a phone these stay on
+           the top row with the brand, rather than disappearing into the
+           collapsed menu. The order utility puts them back on the right once
+           the menu expands. -->
+      <div class="app-actions order-lg-3">
+        <button type="button" class="icon-btn" aria-label="Notifications">
+          <svg width="21" height="21" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-bell"/></svg>
+          <span class="dot" aria-hidden="true"></span>
+        </button>
+        <div class="dropdown">
+          <button type="button" class="account-btn" data-bs-toggle="dropdown" data-bs-offset="0,14" aria-expanded="false" aria-label="Your account">
+            <span class="avatar" aria-hidden="true">AC</span>
+            <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chev-d"/></svg>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end account-menu">
+            <div class="who">
+              <span class="avatar" aria-hidden="true">AC</span>
+              <span>
+                <strong>Alex Carter</strong>
+                <span>alex.carter@example.com</span>
+              </span>
+            </div>
+            <a class="menu-item" href="profile.html"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-user"/></svg>My profile</a>
+            <a class="menu-item" href="wallet.html"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wallet"/></svg>My wallet</a>
+            <a class="menu-item" href="index.html#faq"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-help"/></svg>Help</a>
+            <hr class="menu-rule">
+            <a class="menu-item is-out" href="index.html"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-out"/></svg>Log out</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="navbar-toggler order-lg-3" type="button" data-bs-toggle="collapse" data-bs-target="#primaryNav"
+              aria-controls="primaryNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse order-lg-2" id="primaryNav">
+        <ul class="navbar-nav primary-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="dashboard.html"><svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-home"/></svg>Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="wallet.html"><svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wallet"/></svg>Wallet</a></li>
+          <li class="nav-item"><a class="nav-link active" href="invite.html"><svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-invite"/></svg>Invite</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html"><svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-user"/></svg>Profile</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="app-main">
+  <div class="container screen">
+
+    <div class="screen-head" data-anim="up">
+      <h1 class="screen-title">Invite a friend</h1>
+      <p class="screen-sub">Everyone you bring who stays is worth a euro to you.</p>
+    </div>
+
+    <section class="panel balance-hero" data-anim="up" data-anim-delay="0.08" style="flex-direction:column;align-items:stretch;gap:0">
+      <span class="balance-label">Your invitation link</span>
+      <h2 style="color:var(--white);font-size:27px;margin-top:8px;max-width:560px">
+        Share SondageDirect with your friends
+      </h2>
+      <p style="color:rgba(255,255,255,.86);font-size:14.5px;line-height:1.7;margin-top:10px;max-width:560px">
+        Once someone joins through your link and completes 3 surveys, you earn
+        &euro;1.00 for that person. Profiling surveys do not count toward the three.
+      </p>
+
+      <div class="linkbox" style="max-width:560px">
+        <code id="inviteLink">https://sondagedirect.com/signup?ref=K7M2QX</code>
+        <button class="copy-btn" type="button" data-copy="inviteLink">
+          <svg width="16" height="16" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-copy"/></svg>
+          <span data-copy-label>Copy</span>
+        </button>
+      </div>
+
+      <div class="balance-actions" style="margin-top:18px">
+        <a href="#" class="btn btn-white-cta btn-lg-cta">
+          <svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-send"/></svg>Send to a friend
+        </a>
+      </div>
+    </section>
+
+    <div class="bento" style="margin-top:18px" data-anim="up" data-anim-delay="0.14" data-anim-stagger="0.07" data-anim-group>
+      <article class="panel stat third">
+        <span class="stat-label">Invited</span>
+        <span class="stat-value" data-count="3">3</span>
+        <span class="stat-note">Friends who signed up through your link</span>
+      </article>
+      <article class="panel stat third">
+        <span class="stat-label">Qualified</span>
+        <span class="stat-value" data-count="1">1</span>
+        <span class="stat-note">Those who finished their 3 surveys</span>
+      </article>
+      <article class="panel stat third">
+        <span class="stat-label">Earned</span>
+        <span class="stat-value">&euro;<span data-count="1.00">1.00</span></span>
+        <span class="stat-note">Paid into the same balance</span>
+      </article>
+    </div>
+
+    <section class="section-block">
+      <div class="block-head">
+        <h2 class="block-title">How it works</h2>
+      </div>
+
+      <!-- The same route the homepage uses for its three steps, markers, rail
+           and all. One pattern for "here is a sequence", used on both the
+           marketing pages and in the app. -->
+      <ol class="steps list-unstyled" style="margin:0" data-anim="up" data-anim-stagger="0.1" data-anim-group>
+        <li class="step">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <h3 class="step-title">Share your link</h3>
+            <p class="step-text">Copy it, or use the button above to send it in whatever app you already use.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <h3 class="step-title">They join and answer</h3>
+            <p class="step-text">Your friend signs up through the link and completes 3 surveys. Profiling surveys do not count toward the three.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">3</span>
+          <div class="step-body">
+            <h3 class="step-title">You earn &euro;1.00</h3>
+            <p class="step-text">For each person who gets there, paid into your balance alongside your own work.</p>
+          </div>
+        </li>
+      </ol>
+
+      <p class="fineprint">Referral earnings follow the same payout rules as the rest of your balance.</p>
+    </section>
+
+    <section class="section-block" data-anim="up">
+      <div class="block-head">
+        <h2 class="block-title">Friends who joined</h2>
+        <span class="block-note">3 friends</span>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table class="data-table">
+            <caption class="visually-hidden">Everyone who signed up through your link, how far through their three surveys they are, and what each has earned you.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Joined</th>
+                <th scope="col">Surveys taken</th>
+                <th scope="col" class="cell-end">Your bonus</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="who"><span class="avatar" aria-hidden="true">RG</span>rgarnen<span aria-label=", last five characters hidden">&ast;&ast;&ast;&ast;&ast;</span></span></td>
+                <td>22 September 2026</td>
+                <td><span class="tag is-good">3 of 3</span></td>
+                <td class="cell-end">&euro;1.00</td>
+              </tr>
+              <tr>
+                <td><span class="who"><span class="avatar" aria-hidden="true">ML</span>mlopez<span aria-label=", last five characters hidden">&ast;&ast;&ast;&ast;&ast;</span></span></td>
+                <td>19 September 2026</td>
+                <td><span class="tag is-wait">2 of 3</span></td>
+                <td class="cell-end">&euro;0.00</td>
+              </tr>
+              <tr>
+                <td><span class="who"><span class="avatar" aria-hidden="true">KD</span>kdeboer<span aria-label=", last five characters hidden">&ast;&ast;&ast;&ast;&ast;</span></span></td>
+                <td>15 September 2026</td>
+                <td><span class="tag is-wait">0 of 3</span></td>
+                <td class="cell-end">&euro;0.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="app-footer">
+  <div class="container app-footer-inner">
+    <p class="mb-0">&copy; 2026 Sondage Direct &mdash; a brand by Main Frame Ltd</p>
+    <ul class="list-unstyled mb-0">
+      <li><a href="index.html#faq">Help</a></li>
+      <li><a href="#">Terms</a></li>
+      <li><a href="#">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -95,9 +95,16 @@
   // Built here rather than written into the markup so a page with no script
   // has no stray element to explain. It is an <li> because its parent is a
   // <ul>, which may take nothing else.
+  //
+  // Every link in the menu, not just the ones pointing at a section of this
+  // page. On the homepage .active is moved by markNav above as you scroll; in
+  // the app it is written into the markup, because there "current" means the
+  // page you are on. The pill follows .active and does not care which put it
+  // there, which is what lets one implementation serve both.
   var navList = document.querySelector('.primary-nav');
+  var pillLinks = [].slice.call(document.querySelectorAll('.primary-nav .nav-link'));
 
-  if (navList && navLinks.length) {
+  if (navList && pillLinks.length) {
     var pill = document.createElement('li');
     pill.className = 'nav-pill';
     pill.setAttribute('aria-hidden', 'true');
@@ -118,11 +125,11 @@
     // very top of the page, and then the pill has nowhere to be.
     var settle = function () {
       var current = null;
-      navLinks.forEach(function (l) { if (l.classList.contains('active')) current = l; });
+      pillLinks.forEach(function (l) { if (l.classList.contains('active')) current = l; });
       sitOn(current);
     };
 
-    navLinks.forEach(function (link) {
+    pillLinks.forEach(function (link) {
       link.addEventListener('mouseenter', function () { sitOn(link); });
       link.addEventListener('focus', function () { sitOn(link); });
     });
