@@ -466,6 +466,42 @@
     });
   }
 
+  /* ----------------------------------------------------------- the three steps */
+
+  // The route lights itself once you reach it: marker one fills, the line
+  // draws down to two, two fills, and so on. Everything it looks like is in
+  // CSS — this only adds .is-on to each step in turn, and the transitions
+  // there do the rest.
+  //
+  // once: true, and no reverse. An indicator that un-completes itself when you
+  // scroll back up is reporting something untrue about where you have been,
+  // and it was reverse on triggers like this one that had the whole page
+  // strobing earlier.
+  function initSteps() {
+    var steps = [].slice.call(document.querySelectorAll('.steps .step'));
+    if (!steps.length) return;
+
+    var light = function () {
+      steps.forEach(function (step, i) {
+        gsap.delayedCall(i * 0.45, function () { step.classList.add('is-on'); });
+      });
+    };
+
+    // Lit outright where motion is unwelcome, rather than lit instantly three
+    // times over — the delayedCalls would still be a sequence, just a fast one.
+    if (reduced) {
+      steps.forEach(function (step) { step.classList.add('is-on'); });
+      return;
+    }
+
+    ScrollTrigger.create({
+      trigger: '.steps',
+      start: 'top 78%',
+      once: true,
+      onEnter: light
+    });
+  }
+
   /* ------------------------------------------------------------ magnetic keys */
 
   // The main call to action leans toward the pointer as it comes near, and springs back
@@ -604,6 +640,7 @@
     initParallax();
     initDepth();
     initMagnets();
+    initSteps();
     initFaq();
 
     root.classList.add('sd-anim-ready');

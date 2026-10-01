@@ -642,12 +642,41 @@ a{ text-decoration:none; }
 }
 
 .step{
+  position:relative;
   display:flex;
   align-items:flex-start;
   gap:20px;
 }
 
+/* The rail between one marker and the next. Three numbered paragraphs are
+   three separate facts; joined up they are one route, which is what a list
+   called "3 steps" is actually describing.
+
+   It is two pseudo-elements on each step rather than one element down the
+   whole list because the steps are different heights, and only the step
+   itself knows where its own marker stops and the gap to the next begins.
+   ::before is the track, ::after the line that draws along it. */
+.step:not(:last-child)::before,
+.step:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  left:20px;
+  top:50px;
+  bottom:-34px;
+  width:2px;
+  border-radius:2px;
+}
+
+.step:not(:last-child)::before{ background:var(--border); }
+
+.step:not(:last-child)::after{
+  background:linear-gradient(180deg,var(--blue) 0%,var(--blue-deep) 100%);
+  transform-origin:top;
+  transition:transform .55s cubic-bezier(.4,0,.2,1) .1s;
+}
+
 .step-num{
+  position:relative;
   flex:none;
   width:42px;
   height:42px;
@@ -659,7 +688,48 @@ a{ text-decoration:none; }
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 8px 20px rgba(8,116,252,.24);
+  box-shadow:inset 0 0 0 2px var(--blue), 0 8px 20px rgba(8,116,252,.24);
+  transition:background-color .42s ease, color .42s ease, box-shadow .42s ease;
+}
+
+/* The ring that blooms out of a marker as it lights. Sized off the marker
+   with inset, so it stays concentric at any size. */
+.step-num::after{
+  content:"";
+  position:absolute;
+  inset:-7px;
+  border-radius:50%;
+  border:2px solid rgba(8,116,252,.3);
+  transition:opacity .55s ease, transform .55s cubic-bezier(.22,.8,.3,1);
+}
+
+/* Everything above is the FINISHED state, deliberately. A page where the
+   animation layer never arrives shows a complete path — which is how this
+   list looked before any of this existed. The unlit state below only applies
+   while something is actually there to light it, and animations.js adds
+   .is-on to each step in turn once the list is reached. */
+.sd-anim-ready .step:not(.is-on) .step-num{
+  background:var(--white);
+  color:var(--blue);
+  box-shadow:inset 0 0 0 2px #CFE2F7, 0 2px 8px rgba(8,116,252,.07);
+}
+
+.sd-anim-ready .step:not(.is-on) .step-num::after{
+  opacity:0;
+  transform:scale(.72);
+}
+
+.sd-anim-ready .step:not(.is-on)::after{ transform:scaleY(0); }
+
+/* A light hold under the pointer. The body moves and the step does not —
+   the rail is drawn on the step, and shifting that would pull the route out
+   of line with the markers it joins. */
+.step-body{ transition:transform .3s cubic-bezier(.22,.8,.3,1); }
+
+.step:hover .step-body{ transform:translateX(5px); }
+
+.step:hover .step-num{
+  box-shadow:inset 0 0 0 2px var(--blue), 0 12px 26px rgba(8,116,252,.36);
 }
 
 .step-title{
