@@ -795,6 +795,44 @@ a{ text-decoration:none; }
   align-items:stretch;
 }
 
+/* Hidden by default: all three reviews are on screen at once up here, so a
+   marker for which one you are on would be marking nothing. The breakpoint
+   that turns the track into a swipe strip turns these on with it. */
+.testimonial-dots{ display:none; }
+
+/* The button is 26px so it is a real tap target; the dot you see is the 8px
+   pill inside it. */
+.testimonial-dot{
+  width:26px;
+  height:26px;
+  padding:0;
+  border:0;
+  background:none;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+
+.testimonial-dot::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:100px;
+  background:#BBD3EA;
+  transition:width .25s ease, background-color .25s ease;
+}
+
+.testimonial-dot[aria-current="true"]::before{
+  width:22px;
+  background:var(--blue);
+}
+
+.testimonial-dot:focus-visible{
+  outline:3px solid rgba(8,116,252,.35);
+  outline-offset:1px;
+  border-radius:100px;
+}
+
 .testimonial-card{
   display:flex;
   flex-direction:column;
@@ -1265,6 +1303,16 @@ a{ text-decoration:none; }
   .testimonial-card{
     flex:0 0 min(420px, 86%);
     scroll-snap-align:center;
+  }
+
+  /* The scrollbar is hidden just above, and a card and a half fills the
+     screen, so without these there is nothing at all to say two more reviews
+     are sitting off to the right. */
+  .testimonial-dots{
+    display:flex;
+    justify-content:center;
+    gap:4px;
+    margin-top:22px;
   }
 
   .cta-band{ min-height:0; padding:60px 0 64px; }

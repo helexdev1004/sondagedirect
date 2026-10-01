@@ -42,9 +42,13 @@
       </button>
 
       <div class="collapse navbar-collapse" id="primaryNav">
+        <!-- In the page's own order. Rewards sits above How it works in the
+             document, so with the two the other way round the menu ran
+             backwards: the second link jumped you up the page, and the lit
+             underline hopped back a step as you scrolled past them. -->
         <ul class="navbar-nav primary-nav mx-auto">
-          <li class="nav-item"><a class="nav-link" href="#how">How it works</a></li>
           <li class="nav-item"><a class="nav-link" href="#rewards">Rewards</a></li>
+          <li class="nav-item"><a class="nav-link" href="#how">How it works</a></li>
           <li class="nav-item"><a class="nav-link" href="#topics">Topics</a></li>
           <li class="nav-item"><a class="nav-link" href="#testimonials">Reviews</a></li>
           <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
@@ -438,6 +442,10 @@
         </span>
       </article>
     </div>
+
+    <!-- Filled in by main.js, one per review. Only has anything to say where
+         the track swipes; above 992px the three sit side by side. -->
+    <div class="testimonial-dots" id="testimonialDots" role="group" aria-label="Choose a review"></div>
 
   </div>
 </section>
