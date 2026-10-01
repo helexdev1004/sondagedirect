@@ -1030,54 +1030,36 @@ a{ text-decoration:none; }
 .cta-band{
   position:relative;
   overflow:hidden;
-  min-height:340px;
+  min-height:300px;
   display:flex;
   align-items:center;
-  /* Deep at the foot on purpose: it is the room the waves travel in. With
-     the old padding the copy filled the band top to bottom and there was
-     nowhere for them to be that was not behind a line of text. */
-  padding:66px 0 148px;
+  padding:64px 0 70px;
   background:linear-gradient(120deg,#0874FC 0%,#1F5EF0 52%,#005FE0 100%);
 }
 
-/* The layer the shapes live in. Nothing animates in here, so nothing needs
-   promoting to a compositor layer of its own. */
-.cta-shapes{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-}
-
-/* Centred here, in the stylesheet. That had to live in the script while the
-   ribbons were animated — anything GSAP wrote to transform threw a CSS one
-   away, which dropped the -50% and shoved every shape half its width to the
-   right. With them still it belongs back here.
-
-   max-width off, or the global img{max-width:100%} clamps these to the band's
-   own width. The extra width is what keeps the ribbons running past both
-   edges rather than ending inside the band. */
 .cta-shape{
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  width:126%;
-  min-width:1340px;
-  max-width:none;
+  width:130%;
+  min-width:1200px;
   pointer-events:none;
 }
 
-/* Two planes, nine ribbons between them, crossing the band at different
-   heights so they read as one weave rather than two bands of five and four. */
 .cta-shape-1{
-  top:-4%;
-  opacity:.95;
+  top:-6%;
+  opacity:.14;
 }
 
 .cta-shape-2{
-  bottom:-16%;
-  opacity:.9;
+  bottom:-18%;
+  opacity:.18;
 }
 
+.cta-shape-3{
+  bottom:-34%;
+  opacity:.55;
+}
 
 .cta-inner{
   position:relative;
