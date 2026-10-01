@@ -170,21 +170,65 @@ a{ text-decoration:none; }
    Header
    -------------------------------------------------------------------------- */
 
+/* Frosted, and tinted rather than white. Two things make it read as glass
+   instead of a white slab:
+
+   The opacity has to be low enough for the blur to have something to do. At
+   .88 the bar was very nearly solid, so the backdrop-filter behind it was
+   doing almost nothing and paying for the privilege — the giveaway was that
+   turning the filter off changed nothing you could see.
+
+   And the tint is the page's own cool white, not #fff. Pure white over a page
+   whose every surface is faintly blue reads as a separate sheet laid on top;
+   a few degrees of blue and it reads as the page seen through something. */
 .site-header{
   position:sticky;
   top:0;
   z-index:1030;
-  background:rgba(255,255,255,.88);
-  backdrop-filter:saturate(180%) blur(14px);
-  -webkit-backdrop-filter:saturate(180%) blur(14px);
-  border-bottom:1px solid transparent;
-  transition:box-shadow .25s ease, border-color .25s ease, background-color .25s ease;
+  background:rgba(242,248,255,.68);
+  backdrop-filter:saturate(190%) blur(20px);
+  -webkit-backdrop-filter:saturate(190%) blur(20px);
+  transition:box-shadow .25s ease, background-color .25s ease;
 }
 
 .site-header.is-stuck{
-  background:rgba(255,255,255,.94);
-  border-bottom-color:var(--border);
-  box-shadow:0 6px 24px rgba(28,82,160,.06);
+  background:rgba(245,250,255,.80);
+  /* Tight and blue-cast rather than a grey halo — it reads as the bar sitting
+     just above the page rather than floating well over it. */
+  box-shadow:0 8px 28px -10px rgba(16,64,140,.22);
+}
+
+/* The rule under the bar, fading out before it reaches either end. A hairline
+   running the full width cuts the page in two; one that arrives and leaves
+   lets the bar sit on the page instead. Drawn here rather than as a
+   border-bottom so it can carry a gradient, and so there is no 1px of layout
+   to animate. */
+.site-header::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:1px;
+  background:linear-gradient(90deg,
+    rgba(146,183,228,0) 0%,
+    rgba(146,183,228,.5) 16%,
+    rgba(146,183,228,.5) 84%,
+    rgba(146,183,228,0) 100%);
+  opacity:0;
+  transition:opacity .25s ease;
+  pointer-events:none;
+}
+
+.site-header.is-stuck::after{ opacity:1; }
+
+/* With the menu open the bar stops being a bar and becomes a panel over the
+   page, and a panel you can see the page through reads as unfinished. Glass is
+   right for a 76px strip and wrong for half a screen, so the tint goes nearly
+   solid for as long as it is open. Browsers without :has() simply keep the
+   translucent one, which the blur already makes legible. */
+.site-header:has(#primaryNav.show){
+  background:rgba(249,252,255,.97);
 }
 
 .site-header .navbar{ min-height:76px; }
