@@ -297,11 +297,18 @@
   overflow:hidden;
   color:var(--white);
   border:0;
-  /* Deep indigo, not the brand blue. These panels carry white text, a white
-     button and the folds of light; the darker and the more violet the ground,
-     the further all three stand off it. The middle stop is the lightest so
-     the panel has a direction to it rather than reading as a flat block. */
-  background:linear-gradient(120deg,#1C1140 0%,#2E1C5E 34%,#3B2674 62%,#20134A 100%);
+  /* Two layers, and the second is what makes it.
+
+     A linear gradient alone only ever gets lighter along ONE axis, which is
+     why the last version read as a flat slab however dark it was. Underneath
+     is a near-black indigo; over it, a violet light pooled off-centre toward
+     the top right and falling away in every direction. Light that comes from
+     somewhere is what gives a dark panel depth — the corners go dark on their
+     own because they are simply further from it. */
+  background:
+    radial-gradient(58% 92% at 82% 16%,
+      #6B33A6 0%, rgba(84,38,142,.62) 22%, rgba(45,25,92,.26) 46%, rgba(24,17,52,0) 70%),
+    linear-gradient(145deg, #1A1335 0%, #1F1840 46%, #120D27 100%);
   padding:30px 32px;
   display:flex;
   align-items:center;
@@ -316,7 +323,7 @@
   position:absolute;
   inset:0;
   background:url("../assets/cta-waves.svg") center / cover no-repeat;
-  opacity:.82;
+  opacity:.22;
   pointer-events:none;
 }
 
@@ -1239,7 +1246,7 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   width:100%;
   height:7px;
   border-radius:100px;
-  background:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.14);
   overflow:hidden;
   margin:18px 0 10px;
 }
@@ -1248,8 +1255,8 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   display:block;
   height:100%;
   border-radius:100px;
-  background:linear-gradient(90deg,#B9A3FF 0%,#FFFFFF 100%);
-  box-shadow:0 0 14px rgba(255,255,255,.4);
+  background:linear-gradient(90deg,#6A9CF5 0%,#A777F0 100%);
+  box-shadow:0 0 14px rgba(150,110,240,.45);
   /* Set in the markup, so the bar is correct with no script at all. */
   transition:width 1.1s cubic-bezier(.22,.8,.3,1);
 }
