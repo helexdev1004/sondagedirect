@@ -560,12 +560,19 @@ a.row-card:hover{
    line icon in the nav and in buttons, where neither is set. One sprite,
    two appearances, decided by where the icon is rather than which id it uses.
 
-   Almost everything wears the brand tint. Colour is spent only where it
-   reports a STATE — green for value arriving, red for value leaving — and
-   never on a mere KIND of thing. A palette that varies by category teaches the
-   eye nothing, because the category is already written beside it in words; all
-   it does is make a calm screen loud. The other hues stay defined below
-   because the status tags use them, and because a future state may want one.
+   One hue per CATEGORY, and a category means a real kind of thing — a survey,
+   a profiling survey, a referral, a gift card, a cash payout. Five in total
+   across the whole app, and never more than three on any one screen.
+
+   That is the difference from the version that was too loud: it coloured by
+   whichever panel was buying the survey and then by how much it paid, so four
+   consecutive rows of the same kind came out four different colours and the
+   palette meant nothing. Tie it to the kind and two rows of the same kind look
+   the same, which is the whole point of colouring them at all.
+
+   The classes below are named for what a thing IS, not for its colour, so the
+   palette can change in one place without touching a page. Each sits on the
+   same rule as the colour name it uses, so neither is a copy of the other.
    -------------------------------------------------------------------------- */
 
 .row-icon,
@@ -585,18 +592,21 @@ a.row-card:hover{
   box-shadow:inset 0 0 0 1px var(--ic-ring);
 }
 
-.is-indigo{
+.is-indigo,
+.is-profiling{
   --ic-1:#6248F0; --ic-2:#D3CAFC; --ic-ink:#5A3DEF;
   --ic-bg1:#F0EDFE; --ic-bg2:#E3DDFD; --ic-ring:rgba(98,72,240,.13);
 }
 
 .is-plus,
-.is-green{
+.is-green,
+.is-referral{
   --ic-1:#0E9F6E; --ic-2:#AEE6CD; --ic-ink:#0B7F58;
   --ic-bg1:#E9F8F1; --ic-bg2:#D7F1E5; --ic-ring:rgba(14,159,110,.14);
 }
 
-.is-amber{
+.is-amber,
+.is-giftcard{
   /* The line is a shade darker than the others' because amber is the
      lightest hue here and was the one graphic that missed 3:1 on its tile. */
   --ic-1:#B8760C; --ic-2:#F8DCA4; --ic-ink:#9D650A;
@@ -609,7 +619,8 @@ a.row-card:hover{
   --ic-bg1:#FDF0EF; --ic-bg2:#FBE2E0; --ic-ring:rgba(214,69,59,.14);
 }
 
-.is-teal{
+.is-teal,
+.is-payout{
   --ic-1:#0E8C9F; --ic-2:#AEE0E8; --ic-ink:#0C7B8C;
   --ic-bg1:#E8F7F9; --ic-bg2:#D5EFF3; --ic-ring:rgba(14,140,159,.14);
 }
