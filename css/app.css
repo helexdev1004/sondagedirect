@@ -520,20 +520,84 @@ a.row-card:hover{
   transform:translateY(-2px);
 }
 
+/* --------------------------------------------------------------------------
+   Icon tiles
+   --------------------------------------------------------------------------
+   Every row used to carry the same pale blue square with the same one-colour
+   line in it, so a referral, a survey and a gift card were indistinguishable
+   until you read them. Each kind has its own hue now, and the icon inside is
+   drawn in two tones of it.
+
+   The two tones are custom properties the sprite reads: --ic-1 for the line
+   and --ic-2 for the shape behind it. Both have defaults that matter —
+   currentColor and TRANSPARENT — so the very same symbol is still a plain
+   line icon in the nav and in buttons, where neither is set. One sprite,
+   two appearances, decided by where the icon is rather than which id it uses.
+
+   The hues are the brand blue plus four that sit beside it rather than
+   compete: indigo for profiling, green for anything arriving in your balance,
+   amber for a reward, red for anything leaving.
+   -------------------------------------------------------------------------- */
+
+.row-icon,
+.reward-logo,
+.empty-mark,
+.modal-mark{
+  --ic-1:var(--blue);
+  --ic-2:#C2DCFB;
+  --ic-bg1:#EBF4FE;
+  --ic-bg2:#DAEAFD;
+  --ic-ring:rgba(8,116,252,.12);
+  --ic-ink:#0368E7;
+  color:var(--ic-1);
+  background:linear-gradient(145deg,var(--ic-bg1) 0%,var(--ic-bg2) 100%);
+  box-shadow:inset 0 0 0 1px var(--ic-ring);
+}
+
+.is-indigo{
+  --ic-1:#6248F0; --ic-2:#D3CAFC; --ic-ink:#5A3DEF;
+  --ic-bg1:#F0EDFE; --ic-bg2:#E3DDFD; --ic-ring:rgba(98,72,240,.13);
+}
+
+.is-plus,
+.is-green{
+  --ic-1:#0E9F6E; --ic-2:#AEE6CD; --ic-ink:#0B7F58;
+  --ic-bg1:#E9F8F1; --ic-bg2:#D7F1E5; --ic-ring:rgba(14,159,110,.14);
+}
+
+.is-amber{
+  /* The line is a shade darker than the others' because amber is the
+     lightest hue here and was the one graphic that missed 3:1 on its tile. */
+  --ic-1:#B8760C; --ic-2:#F8DCA4; --ic-ink:#9D650A;
+  --ic-bg1:#FEF6E7; --ic-bg2:#FDECCF; --ic-ring:rgba(184,118,12,.16);
+}
+
+.is-out,
+.is-rose{
+  --ic-1:#D6453B; --ic-2:#F7C3BE; --ic-ink:#CD352B;
+  --ic-bg1:#FDF0EF; --ic-bg2:#FBE2E0; --ic-ring:rgba(214,69,59,.14);
+}
+
+.is-teal{
+  --ic-1:#0E8C9F; --ic-2:#AEE0E8; --ic-ink:#0C7B8C;
+  --ic-bg1:#E8F7F9; --ic-bg2:#D5EFF3; --ic-ring:rgba(14,140,159,.14);
+}
+
 .row-icon{
-  width:42px;
-  height:42px;
-  border-radius:13px;
-  background:var(--tint);
-  color:var(--blue);
+  width:44px;
+  height:44px;
+  border-radius:14px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   flex:none;
+  transition:transform .25s cubic-bezier(.22,.8,.3,1);
 }
 
-.row-icon.is-plus{ background:#EAF7F0; color:#0E9F6E; }
-.row-icon.is-out{ background:#FDF0EF; color:#D6453B; }
+/* The tile leans in a little when the row it belongs to is one you can
+   follow. Rows that are only a record of something — the ledger — do not,
+   because there is nothing to lean toward. */
+a.row-card:hover .row-icon{ transform:scale(1.07) rotate(-3deg); }
 
 .row-body{ flex:1 1 auto; min-width:0; }
 
@@ -589,6 +653,9 @@ a.row-card:hover{
 a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
 /* A tag on a row — the survey's source, a payment's state. */
+/* The tag reads the same two custom properties the icon tiles do, so putting
+   a hue class on a row's tag and on its tile keeps the pair in step without
+   either of them naming a colour. Bare, it falls back to the brand blue. */
 .tag{
   display:inline-flex;
   align-items:center;
@@ -597,12 +664,16 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   border-radius:100px;
   font-size:11.5px;
   font-weight:600;
-  background:var(--tint);
-  color:var(--blue);
+  background:var(--ic-bg1,var(--tint));
+  /* --ic-ink, not --ic-1. The line in an icon is a graphic and clears at
+     3:1; 11.5px text needs 4.5:1, which none of these hues reached at the
+     weight the icons use — the tag that was here before this change did not
+     either, at 3.85:1 on its own tint. */
+  color:var(--ic-ink,#0368E7);
 }
 
-.tag.is-good{ background:#EAF7F0; color:#0E9F6E; }
-.tag.is-wait{ background:#FFF6E6; color:#B07908; }
+.tag.is-good{ background:#E9F8F1; color:#0B7F58; }
+.tag.is-wait{ background:#FEF6E7; color:#9D650A; }
 
 /* --------------------------------------------------------------------------
    Reward options — cards, not table rows
@@ -644,15 +715,17 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 }
 
 .reward-logo{
-  width:46px;
-  height:46px;
-  border-radius:13px;
-  background:var(--bg-soft);
+  width:48px;
+  height:48px;
+  border-radius:14px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   flex:none;
+  transition:transform .25s cubic-bezier(.22,.8,.3,1);
 }
+
+.reward-option:hover .reward-logo{ transform:scale(1.07) rotate(-3deg); }
 
 .reward-logo svg{ width:26px; height:26px; }
 
@@ -795,8 +868,6 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   width:52px;
   height:52px;
   border-radius:50%;
-  background:var(--tint);
-  color:var(--blue);
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -846,15 +917,13 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   width:54px;
   height:54px;
   border-radius:50%;
-  background:var(--tint);
-  color:var(--blue);
   display:inline-flex;
   align-items:center;
   justify-content:center;
   margin-bottom:16px;
 }
 
-.modal-mark.is-good{ background:#E7F7EE; color:#0E9F6E; }
+/* .is-green below gives it the green family; nothing else needed. */
 
 .app-modal h2{
   font-size:21px;
