@@ -560,9 +560,12 @@ a.row-card:hover{
    line icon in the nav and in buttons, where neither is set. One sprite,
    two appearances, decided by where the icon is rather than which id it uses.
 
-   The hues are the brand blue plus four that sit beside it rather than
-   compete: indigo for profiling, green for anything arriving in your balance,
-   amber for a reward, red for anything leaving.
+   Almost everything wears the brand tint. Colour is spent only where it
+   reports a STATE — green for value arriving, red for value leaving — and
+   never on a mere KIND of thing. A palette that varies by category teaches the
+   eye nothing, because the category is already written beside it in words; all
+   it does is make a calm screen loud. The other hues stay defined below
+   because the status tags use them, and because a future state may want one.
    -------------------------------------------------------------------------- */
 
 .row-icon,
@@ -570,10 +573,12 @@ a.row-card:hover{
 .empty-mark,
 .modal-mark{
   --ic-1:var(--blue);
-  --ic-2:#C2DCFB;
-  --ic-bg1:#EBF4FE;
-  --ic-bg2:#DAEAFD;
-  --ic-ring:rgba(8,116,252,.12);
+  --ic-2:#CFE3FB;
+  /* A shorter trip between the two stops than before. The tile should read as
+     one tinted surface, not as a little gradient of its own. */
+  --ic-bg1:#EDF5FE;
+  --ic-bg2:#E1EDFD;
+  --ic-ring:rgba(8,116,252,.10);
   --ic-ink:#0368E7;
   color:var(--ic-1);
   background:linear-gradient(145deg,var(--ic-bg1) 0%,var(--ic-bg2) 100%);
