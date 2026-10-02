@@ -1093,3 +1093,51 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 @media (max-width:991.98px){
   .app-body .primary-nav .nav-link{ justify-content:flex-start; }
 }
+
+/* --------------------------------------------------------------------------
+   Icon weight
+   --------------------------------------------------------------------------
+   The sprite carries no stroke-width of its own, so it is set here — and it
+   has to be set more than once.
+
+   A stroke is in viewBox units, and the box is 24 wide but rendered anywhere
+   from 13px to 26px. One value cannot serve that range: at 1.9 the 13px icons
+   draw a 1.03px line, which falls below what a screen can put down cleanly and
+   greys out into a smear, while the same value at 26px is a 2.06px line that
+   reads as heavy. So the weight goes up as the icon gets smaller, which is
+   what keeps the OPTICAL weight the same everywhere — the thing that actually
+   makes a set look like one set.
+
+   stroke-width is an inherited SVG property, so a value on the <svg> element
+   reaches the shapes inside the shadow tree that <use> builds. That only works
+   because no path in the sprite carries the attribute itself: a presentation
+   attribute would beat the inherited value.
+   -------------------------------------------------------------------------- */
+
+.app-body svg{
+  stroke-width:1.9;
+  /* Keeps the curves true at small sizes instead of letting the renderer trade
+     accuracy for speed on shapes this small. */
+  shape-rendering:geometricPrecision;
+}
+
+/* 13-16px: the meta line's clock, the segmented control, the small buttons. */
+.row-meta svg,
+.segment svg,
+.copy-btn svg,
+.back-link svg,
+.stat-trend svg,
+.account-btn > svg,
+.btn svg{ stroke-width:2.35; }
+
+/* 17-18px: the menu and the row chevrons. */
+.primary-nav .nav-link svg,
+.menu-item svg,
+.row-go svg{ stroke-width:2.15; }
+
+/* 21px and up: the tiles and the marks, where 1.9 is already a 1.7px line. */
+.row-icon svg,
+.reward-logo svg,
+.empty-mark svg,
+.modal-mark svg,
+.icon-btn svg{ stroke-width:1.85; }
