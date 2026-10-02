@@ -297,7 +297,10 @@
   overflow:hidden;
   color:var(--white);
   border:0;
-  background:linear-gradient(120deg,#0874FC 0%,#1F5EF0 52%,#005FE0 100%);
+  /* Deeper than the brand blue and than the homepage's closing band. These
+     panels carry white text, a white button and the folds of light, and at
+     the lighter blue all three sat close to the ground they were on. */
+  background:linear-gradient(135deg,#1A4FC9 0%,#103A96 48%,#0A2460 100%);
   padding:30px 32px;
   display:flex;
   align-items:center;
@@ -312,7 +315,7 @@
   position:absolute;
   inset:0;
   background:url("../assets/cta-waves.svg") center / cover no-repeat;
-  opacity:.9;
+  opacity:1;
   pointer-events:none;
 }
 
@@ -497,11 +500,29 @@
    Rows — surveys, ledger entries, anything that is a list of one-line facts
    -------------------------------------------------------------------------- */
 
+/* A plain stack by default — a ledger is a sequence and belongs in one
+   column. The dashboard's open surveys are not a sequence, they are a set to
+   choose from, so that list opts into two across. */
 .rows{
   display:flex;
   flex-direction:column;
   gap:10px;
 }
+
+.rows.is-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+@media (max-width:767.98px){
+  .rows.is-grid{ grid-template-columns:1fr; }
+}
+
+/* In the grid the payout is what you are choosing between, so it is the
+   largest thing on the card rather than a line of the same weight as the
+   survey number underneath it. */
+.rows.is-grid .row-pay{ font-size:26px; }
 
 .row-card{
   display:flex;
@@ -603,12 +624,28 @@ a.row-card:hover .row-icon{ transform:scale(1.07) rotate(-3deg); }
 
 .row-pay{
   display:block;
-  font-size:17px;
+  font-size:19px;
   font-weight:800;
   letter-spacing:-.02em;
   color:var(--navy);
   font-variant-numeric:tabular-nums;
 }
+
+/* "points" after the figure, on every surface that shows one. Sized in em so
+   it keeps its proportion wherever the figure is scaled up or down. */
+.unit{
+  font-size:.52em;
+  font-weight:600;
+  letter-spacing:0;
+  color:var(--body);
+  margin-left:.28em;
+}
+
+.row-end .unit,
+.stat-value .unit{ color:var(--body); }
+
+.balance-value .unit,
+.row-end.is-plus .unit{ color:inherit; opacity:.72; }
 
 .row-title{
   display:block;
