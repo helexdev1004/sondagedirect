@@ -6,6 +6,14 @@
   --navy:#0B1437;
   --blue:#0874FC;
   --blue-deep:#1F5EF0;
+
+  /* The solid button's own face. It used to be --blue, which is pitched to be
+     read as a LINE — a link, an icon, a figure — against white or a pale
+     tint. Reversed into a filled button it has to hold a white label instead,
+     and at #0874FC that label sat at 4.27:1, under the bar for its size. This
+     is the same hue taken down until it clears. */
+  --blue-btn:#0B55CE;
+  --blue-btn-hover:#0A46A8;
   --tint:#E8F4FD;
   --bg-soft:#F3F9FE;
   --body:#5F6787;
@@ -120,14 +128,18 @@ a{ text-decoration:none; }
 }
 
 .btn-brand{
-  background:var(--blue);
+  background:var(--blue-btn);
   color:var(--white);
-  box-shadow:0 8px 22px rgba(8,116,252,.25);
+  box-shadow:0 8px 22px rgba(11,85,206,.28);
 }
 
+/* Darker on hover, not lighter. The old hover was --blue-deep, which is
+   brighter than the new face — so pointing at the button would have lifted it
+   toward the colour it had just been taken off. */
 .btn-brand:hover{
-  background:var(--blue-deep);
+  background:var(--blue-btn-hover);
   color:var(--white);
+  box-shadow:0 10px 26px rgba(10,70,168,.34);
 }
 
 .btn-brand:hover .arrow{ transform:translate(3px,1px); }
