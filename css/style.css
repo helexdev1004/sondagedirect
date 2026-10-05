@@ -1620,3 +1620,104 @@ a{ text-decoration:none; }
     transition-duration:.001ms !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Legal pages
+   --------------------------------------------------------------------------
+   Terms and the privacy policy. Continuous prose under plain headings, which
+   is how the source documents are written and how they are set here — no
+   numbered clauses, no section index, no accordion. A legal page is read
+   start to finish or searched with ctrl-F, and both of those are hindered by
+   chrome. The only concessions to reading are a narrow measure and headings
+   you can see coming.
+   -------------------------------------------------------------------------- */
+
+.legal-main{
+  background:linear-gradient(180deg,var(--bg-soft) 0%,var(--white) 420px);
+  padding-bottom:90px;
+}
+
+.legal-head{
+  max-width:760px;
+  margin:0 auto;
+  padding:64px 0 0;
+}
+
+.legal-title{
+  font-size:42px;
+  line-height:1.15;
+  margin-top:20px;
+}
+
+.legal-updated{
+  color:var(--body);
+  font-size:14.5px;
+  margin-top:14px;
+}
+
+/* 68 characters or so. Past about 75 the eye loses the start of the next line
+   on the way back, and a document this long is exactly where that tells. */
+.legal{
+  max-width:760px;
+  margin:0 auto;
+  padding-top:14px;
+}
+
+.legal h2{
+  font-size:21px;
+  line-height:1.3;
+  margin:44px 0 16px;
+  scroll-margin-top:110px;
+}
+
+.legal h2:first-child{ margin-top:36px; }
+
+.legal p{
+  color:var(--body);
+  font-size:15.5px;
+  line-height:1.8;
+  margin-bottom:18px;
+}
+
+.legal ul{
+  margin:0 0 18px;
+  padding-left:22px;
+}
+
+.legal li{
+  color:var(--body);
+  font-size:15.5px;
+  line-height:1.8;
+  margin-bottom:9px;
+}
+
+.legal li::marker{ color:#A9BDD6; }
+
+.legal strong{ color:var(--navy); font-weight:600; }
+
+.legal a{
+  color:var(--blue);
+  text-decoration:underline;
+  text-decoration-color:rgba(8,116,252,.3);
+  text-underline-offset:3px;
+  transition:text-decoration-color .2s ease;
+}
+
+.legal a:hover{ text-decoration-color:var(--blue); }
+
+/* The two documents refer to each other constantly, so each ends with the way
+   to the other rather than making you go back to the footer for it. */
+.legal-switch{
+  margin-top:48px;
+  padding-top:26px;
+  border-top:1px solid var(--border);
+  font-size:15px;
+}
+
+@media (max-width:767.98px){
+  .legal-head{ padding-top:44px; }
+  .legal-title{ font-size:31px; }
+  .legal h2{ font-size:19px; margin:36px 0 14px; }
+  .legal p,
+  .legal li{ font-size:15px; }
+}
