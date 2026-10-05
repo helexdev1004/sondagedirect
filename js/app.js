@@ -223,4 +223,92 @@
     });
   }
 
+  /* ----------------------------------------------------- editing a detail */
+
+  // Each row opens in place. One at a time, because two rows open at once is
+  // two sets of Save buttons and no way to tell which one Enter belongs to.
+  var details = [].slice.call(document.querySelectorAll('.detail'));
+
+  function closeDetail(row) {
+    var form = row.querySelector('.detail-form');
+    var edit = row.querySelector('.detail-edit');
+    if (!form) return;
+    form.hidden = true;
+    if (edit) { edit.hidden = false; }
+  }
+
+  details.forEach(function (row) {
+    var form = row.querySelector('.detail-form');
+    var edit = row.querySelector('.detail-edit');
+    var value = row.querySelector('[data-value]');
+    if (!form || !edit) return;
+
+    var field = form.querySelector('.detail-input');
+    var was = field ? field.value : '';
+
+    edit.addEventListener('click', function () {
+      details.forEach(function (other) { if (other !== row) closeDetail(other); });
+      form.hidden = false;
+      edit.hidden = true;
+      if (field) { field.focus(); if (field.select) field.select(); }
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (field && value) {
+        // A password is never echoed back into the page. The row keeps its
+        // dots and says nothing about what the new one is.
+        if (field.type !== 'password') {
+          value.textContent = field.value;
+        }
+        was = field.value;
+      }
+      closeDetail(row);
+      edit.focus();
+    });
+
+    form.addEventListener('reset', function () { closeDetail(row); });
+
+    var cancel = form.querySelector('[data-cancel]');
+    if (cancel) {
+      cancel.addEventListener('click', function () {
+        if (field) field.value = was;   // put back what was there, not what was typed
+        closeDetail(row);
+        edit.focus();
+      });
+    }
+
+    // Escape closes the row the same way Cancel does. Without it the only way
+    // out of an open field is to find a small button with the mouse.
+    form.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation();
+      if (field) field.value = was;
+      closeDetail(row);
+      edit.focus();
+    });
+  });
+
+  /* -------------------------------------------------- deleting an account */
+
+  // The button stays dead until the word is typed. A single click is too easy
+  // to reach by accident for the one action in the app with no way back.
+  var word = document.querySelector('[data-confirm-word]');
+  var go = document.querySelector('[data-confirm-delete]');
+
+  if (word && go) {
+    var wanted = word.getAttribute('data-confirm-word');
+    var check = function () {
+      go.disabled = word.value.trim().toUpperCase() !== wanted;
+    };
+    word.addEventListener('input', check);
+    check();
+
+    var box = word.closest('.modal');
+    if (box) {
+      box.addEventListener('hidden.bs.modal', function () { word.value = ''; check(); });
+      box.addEventListener('shown.bs.modal', function () { word.focus(); });
+    }
+  }
+
 })();

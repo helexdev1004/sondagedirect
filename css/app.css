@@ -1243,6 +1243,10 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
    -------------------------------------------------------------------------- */
 
 .balance-bar{
+  /* Explicitly a block. It is a <span>, and on the dashboard it only took its
+     width and height because the flex parent blockified it — dropped into a
+     plain div on the profile screen it stayed inline and collapsed to nothing. */
+  display:block;
   width:100%;
   height:7px;
   border-radius:100px;
@@ -1262,3 +1266,279 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 }
 
 .balance-hero .balance-gap{ margin-top:0; }
+
+/* --------------------------------------------------------------------------
+   The profile screen
+   -------------------------------------------------------------------------- */
+
+.profile-hero{
+  align-items:center;
+  gap:40px;
+}
+
+.whoami{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  flex:1 1 300px;
+}
+
+.avatar-xl{
+  width:72px;
+  height:72px;
+  font-size:24px;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.26);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+
+.whoami-name{
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-.025em;
+  color:var(--white);
+  margin-top:4px;
+  line-height:1.2;
+}
+
+.whoami-mail,
+.whoami-since{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:13.5px;
+  color:rgba(255,255,255,.82);
+  margin-top:5px;
+}
+
+.whoami-since{ color:rgba(255,255,255,.62); }
+
+.strength{ flex:1 1 280px; }
+
+.strength-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.strength-pct{
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:var(--white);
+  font-variant-numeric:tabular-nums;
+}
+
+.strength .balance-bar{ margin:10px 0 10px; }
+
+/* --------------------------------------------------------------------------
+   Editable details
+   --------------------------------------------------------------------------
+   Edited in place rather than in a dialog. A modal for one field puts a whole
+   screen between you and a two-character change, and loses the other seven
+   fields while you make it — the point of a list like this is that you can see
+   what you are changing it relative to.
+   -------------------------------------------------------------------------- */
+
+.details{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.detail{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex-wrap:wrap;
+  padding:16px 20px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:16px;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+
+.detail:focus-within{
+  border-color:#BFDCFA;
+  box-shadow:0 10px 26px rgba(28,82,160,.09);
+}
+
+.detail-main{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+.detail-label{
+  display:block;
+  color:var(--body);
+  font-size:12.5px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+.detail-value{
+  display:block;
+  font-size:15.5px;
+  font-weight:600;
+  color:var(--navy);
+  margin-top:3px;
+  overflow-wrap:anywhere;
+}
+
+.detail.is-danger .detail-value{
+  font-weight:400;
+  font-size:14px;
+  color:var(--body);
+  line-height:1.6;
+  max-width:62ch;
+}
+
+.detail-edit{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid var(--border);
+  background:var(--white);
+  border-radius:11px;
+  padding:9px 15px;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--navy);
+  cursor:pointer;
+  transition:border-color .2s ease, color .2s ease, background-color .2s ease;
+}
+
+.detail-edit:hover{ border-color:#BFDCFA; color:var(--blue); }
+
+.detail-edit.is-danger{ color:#D6453B; }
+
+.detail-edit.is-danger:hover{
+  border-color:#F3BDB8;
+  background:#FDF4F3;
+  color:#D6453B;
+}
+
+/* The form takes the whole width below the row rather than squeezing in
+   beside the label, so a long value and its buttons are not fighting for the
+   same 200px. */
+.detail-form{
+  flex:1 0 100%;
+  padding-top:14px;
+  margin-top:2px;
+  border-top:1px solid var(--border);
+}
+
+.detail-input{
+  width:100%;
+  max-width:420px;
+  font:inherit;
+  font-size:15px;
+  color:var(--navy);
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:11px 14px;
+  transition:border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.detail-input:focus{
+  outline:none;
+  background:var(--white);
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(8,116,252,.14);
+}
+
+.detail-hint{
+  color:var(--body);
+  font-size:13px;
+  line-height:1.6;
+  margin-top:9px;
+  max-width:52ch;
+}
+
+.detail-actions{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+  flex-wrap:wrap;
+}
+
+.detail-actions .btn{ padding:10px 20px; }
+
+/* --------------------------------------------------------------------------
+   Profiling topics
+   -------------------------------------------------------------------------- */
+
+.topics{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+@media (max-width:767.98px){
+  .topics{ grid-template-columns:1fr; }
+}
+
+.topic{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  width:100%;
+  text-align:left;
+  padding:15px 18px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:14px;
+  cursor:pointer;
+  transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.topic:hover{
+  border-color:#BFDCFA;
+  box-shadow:0 10px 26px rgba(28,82,160,.09);
+  transform:translateY(-2px);
+}
+
+.topic-name{
+  flex:1 1 auto;
+  font-size:14.5px;
+  font-weight:600;
+  color:var(--navy);
+}
+
+.topic .row-go{ color:#9FB4CE; }
+.topic:hover .row-go{ color:var(--blue); transform:translateX(3px); }
+
+/* --------------------------------------------------------------------------
+   The one destructive button in the app
+   -------------------------------------------------------------------------- */
+
+.btn-danger-solid{
+  background:#C9372C;
+  color:var(--white);
+  box-shadow:0 8px 22px rgba(201,55,44,.26);
+}
+
+.btn-danger-solid:hover{
+  background:#A82C23;
+  color:var(--white);
+}
+
+.btn-danger-solid:disabled{
+  background:#E3B4AF;
+  box-shadow:none;
+  cursor:not-allowed;
+}
+
+@media (max-width:767.98px){
+  .profile-hero{ gap:26px; }
+  .whoami{ gap:16px; }
+  .avatar-xl{ width:58px; height:58px; font-size:19px; }
+  .whoami-name{ font-size:22px; }
+  .detail{ gap:12px; }
+  .detail-edit{ padding:8px 13px; }
+}
