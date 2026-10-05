@@ -1542,3 +1542,189 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   .detail{ gap:12px; }
   .detail-edit{ padding:8px 13px; }
 }
+
+/* --------------------------------------------------------------------------
+   A survey row
+   --------------------------------------------------------------------------
+   What you are actually doing on this list is weighing pay against time, so
+   the row is built to let you do that without reading it twice: the figure
+   first, the length as four bars you can compare at a glance, and the rate the
+   two of them work out to. A number alone makes you do the arithmetic; four
+   lit bars do not.
+   -------------------------------------------------------------------------- */
+
+.survey{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding:16px 20px 16px 26px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  transition:border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+
+.survey:hover{
+  border-color:#BFDCFA;
+  box-shadow:0 12px 30px rgba(28,82,160,.11);
+  transform:translateY(-2px);
+}
+
+/* The category, as an edge rather than a block of colour. It grows to the full
+   height of the row under the pointer, which is the whole hover state doing
+   one thing instead of four. */
+.survey::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:12px;
+  bottom:12px;
+  width:4px;
+  border-radius:0 4px 4px 0;
+  background:var(--ic-1,var(--blue));
+  transition:top .25s cubic-bezier(.22,.8,.3,1), bottom .25s cubic-bezier(.22,.8,.3,1);
+}
+
+.survey:hover::before{ top:0; bottom:0; }
+
+.survey .row-icon{ transition:transform .25s cubic-bezier(.22,.8,.3,1); }
+.survey:hover .row-icon{ transform:scale(1.07) rotate(-3deg); }
+
+/* Fixed, so the figures stack into a straight edge down the list. */
+.survey-pay{
+  flex:none;
+  width:124px;
+  font-size:23px;
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:var(--navy);
+  font-variant-numeric:tabular-nums;
+}
+
+.survey-id{
+  flex:none;
+  width:96px;
+  color:var(--body);
+  font-size:13.5px;
+  font-variant-numeric:tabular-nums;
+}
+
+.survey-len{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  color:var(--body);
+  font-size:13.5px;
+  white-space:nowrap;
+}
+
+.len-meter{
+  display:inline-flex;
+  align-items:flex-end;
+  gap:3px;
+}
+
+/* Rising bars, so length reads as a quantity even before the lit ones are
+   counted. */
+.len-meter i{
+  display:block;
+  width:4px;
+  border-radius:2px;
+  background:#DEE8F4;
+}
+
+.len-meter i:nth-child(1){ height:7px; }
+.len-meter i:nth-child(2){ height:10px; }
+.len-meter i:nth-child(3){ height:13px; }
+.len-meter i:nth-child(4){ height:16px; }
+
+.len-meter i.on{ background:var(--ic-1,var(--blue)); opacity:.85; }
+
+/* Pushed to the right, away from the three facts it is derived from, so it
+   reads as a conclusion rather than a fourth fact. */
+.survey-rate{
+  margin-left:auto;
+  flex:none;
+  display:inline-flex;
+  align-items:baseline;
+  gap:1px;
+  padding:5px 12px;
+  border-radius:100px;
+  background:var(--ic-bg1,var(--tint));
+  color:var(--ic-ink,#0368E7);
+  font-size:13px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+.rate-unit{
+  font-size:.82em;
+  font-weight:600;
+  opacity:.72;
+}
+
+/* A chevron at rest; the word arrives with the pointer. Animating max-width
+   rather than display, so it slides out of the chevron instead of appearing
+   beside it and shoving everything along. */
+/* The width the word will need is reserved from the start, so it slides into
+   space that was already there. Without the min-width the whole right-hand
+   side of the row — the rate chip especially — got shoved left the moment the
+   pointer arrived, which is a lot of movement to pay for one word. */
+.survey-go{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
+  min-width:72px;
+  color:var(--blue-btn);
+  font-size:13.5px;
+  font-weight:700;
+}
+
+.go-word{
+  display:inline-block;
+  max-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  opacity:0;
+  transition:max-width .28s cubic-bezier(.22,.8,.3,1), opacity .2s ease, margin-right .28s ease;
+}
+
+.survey:hover .go-word,
+.survey:focus-visible .go-word{
+  max-width:60px;
+  opacity:1;
+  margin-right:6px;
+}
+
+.survey-go svg{
+  transition:transform .25s cubic-bezier(.22,.8,.3,1);
+  color:#9FB4CE;
+}
+
+.survey:hover .survey-go svg{ transform:translateX(2px); color:var(--blue-btn); }
+
+@media (max-width:991.98px){
+  .survey-id{ width:auto; }
+  .survey-pay{ width:108px; font-size:21px; }
+  .survey{ gap:14px; }
+}
+
+/* Below this there is no room for one line, so the figure keeps the first row
+   and everything it is weighed against goes under it. */
+@media (max-width:767.98px){
+  .survey{
+    flex-wrap:wrap;
+    gap:6px 14px;
+    padding:15px 16px 15px 22px;
+  }
+  .survey-pay{ width:auto; }
+  .survey-rate{ margin-left:auto; }
+  .survey-id,
+  .survey-len{ order:3; }
+  .survey-id{ padding-left:58px; }
+  .survey-go{ order:4; margin-left:auto; min-width:0; }
+  .survey .go-word{ max-width:60px; opacity:1; margin-right:6px; }
+}
