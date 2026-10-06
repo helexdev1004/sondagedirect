@@ -595,6 +595,7 @@ a.row-card:hover{
   --ic-bg2:#E1EDFD;
   --ic-ring:rgba(8,116,252,.10);
   --ic-ink:#0368E7;
+  --ic-solid1:#2C86FF; --ic-solid2:#0B55CE; --ic-glow:rgba(11,85,206,.42);
   color:var(--ic-1);
   background:linear-gradient(145deg,var(--ic-bg1) 0%,var(--ic-bg2) 100%);
   box-shadow:inset 0 0 0 1px var(--ic-ring);
@@ -603,6 +604,7 @@ a.row-card:hover{
 .is-indigo,
 .is-profiling{
   --ic-1:#6248F0; --ic-2:#D3CAFC; --ic-ink:#5A3DEF;
+  --ic-solid1:#7C64F5; --ic-solid2:#4A2FD6; --ic-glow:rgba(74,47,214,.42);
   --ic-bg1:#F0EDFE; --ic-bg2:#E3DDFD; --ic-ring:rgba(98,72,240,.13);
 }
 
@@ -610,6 +612,7 @@ a.row-card:hover{
 .is-green,
 .is-referral{
   --ic-1:#0E9F6E; --ic-2:#AEE6CD; --ic-ink:#0B7F58;
+  --ic-solid1:#19B37E; --ic-solid2:#0A7B54; --ic-glow:rgba(10,123,84,.42);
   --ic-bg1:#E9F8F1; --ic-bg2:#D7F1E5; --ic-ring:rgba(14,159,110,.14);
 }
 
@@ -618,18 +621,21 @@ a.row-card:hover{
   /* The line is a shade darker than the others' because amber is the
      lightest hue here and was the one graphic that missed 3:1 on its tile. */
   --ic-1:#B8760C; --ic-2:#F8DCA4; --ic-ink:#9D650A;
+  --ic-solid1:#D08A14; --ic-solid2:#96600A; --ic-glow:rgba(150,96,10,.42);
   --ic-bg1:#FEF6E7; --ic-bg2:#FDECCF; --ic-ring:rgba(184,118,12,.16);
 }
 
 .is-out,
 .is-rose{
   --ic-1:#D6453B; --ic-2:#F7C3BE; --ic-ink:#CD352B;
+  --ic-solid1:#E05449; --ic-solid2:#B32F26; --ic-glow:rgba(179,47,38,.42);
   --ic-bg1:#FDF0EF; --ic-bg2:#FBE2E0; --ic-ring:rgba(214,69,59,.14);
 }
 
 .is-teal,
 .is-payout{
   --ic-1:#0E8C9F; --ic-2:#AEE0E8; --ic-ink:#0C7B8C;
+  --ic-solid1:#15A3B8; --ic-solid2:#0B6F7E; --ic-glow:rgba(11,111,126,.42);
   --ic-bg1:#E8F7F9; --ic-bg2:#D5EFF3; --ic-ring:rgba(14,140,159,.14);
 }
 
@@ -1543,91 +1549,135 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   .detail-edit{ padding:8px 13px; }
 }
 
+
 /* --------------------------------------------------------------------------
    A survey row
    --------------------------------------------------------------------------
-   What you are actually doing on this list is weighing pay against time, so
-   the row is built to let you do that without reading it twice: the figure
-   first, the length as four bars you can compare at a glance, and the rate the
-   two of them work out to. A number alone makes you do the arithmetic; four
-   lit bars do not.
+   Built on the shape VivaPoll uses, which is heavier than what was here and
+   reads from further away — right for a list you are choosing from rather than
+   reading. A SOLID tile instead of a pale tint, the figure stacked over the
+   facts instead of beside them, a round badge on each fact, and a circular
+   button rather than a bare chevron.
+
+   Kept from the version before it: the length as four bars, the rate the pay
+   and the time work out to, and the category as an edge down the left.
    -------------------------------------------------------------------------- */
 
 .survey{
   position:relative;
   display:flex;
   align-items:center;
-  gap:20px;
-  padding:16px 20px 16px 26px;
+  gap:18px;
+  padding:16px 18px 16px 26px;
   background:var(--white);
   border:1px solid var(--border);
-  border-radius:16px;
+  border-radius:18px;
+  box-shadow:0 8px 24px rgba(28,82,160,.05);
   overflow:hidden;
-  transition:border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+  transition:transform .25s cubic-bezier(.22,.8,.3,1), box-shadow .25s ease,
+             border-color .25s ease, background .3s ease;
 }
 
+/* The wash comes in from the right on hover, in the row's own category colour.
+   A tint rather than a tone change: the card stays white where the text is and
+   only picks up colour where there is nothing to read. */
 .survey:hover{
-  border-color:#BFDCFA;
-  box-shadow:0 12px 30px rgba(28,82,160,.11);
-  transform:translateY(-2px);
+  transform:translateY(-3px);
+  border-color:#C9E0FB;
+  box-shadow:0 18px 38px rgba(28,82,160,.14);
+  background:linear-gradient(100deg, var(--white) 58%, var(--ic-bg1,var(--tint)) 100%);
 }
 
-/* The category, as an edge rather than a block of colour. It grows to the full
-   height of the row under the pointer, which is the whole hover state doing
-   one thing instead of four. */
 .survey::before{
   content:"";
   position:absolute;
   left:0;
-  top:12px;
-  bottom:12px;
+  top:14px;
+  bottom:14px;
   width:4px;
   border-radius:0 4px 4px 0;
-  background:var(--ic-1,var(--blue));
+  background:var(--ic-solid2,var(--blue));
   transition:top .25s cubic-bezier(.22,.8,.3,1), bottom .25s cubic-bezier(.22,.8,.3,1);
 }
 
 .survey:hover::before{ top:0; bottom:0; }
 
-.survey .row-icon{ transition:transform .25s cubic-bezier(.22,.8,.3,1); }
-.survey:hover .row-icon{ transform:scale(1.07) rotate(-3deg); }
-
-/* Fixed, so the figures stack into a straight edge down the list. */
-.survey-pay{
+/* Filled, not tinted. The icon inside goes white — the two custom properties
+   the sprite reads are reset here, so the same symbol that is a blue line on a
+   pale tile is a white line on a solid one, with no second sprite. */
+.survey-icon{
+  --ic-1:#FFFFFF;
+  --ic-2:rgba(255,255,255,.28);
   flex:none;
-  width:124px;
-  font-size:23px;
+  display:grid;
+  place-items:center;
+  width:56px;
+  height:56px;
+  border-radius:17px;
+  background:linear-gradient(145deg, var(--ic-solid1,#2C86FF), var(--ic-solid2,#0B55CE));
+  color:var(--white);
+  box-shadow:0 8px 18px -5px var(--ic-glow,rgba(11,85,206,.42));
+  transition:transform .25s cubic-bezier(.22,.8,.3,1), box-shadow .25s ease;
+}
+
+.survey:hover .survey-icon{
+  transform:translateY(-2px) rotate(-3deg);
+  box-shadow:0 14px 26px -6px var(--ic-glow,rgba(11,85,206,.42));
+}
+
+.survey-body{
+  flex:1 1 auto;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.survey-pay{
+  font-size:26px;
   font-weight:800;
-  letter-spacing:-.02em;
+  letter-spacing:-.025em;
+  line-height:1.15;
   color:var(--navy);
   font-variant-numeric:tabular-nums;
 }
 
-.survey-id{
-  flex:none;
-  width:96px;
+.survey-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px 22px;
   color:var(--body);
   font-size:13.5px;
+}
+
+.fact{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  white-space:nowrap;
   font-variant-numeric:tabular-nums;
 }
 
-.survey-len{
-  display:inline-flex;
-  align-items:center;
-  gap:9px;
-  color:var(--body);
-  font-size:13.5px;
-  white-space:nowrap;
+/* A small round chip on each fact, which is what stops the line reading as one
+   run-on string of numbers. */
+.fact-badge{
+  display:grid;
+  place-items:center;
+  width:23px;
+  height:23px;
+  border-radius:50%;
+  flex:none;
+  background:var(--ic-bg1,var(--tint));
+  color:var(--ic-ink,#0368E7);
 }
 
 .len-meter{
   display:inline-flex;
   align-items:flex-end;
   gap:3px;
+  margin-right:2px;
 }
 
-/* Rising bars, so length reads as a quantity even before the lit ones are
-   counted. */
 .len-meter i{
   display:block;
   width:4px;
@@ -1640,23 +1690,21 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 .len-meter i:nth-child(3){ height:13px; }
 .len-meter i:nth-child(4){ height:16px; }
 
-.len-meter i.on{ background:var(--ic-1,var(--blue)); opacity:.85; }
+.len-meter i.on{ background:var(--ic-solid2,var(--blue)); }
 
-/* Pushed to the right, away from the three facts it is derived from, so it
-   reads as a conclusion rather than a fourth fact. */
 .survey-rate{
-  margin-left:auto;
   flex:none;
   display:inline-flex;
   align-items:baseline;
   gap:1px;
-  padding:5px 12px;
+  padding:6px 13px;
   border-radius:100px;
   background:var(--ic-bg1,var(--tint));
   color:var(--ic-ink,#0368E7);
   font-size:13px;
   font-weight:700;
   font-variant-numeric:tabular-nums;
+  transition:background-color .25s ease, color .25s ease;
 }
 
 .rate-unit{
@@ -1665,66 +1713,38 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   opacity:.72;
 }
 
-/* A chevron at rest; the word arrives with the pointer. Animating max-width
-   rather than display, so it slides out of the chevron instead of appearing
-   beside it and shoving everything along. */
-/* The width the word will need is reserved from the start, so it slides into
-   space that was already there. Without the min-width the whole right-hand
-   side of the row — the rate chip especially — got shoved left the moment the
-   pointer arrived, which is a lot of movement to pay for one word. */
+/* A circle that fills with the row's colour as you arrive, rather than a
+   chevron that only moves. It is the one piece of the row that changes state
+   outright, which is what makes the whole card read as live. */
 .survey-go{
   flex:none;
-  display:inline-flex;
-  align-items:center;
-  justify-content:flex-end;
-  min-width:72px;
-  color:var(--blue-btn);
-  font-size:13.5px;
-  font-weight:700;
+  display:grid;
+  place-items:center;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:var(--ic-bg1,var(--tint));
+  color:var(--ic-ink,#0368E7);
+  transition:background .25s ease, color .25s ease, transform .25s cubic-bezier(.22,.8,.3,1);
 }
 
-.go-word{
-  display:inline-block;
-  max-width:0;
-  overflow:hidden;
-  white-space:nowrap;
-  opacity:0;
-  transition:max-width .28s cubic-bezier(.22,.8,.3,1), opacity .2s ease, margin-right .28s ease;
+.survey:hover .survey-go{
+  background:linear-gradient(145deg, var(--ic-solid1,#2C86FF), var(--ic-solid2,#0B55CE));
+  color:var(--white);
+  transform:translateX(4px);
 }
 
-.survey:hover .go-word,
-.survey:focus-visible .go-word{
-  max-width:60px;
-  opacity:1;
-  margin-right:6px;
-}
-
-.survey-go svg{
-  transition:transform .25s cubic-bezier(.22,.8,.3,1);
-  color:#9FB4CE;
-}
-
-.survey:hover .survey-go svg{ transform:translateX(2px); color:var(--blue-btn); }
-
-@media (max-width:991.98px){
-  .survey-id{ width:auto; }
-  .survey-pay{ width:108px; font-size:21px; }
-  .survey{ gap:14px; }
-}
-
-/* Below this there is no room for one line, so the figure keeps the first row
-   and everything it is weighed against goes under it. */
 @media (max-width:767.98px){
   .survey{
+    gap:14px;
+    padding:14px 14px 14px 20px;
     flex-wrap:wrap;
-    gap:6px 14px;
-    padding:15px 16px 15px 22px;
   }
-  .survey-pay{ width:auto; }
-  .survey-rate{ margin-left:auto; }
-  .survey-id,
-  .survey-len{ order:3; }
-  .survey-id{ padding-left:58px; }
-  .survey-go{ order:4; margin-left:auto; min-width:0; }
-  .survey .go-word{ max-width:60px; opacity:1; margin-right:6px; }
+  .survey-icon{ width:48px; height:48px; border-radius:14px; }
+  .survey-pay{ font-size:23px; }
+  .survey-meta{ gap:3px 16px; font-size:13px; }
+  /* The rate and the button drop to their own line rather than squeezing the
+     facts into two words each. */
+  .survey-rate{ order:3; margin-left:62px; }
+  .survey-go{ order:4; margin-left:auto; width:36px; height:36px; }
 }
