@@ -1018,39 +1018,6 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 .modal-actions .btn{ flex:1 1 140px; }
 
 /* --------------------------------------------------------------------------
-   App footer
-   -------------------------------------------------------------------------- */
-
-.app-footer{
-  flex:none;
-  border-top:1px solid var(--border);
-  background:var(--white);
-  padding:22px 0;
-}
-
-.app-footer-inner{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:18px;
-  flex-wrap:wrap;
-}
-
-.app-footer p,
-.app-footer a{
-  font-size:13px;
-  color:var(--body);
-}
-
-.app-footer ul{
-  display:flex;
-  gap:22px;
-  flex-wrap:wrap;
-}
-
-.app-footer a:hover{ color:var(--blue); }
-
-/* --------------------------------------------------------------------------
    Responsive
    -------------------------------------------------------------------------- */
 

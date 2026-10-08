@@ -2080,3 +2080,43 @@ a{ text-decoration:none; }
   .fields{ grid-template-columns:1fr; }
   .auth-bar-aside .btn{ padding:10px 16px; font-size:14px; }
 }
+
+/* --------------------------------------------------------------------------
+   The compact footer
+   --------------------------------------------------------------------------
+   Lives here rather than in app.css because it is not the app's. Sign in and
+   sign up use it too, and they do not load app.css — so from their side the
+   whole thing was unstyled: a column of browser-default purple links under a
+   line of serif. Both halves of the site load this file, so this is where
+   anything shared between them belongs.
+   -------------------------------------------------------------------------- */
+
+.app-footer{
+  flex:none;
+  border-top:1px solid var(--border);
+  background:var(--white);
+  padding:22px 0;
+}
+
+.app-footer-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+}
+
+.app-footer p,
+.app-footer a{
+  font-size:13px;
+  color:var(--body);
+}
+
+.app-footer ul{
+  display:flex;
+  gap:22px;
+  flex-wrap:wrap;
+}
+
+.app-footer a:hover{ color:var(--blue); }
+
