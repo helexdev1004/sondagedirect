@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
 <script>
   /* Hides what is about to animate, before anything paints. animations.js
      removes this the instant it takes over; if it never does — blocked CDN,
@@ -60,32 +61,28 @@
 
 <main class="auth-main">
   <div class="container">
-    <div class="auth-row is-wide">
+    <div class="auth-stage">
 
-      <!-- Rises rather than slides in. The engine swaps a sideways reveal for a
-           rise below 768px, but the panel goes full-width at 992 — so between the
-           two it was still being offset 46px to the left of a block that already
-           filled the row, and hanging over the edge until it played. -->
-      <aside class="auth-panel" data-anim="up">
-        <h2 class="auth-panel-title">Share your opinion.<br>Earn rewards.</h2>
-        <p class="auth-panel-sub">Answer short surveys on the things you already have views about, and turn a few spare minutes into something worth having.</p>
-        <ul class="auth-points list-unstyled mb-0">
-          <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>Surveys pay between 5 and 30 points, and most take under ten minutes.</span></li>
-          <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>Exchange 275 points for a gift card, PayPal or a virtual Visa.</span></li>
-          <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>We never ask for your bank details, and joining is free.</span></li>
-        </ul>
-        <p class="auth-note">Points never expire. You decide which surveys to take and can stop at any time.</p>
+      <!-- One sheet of glass divided by a hairline, not two cards. Sign-up
+           has to make an argument as well as take an answer, and standing
+           them on the same pane says they are one thing. -->
+      <div class="auth-card glass is-split" data-anim="up">
 
-        <!-- The panel was three short paragraphs beside a nine-field form, so
-             it stopped less than half way down the row. This finishes it, and
-             draws the figure the second bullet names rather than repeating it
-             in words. -->
-        <img class="auth-panel-art" src="assets/auth-reward.svg" alt="" width="400" height="292">
-      </aside>
+        <aside class="auth-pitch">
+          <h2 class="auth-pitch-title">Share your opinion.<br>Earn rewards.</h2>
+          <p class="auth-pitch-sub">Answer short surveys on the things you already have views about, and turn a few spare minutes into something worth having.</p>
+          <ul class="auth-points list-unstyled mb-0">
+            <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>Surveys pay between 5 and 30 points, and most take under ten minutes.</span></li>
+            <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>Exchange 275 points for a gift card, PayPal or a virtual Visa.</span></li>
+            <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>We never ask for your bank details, and joining is free.</span></li>
+          </ul>
+          <img class="auth-pitch-art" src="assets/auth-reward.svg" alt="" width="400" height="292">
+          <p class="auth-note">Points never expire. You decide which surveys to take and can stop at any time.</p>
+        </aside>
 
-      <div class="auth-card" data-anim="focus" data-anim-delay="0.1">
-        <h1 class="auth-title">Create your account</h1>
-        <p class="auth-sub">It takes a minute, costs nothing, and the first surveys are waiting.</p>
+        <div class="auth-form-side">
+          <h1 class="auth-title">Create your account</h1>
+          <p class="auth-sub">It takes a minute, costs nothing, and the first surveys are waiting.</p>
 
         <form class="auth-form" novalidate data-auth-form>
           <div class="auth-done" data-done role="status">
@@ -197,6 +194,8 @@
         <p class="auth-switch">
           Already have an account? <a href="signin.html" class="auth-link">Log in</a>
         </p>
+        </div>
+
       </div>
 
     </div>

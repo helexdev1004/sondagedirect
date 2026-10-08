@@ -1,0 +1,744 @@
+/* ==========================================================================
+   SondageDirect — sign in and sign up
+   --------------------------------------------------------------------------
+   Loaded after style.css, by these two pages only. It takes the tokens from
+   there — the blues, the radii, the type — and builds something the rest of
+   the site does not have: one lit stage, and a panel of glass standing on it.
+
+   The whole thing rests on a single idea. Glass is only glass if there is
+   something behind it worth looking at, and if you can see that something
+   change as it passes under the edge. So the background is built first and
+   the panel is made thin enough to show it: a wash of aurora, silk strands
+   laid across it, grain over the top to stop the gradients banding, and the
+   page's own drawing floating behind the panel so part of it is sharp and
+   part is dissolved.
+
+   Everything inside the panel is therefore drawn for a dark, moving ground
+   rather than for white. Those rules are not variations on the light ones —
+   a border that works on #fff disappears on glass — so none of the old field
+   styling is reused here.
+   ========================================================================== */
+
+:root{
+  --glass:rgba(255,255,255,.085);
+  --glass-line:rgba(255,255,255,.17);
+  --glass-lit:rgba(255,255,255,.34);
+  --on-glass:#F2F7FF;
+  --on-glass-dim:rgba(233,241,255,.86);
+  --on-glass-faint:rgba(226,237,255,.74);
+  --field-face:rgba(255,255,255,.07);
+  --field-line:rgba(255,255,255,.16);
+  --accent:#8CC3FF;
+  --bad:#FF9E93;
+}
+
+/* --------------------------------------------------------------------------
+   The stage
+   -------------------------------------------------------------------------- */
+
+.auth-body{
+  min-height:100vh;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  background:#04070F;
+  color:var(--on-glass);
+  /* The background layers are fixed and the page scrolls over them, so a tall
+     sign-up form moves against the light rather than dragging it along. */
+  position:relative;
+  isolation:isolate;
+  /* The drawing runs off the side on purpose. clip, not hidden: hidden would
+     make the body a scroll container and the fixed background layers would
+     stop being fixed. */
+  overflow-x:clip;
+}
+
+/* Layer one: the aurora. Four washes placed off the corners so no single one
+   can be read as a circle — what should be visible is the colour they make
+   where they overlap, not any of them on its own. */
+.auth-body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    radial-gradient(62% 58% at 16% 18%, rgba(34,114,255,.46), transparent 64%),
+    radial-gradient(56% 52% at 86% 12%, rgba(96,66,232,.36), transparent 62%),
+    radial-gradient(70% 62% at 78% 88%, rgba(10,146,226,.32), transparent 64%),
+    radial-gradient(52% 48% at 28% 94%, rgba(20,74,198,.34), transparent 62%),
+    linear-gradient(162deg, #061024 0%, #081A3C 44%, #03060F 100%);
+}
+
+/* Layer two: the silk, and layer three: the grain.
+   The grain is the detail that stops this looking like a CSS gradient. Four
+   per cent of monochrome noise is invisible as texture and completely
+   removes the banding that a dark blue ramp shows on an 8-bit screen. */
+.auth-body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E") repeat 0 0 / 160px 160px,
+    url("../assets/auth-silk.svg") center / cover no-repeat;
+  opacity:.9;
+}
+
+/* --------------------------------------------------------------------------
+   The floating bar
+   --------------------------------------------------------------------------
+   No bar, in fact. A band across the top would cut the stage in half; the
+   two things that have to be up there simply stand on the background.
+   -------------------------------------------------------------------------- */
+
+.auth-bar{
+  flex:none;
+  padding:26px 0 0;
+}
+
+.auth-bar-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.auth-bar .brand-name{ color:var(--on-glass); }
+
+.auth-bar-aside{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  color:var(--on-glass-dim);
+  font-size:14.5px;
+}
+
+/* A button made of the same glass as the panel, so the two read as one
+   material rather than a white button sitting on a dark page. */
+.auth-bar-aside .btn-ghost{
+  background:var(--glass);
+  border:1px solid var(--glass-line);
+  color:var(--on-glass);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);
+  backdrop-filter:blur(14px) saturate(150%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+}
+
+.auth-bar-aside .btn-ghost:hover{
+  background:rgba(255,255,255,.16);
+  border-color:rgba(255,255,255,.3);
+  color:#fff;
+}
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+
+.auth-main{
+  flex:1 0 auto;
+  display:flex;
+  align-items:center;
+  padding:44px 0 56px;
+}
+
+.auth-stage{
+  position:relative;
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+
+/* The drawing stands beside the panel with only its edge tucked under it.
+   That edge is the whole point: one object, sharp on the open page and
+   dissolved the moment it passes behind the glass, says the panel is
+   transparent better than any amount of tint. It was first placed with most
+   of itself behind the panel, which looked wonderful and made the labels
+   over it unreadable — a white card is the worst possible backdrop for
+   white text, blurred or not. */
+.auth-art{
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  opacity:.74;
+}
+
+.auth-art img{ display:block; width:100%; height:auto; }
+
+/* Positioned off the panel's own centre line rather than off the stage, so
+   the overlap stays the same whatever the window is doing. Sign-up has no
+   floating drawing: its panel is twice as wide and there is no room beside
+   it, so its drawing sits inside the pitch column instead. */
+.auth-art{ top:50%; width:470px; }
+.auth-art.is-left{ left:50%; transform:translate(-138%, -50%); }
+
+/* --------------------------------------------------------------------------
+   The glass
+   -------------------------------------------------------------------------- */
+
+.glass{
+  position:relative;
+  z-index:1;
+  border-radius:30px;
+  /* Two layers, and the order matters. A dark floor first, so whatever is
+     behind the panel can never lift the ground out from under white text —
+     the aurora has bright patches and the drawing is mostly white card. Then
+     the sheen on top, which is the part that reads as glass. With only the
+     sheen the panel was beautiful over the dark corners and illegible over
+     the light ones. */
+  background:
+    linear-gradient(152deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,.04) 54%, rgba(255,255,255,.075) 100%),
+    linear-gradient(0deg, rgba(6,14,34,.56), rgba(6,14,34,.56));
+  border:1px solid var(--glass-line);
+  -webkit-backdrop-filter:blur(30px) saturate(165%);
+  backdrop-filter:blur(30px) saturate(165%);
+  /* Three shadows doing three jobs: the cast shadow that lifts it off the
+     stage, a bright inset along the top edge for the lit rim glass has, and a
+     dark inset along the bottom for the thickness under it. */
+  box-shadow:
+    0 50px 110px -34px rgba(0,0,0,.72),
+    inset 0 1px 0 var(--glass-lit),
+    inset 0 -1px 0 rgba(0,0,0,.24);
+}
+
+/* The specular streak across the top corner. A real sheet of glass is never
+   evenly lit, and without this the panel reads as flat translucent plastic. */
+.glass::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:
+    radial-gradient(120% 70% at 12% -8%, rgba(255,255,255,.22), transparent 58%),
+    radial-gradient(90% 60% at 100% 104%, rgba(90,160,255,.14), transparent 62%);
+}
+
+.glass > *{ position:relative; }
+
+/* Where the browser cannot blur what is behind, transparency is a liability
+   rather than an effect — the silk would run straight through the labels. So
+   the panel stops being glass and becomes a solid dark card instead. */
+@supports not ((-webkit-backdrop-filter:blur(2px)) or (backdrop-filter:blur(2px))){
+  .glass{ background:rgba(10,20,44,.93); border-color:rgba(255,255,255,.14); }
+  .auth-bar-aside .btn-ghost{ background:rgba(10,20,44,.9); }
+  .auth-art{ opacity:.5; }
+}
+
+/* Some people have asked their system for less of exactly this. Honour it:
+   same layout, same colours, no see-through. */
+@media (prefers-reduced-transparency: reduce){
+  .glass{
+    background:rgba(9,18,40,.96);
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+  .auth-art{ opacity:.45; }
+}
+
+.auth-card{
+  width:100%;
+  max-width:482px;
+  padding:46px 44px 38px;
+}
+
+/* --------------------------------------------------------------------------
+   Type on glass
+   -------------------------------------------------------------------------- */
+
+.auth-title{
+  color:#fff;
+  font-size:clamp(30px, 1.5rem + 1.2vw, 40px);
+  line-height:1.12;
+  letter-spacing:-.034em;
+}
+
+.auth-sub{
+  color:var(--on-glass-dim);
+  font-size:15.5px;
+  line-height:1.65;
+  margin-top:13px;
+}
+
+.auth-card.is-centred{ text-align:center; }
+.auth-card.is-centred .field,
+.auth-card.is-centred .consent{ text-align:left; }
+.auth-card.is-centred .auth-sub{ max-width:26em; margin-inline:auto; }
+
+.auth-form{ margin-top:30px; }
+
+.auth-switch{
+  margin:26px 0 0;
+  padding-top:22px;
+  border-top:1px solid rgba(255,255,255,.12);
+  color:var(--on-glass-faint);
+  font-size:14.5px;
+  text-align:center;
+}
+
+.auth-link{
+  color:var(--accent);
+  font-weight:600;
+  transition:color .2s ease;
+}
+
+.auth-link:hover{ color:#A9D2FF; text-decoration:underline; }
+
+.auth-forgot{
+  display:block;
+  text-align:right;
+  font-size:13.5px;
+  margin:14px 0 22px;
+}
+
+/* --------------------------------------------------------------------------
+   Fields
+   --------------------------------------------------------------------------
+   Nothing here is a tint of the light version. On glass a 1px grey border is
+   invisible and a white fill is a hole, so a field is instead a slightly
+   brighter pane of the same material, and focus brightens it rather than
+   outlining it.
+   -------------------------------------------------------------------------- */
+
+.fields{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:17px 16px;
+}
+
+.field{ display:block; }
+.field.is-full{ grid-column:1 / -1; }
+
+.field-label{
+  display:block;
+  color:var(--on-glass-dim);
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.012em;
+  margin-bottom:8px;
+}
+
+.field-wrap{ display:block; position:relative; }
+
+.field-input{
+  width:100%;
+  min-height:52px;
+  font:inherit;
+  font-size:15px;
+  color:#fff;
+  background-color:var(--field-face);
+  border:1px solid var(--field-line);
+  border-radius:14px;
+  padding:13px 15px;
+  -webkit-backdrop-filter:blur(2px);
+  backdrop-filter:blur(2px);
+  transition:border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.field-input::placeholder{ color:rgba(226,237,255,.46); }
+
+.field-input:focus{
+  outline:none;
+  background-color:rgba(255,255,255,.13);
+  border-color:rgba(140,195,255,.72);
+  box-shadow:0 0 0 3.5px rgba(70,150,255,.22);
+}
+
+.field-input:hover:not(:focus){ border-color:rgba(255,255,255,.26); }
+
+/* The leading icon. Same job as before — nine identical boxes down a form is
+   what makes a sign-up feel long, and a different mark on each is what lets
+   the eye find the one it wants without reading the labels. */
+.field-icon{
+  position:absolute;
+  top:50%;
+  left:15px;
+  transform:translateY(-50%);
+  color:rgba(214,230,255,.56);
+  pointer-events:none;
+  transition:color .2s ease;
+}
+
+.field-wrap .field-input{ padding-left:45px; }
+.field-wrap:focus-within .field-icon{ color:var(--accent); }
+.field.is-bad .field-icon{ color:var(--bad); }
+
+.field-wrap:has(.field-eye) .field-input{ padding-right:48px; }
+
+.field-eye{
+  position:absolute;
+  top:50%;
+  right:7px;
+  transform:translateY(-50%);
+  width:36px;
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:rgba(214,230,255,.6);
+  cursor:pointer;
+  transition:color .2s ease, background-color .2s ease;
+}
+
+.field-eye:hover{ color:#fff; background:rgba(255,255,255,.12); }
+.field-eye:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+
+/* Selects. appearance:none and our own chevron, as on the light version, but
+   drawn in the colours this ground needs. background-COLOR everywhere below,
+   never the shorthand — it would reset the chevron's repeat and size. */
+select.field-input{
+  -webkit-appearance:none;
+  appearance:none;
+  padding-right:36px;
+  cursor:pointer;
+  /* If a translation or a narrow window ever does overrun this, say so with
+     an ellipsis rather than slicing a word in half, which is what a native
+     select does by default and what made "Choose your country" read as
+     "Choose your count". */
+  text-overflow:ellipsis;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23AFC8E8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 13px center;
+  background-size:15px 15px;
+}
+
+select.field-input:focus{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238CC3FF' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.field.is-bad select.field-input{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF9E93' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+select.field-input:disabled{
+  cursor:not-allowed;
+  opacity:.6;
+}
+
+/* Nothing chosen yet is a placeholder and reads like one. :invalid is true
+   for a required control exactly while it is empty. */
+select.field-input:invalid,
+input[type="date"].field-input:invalid{ color:rgba(226,237,255,.46); }
+
+/* The menu itself is drawn by the operating system, not by us, and it does
+   not inherit any of this — so the options are given an explicit dark face
+   rather than being left white-on-white in the dropdown. */
+select.field-input option{ background:#0C1A38; color:#F2F7FF; }
+
+/* The date field's own picker glyph is dark by default and vanishes here.
+   Inverted to match the rest, and toned rather than hidden — hiding it leaves
+   the calendar reachable only from the keyboard. */
+.field-input::-webkit-calendar-picker-indicator{
+  filter:invert(1);
+  opacity:.5;
+  cursor:pointer;
+  transition:opacity .2s ease;
+}
+
+.field-input::-webkit-calendar-picker-indicator:hover,
+.field-input:focus::-webkit-calendar-picker-indicator{ opacity:.85; }
+
+.field-hint{
+  display:block;
+  color:var(--on-glass-faint);
+  font-size:12.5px;
+  margin-top:7px;
+}
+
+.field-error{
+  display:none;
+  color:var(--bad);
+  font-size:12.5px;
+  font-weight:500;
+  margin-top:7px;
+}
+
+.field.is-bad .field-input{
+  border-color:rgba(255,138,122,.62);
+  background-color:rgba(255,110,96,.1);
+}
+
+.field.is-bad .field-input:focus{ box-shadow:0 0 0 3.5px rgba(255,110,96,.2); }
+.field.is-bad .field-error{ display:block; }
+.field.is-bad .field-hint{ display:none; }
+
+/* --------------------------------------------------------------------------
+   Consents and submit
+   -------------------------------------------------------------------------- */
+
+.consents{
+  display:flex;
+  flex-direction:column;
+  gap:11px;
+  margin-top:24px;
+}
+
+.consent{
+  display:flex;
+  align-items:flex-start;
+  gap:11px;
+  color:var(--on-glass-dim);
+  font-size:14px;
+  line-height:1.5;
+  cursor:pointer;
+}
+
+/* accent-color tints the native box, which keeps the control the one the
+   platform draws — right size, right keyboard behaviour, right everything —
+   while still being ours. */
+.consent input{
+  flex:none;
+  width:19px;
+  height:19px;
+  margin-top:1px;
+  accent-color:var(--blue);
+  cursor:pointer;
+}
+
+.consent a{ color:var(--accent); font-weight:600; }
+.consent a:hover{ text-decoration:underline; }
+.consent.is-bad{ color:var(--bad); }
+
+.consents + .auth-submit{ margin-top:26px; }
+
+/* The only thing on the page to press, and lit like it. The glow is the
+   button's own colour thrown onto the glass under it. */
+.auth-submit{
+  width:100%;
+  min-height:56px;
+  font-size:16px;
+  border-radius:15px;
+  margin-top:4px;
+  box-shadow:0 14px 34px -10px rgba(16,94,224,.75);
+}
+
+.auth-submit:hover{ box-shadow:0 18px 40px -10px rgba(16,94,224,.85); }
+
+.auth-done{
+  display:none;
+  align-items:flex-start;
+  gap:11px;
+  margin-bottom:20px;
+  padding:14px 16px;
+  border-radius:14px;
+  background:rgba(34,190,140,.14);
+  border:1px solid rgba(70,220,165,.35);
+  color:#AEF3D6;
+  font-size:13.5px;
+  line-height:1.55;
+}
+
+.auth-done.is-shown{ display:flex; }
+.auth-done svg{ flex:none; margin-top:1px; color:#5FE0AC; }
+
+/* --------------------------------------------------------------------------
+   The pitch, which on sign-up shares the panel with the form
+   --------------------------------------------------------------------------
+   One sheet of glass divided by a hairline, not two cards. Sign-up has to
+   make an argument as well as take an answer, and standing them on the same
+   pane says they are one thing.
+   -------------------------------------------------------------------------- */
+
+/* The column split is set by the longest thing that has to fit on one line,
+   which is a select: "Choose a country first" cannot wrap or shrink, and a
+   native select truncates rather than telling you it has run out of room.
+   At 15px that string is 158px, so each field column needs 158 + 45 for the
+   leading icon + 36 for the chevron = 239px, and the form side needs twice
+   that plus its gap and padding. Everything below is derived from that. */
+.auth-card.is-split{
+  max-width:1080px;
+  padding:0;
+  display:grid;
+  grid-template-columns:minmax(0,.72fr) minmax(0,1fr);
+}
+
+.auth-pitch{
+  padding:46px 40px 40px;
+  border-right:1px solid rgba(255,255,255,.1);
+  display:flex;
+  flex-direction:column;
+  /* The panel's sheen falls across this half, which left the sub-line at
+     4.43:1. A shallow wash from the outer corner takes it back under the
+     text without flattening the glass. */
+  background:linear-gradient(118deg, rgba(4,10,26,.26) 0%, rgba(4,10,26,.06) 62%, transparent 100%);
+  border-radius:30px 0 0 30px;
+}
+
+.auth-card.is-split .auth-form-side{ padding:46px 44px 38px; }
+
+/* Between the tablet stack and the full-width layout the container is 960
+   and the sum above no longer holds, so the form takes a larger share and
+   both sides give up some padding rather than the selects giving up words. */
+@media (min-width:992px) and (max-width:1199.98px){
+  .auth-card.is-split{ grid-template-columns:minmax(0,.58fr) minmax(0,1fr); }
+  .auth-pitch{ padding:38px 30px 32px; }
+  .auth-card.is-split .auth-form-side{ padding:38px 32px 32px; }
+}
+
+.auth-pitch-title{
+  color:#fff;
+  font-size:27px;
+  line-height:1.24;
+  letter-spacing:-.028em;
+}
+
+.auth-pitch-sub{
+  color:var(--on-glass-dim);
+  font-size:14.5px;
+  line-height:1.68;
+  margin-top:13px;
+}
+
+.auth-points{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  margin:28px 0 0;
+}
+
+.auth-point{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  color:var(--on-glass-dim);
+  font-size:14px;
+  line-height:1.55;
+}
+
+.auth-point-mark{
+  flex:none;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(115,180,255,.18);
+  border:1px solid rgba(140,195,255,.3);
+  color:#A8CFFF;
+}
+
+/* The reward drawing belongs to the pitch, not to the stage. On a panel
+   this wide there is no page left beside it to float in. */
+.auth-pitch-art{
+  display:block;
+  width:calc(100% + 28px);
+  max-width:400px;
+  height:auto;
+  margin:26px -14px -6px;
+  opacity:.95;
+}
+
+.auth-note{
+  margin:26px 0 0;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,.1);
+  color:var(--on-glass-faint);
+  font-size:12.5px;
+  line-height:1.6;
+}
+
+/* --------------------------------------------------------------------------
+   The footer, which belongs to the stage and not to the page it came from
+   -------------------------------------------------------------------------- */
+
+/* The footer stands on the bare stage rather than on the panel, and the
+   aurora has bright patches down there — measured, the links came out at
+   3.95:1 against one of them. So it gets a scrim of the same glass as
+   everything else, which fixes the contrast and makes it look deliberate
+   rather than like text dropped on a photograph. */
+.auth-body .app-footer{
+  background:rgba(4,9,22,.5);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  backdrop-filter:blur(18px) saturate(140%);
+  border-top:1px solid rgba(255,255,255,.1);
+}
+
+.auth-body .app-footer .brand-name{ color:var(--on-glass); }
+.auth-body .app-footer-nav a{ color:var(--on-glass-faint); }
+.auth-body .app-footer-nav a:hover{ color:#fff; }
+.auth-body .app-footer-nav a::after{ background:var(--accent); }
+
+.auth-body .app-footer-copy{
+  border-top-color:rgba(255,255,255,.1);
+  color:rgba(226,237,255,.6);
+}
+
+/* --------------------------------------------------------------------------
+   Narrower
+   -------------------------------------------------------------------------- */
+
+/* Narrower than this and the drawing starts running off the left, so it
+   shrinks rather than being cropped. Setting only the width keeps the
+   -138% offset doing the positioning, which is what holds the overlap with
+   the panel edge constant. */
+@media (max-width:1199.98px){
+  .auth-art{ width:400px; }
+}
+
+/* Below this the split panel has no room for two columns, and the drawing has
+   nowhere to stand beside the panel — it goes behind it, centred and faint,
+   which still reads through the glass. */
+@media (max-width:991.98px){
+  .auth-card.is-split{ grid-template-columns:1fr; max-width:620px; }
+  .auth-pitch{
+    border-right:0;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    border-radius:30px 30px 0 0;
+    padding:38px 34px 34px;
+  }
+  .auth-card.is-split .auth-form-side{ padding:36px 34px 34px; }
+
+  /* Nothing stands beside the panel at this width. Putting the drawing
+     behind it instead was the obvious move and the wrong one: a white card
+     under the middle of the glass washed out the labels and the
+     placeholders exactly as it did on the desktop layout before it was
+     moved out. So here it leaves the backdrop entirely and becomes a block
+     under the panel, where it can be sharp and at full strength. */
+  .auth-stage{ flex-direction:column; align-items:center; }
+
+  /* .auth-art.is-left, not .auth-art. A media query adds no specificity, so
+     a bare .auth-art here loses to the .is-left rule above it and the
+     drawing kept its translate(-138%) — which put it 348px off the left of
+     a 390px screen, present and measurable and completely invisible. */
+  .auth-art,
+  .auth-art.is-left{
+    position:static;
+    order:2;
+    transform:none;
+    width:min(74vw, 360px);
+    margin-top:32px;
+    opacity:.95;
+  }
+}
+
+@media (max-width:767.98px){
+  .auth-main{ padding:30px 0 40px; }
+  .auth-card{ padding:36px 26px 30px; border-radius:26px; }
+  .fields{ grid-template-columns:1fr; }
+  .field.is-full{ grid-column:auto; }
+}
+
+@media (max-width:575.98px){
+  .auth-bar{ padding-top:18px; }
+  .auth-bar-aside{ font-size:13.5px; gap:10px; }
+  .auth-card{ padding:30px 20px 26px; border-radius:22px; }
+  .auth-card.is-split .auth-pitch{ padding:30px 20px 26px; }
+  .auth-card.is-split .auth-form-side{ padding:28px 20px 26px; }
+  /* The blur is the most expensive thing on the page and phones are where
+     it costs most, so it is roughly halved here. Both background layers are
+     restated: the shorthand replaces the whole stack, and an earlier version
+     of this rule listed only the sheen — which silently dropped the dark
+     floor and took every label on a phone below 4.5:1 while the desktop
+     measurements stayed clean. */
+  .glass{
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+    backdrop-filter:blur(18px) saturate(150%);
+    background:
+      linear-gradient(152deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.035) 54%, rgba(255,255,255,.065) 100%),
+      linear-gradient(0deg, rgba(6,14,34,.62), rgba(6,14,34,.62));
+  }
+}
