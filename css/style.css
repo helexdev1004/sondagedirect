@@ -1721,3 +1721,362 @@ a{ text-decoration:none; }
   .legal p,
   .legal li{ font-size:15px; }
 }
+
+/* --------------------------------------------------------------------------
+   Sign in and sign up
+   --------------------------------------------------------------------------
+   Two columns: the form, and a panel saying what the account is for. The panel
+   is the only thing on these pages carrying the brand's weight, because a
+   person arriving at a login screen has usually decided already and the form
+   should not argue with them.
+   -------------------------------------------------------------------------- */
+
+.auth-body{
+  background:var(--bg-soft);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* A slim bar: the mark, and the one action this page is not. Nothing else — a
+   menu here is an invitation to leave halfway through signing in. */
+.auth-bar{
+  flex:none;
+  padding:22px 0;
+}
+
+.auth-bar-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.auth-bar-aside{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:14.5px;
+  color:var(--body);
+}
+
+.auth-main{
+  flex:1 0 auto;
+  display:flex;
+  align-items:center;
+  padding:18px 0 56px;
+}
+
+.auth-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,.92fr);
+  gap:44px;
+  align-items:center;
+  width:100%;
+}
+
+/* Sign-up has nine fields and wants the room, so its panel takes the smaller
+   half and sits on the other side — the two pages are then not the same
+   picture twice. */
+.auth-row.is-wide{ grid-template-columns:minmax(0,.78fr) minmax(0,1fr); }
+
+.auth-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r-card);
+  box-shadow:var(--shadow-soft);
+  padding:38px 40px 34px;
+}
+
+.auth-title{
+  font-size:31px;
+  line-height:1.2;
+}
+
+.auth-sub{
+  color:var(--body);
+  font-size:15px;
+  line-height:1.7;
+  margin-top:12px;
+}
+
+.auth-form{ margin-top:26px; }
+
+.auth-switch{
+  margin-top:24px;
+  padding-top:22px;
+  border-top:1px solid var(--border);
+  font-size:14.5px;
+  color:var(--body);
+  text-align:center;
+}
+
+.auth-link{
+  color:var(--blue);
+  font-weight:600;
+}
+
+.auth-link:hover{ color:var(--blue-btn-hover); text-decoration:underline; }
+
+.auth-forgot{
+  display:block;
+  text-align:right;
+  font-size:13.5px;
+  margin-top:-6px;
+  margin-bottom:22px;
+}
+
+.auth-submit{ width:100%; }
+
+/* --------------------------------------------------------------------------
+   Form fields
+   -------------------------------------------------------------------------- */
+
+.fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px 18px;
+}
+
+.field{ display:block; }
+.field.is-full{ grid-column:1 / -1; }
+
+.field-label{
+  display:block;
+  color:var(--navy);
+  font-size:13.5px;
+  font-weight:600;
+  margin-bottom:7px;
+}
+
+.field-input{
+  width:100%;
+  font:inherit;
+  font-size:15px;
+  color:var(--navy);
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px 15px;
+  transition:border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.field-input::placeholder{ color:#9AA7BF; }
+
+.field-input:focus{
+  outline:none;
+  background:var(--white);
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(8,116,252,.14);
+}
+
+/* The wrapper exists so the eye can sit inside the box, and it has to be a
+   block to do it: as an inline span it collapses to its content and right:6px
+   then measures from a box the width of the text, which put the eye outside
+   the card on the wider form. */
+.field-wrap{ display:block; position:relative; }
+
+.field-wrap .field-input{ padding-right:48px; }
+
+.field-eye{
+  position:absolute;
+  top:50%;
+  right:6px;
+  transform:translateY(-50%);
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:9px;
+  background:transparent;
+  color:var(--body);
+  cursor:pointer;
+  transition:color .2s ease, background-color .2s ease;
+}
+
+.field-eye:hover{ color:var(--blue); background:rgba(8,116,252,.08); }
+
+.field-hint{
+  color:var(--body);
+  font-size:12.5px;
+  line-height:1.6;
+  margin-top:6px;
+}
+
+/* Shown by the script, and only once a field has been submitted. Marking a
+   field red while someone is still typing their email address is telling them
+   they are wrong before they have finished. */
+.field-error{
+  display:none;
+  color:#CD352B;
+  font-size:12.5px;
+  line-height:1.6;
+  margin-top:6px;
+}
+
+.field.is-bad .field-input{
+  border-color:#E0837B;
+  background:#FDF6F5;
+}
+
+.field.is-bad .field-input:focus{ box-shadow:0 0 0 3px rgba(205,53,43,.14); }
+
+.field.is-bad .field-error{ display:block; }
+.field.is-bad .field-hint{ display:none; }
+
+/* --------------------------------------------------------------------------
+   Consent
+   -------------------------------------------------------------------------- */
+
+.consents{
+  display:flex;
+  flex-direction:column;
+  gap:11px;
+  margin-top:22px;
+}
+
+.consent{
+  display:flex;
+  align-items:flex-start;
+  gap:11px;
+  font-size:13.5px;
+  line-height:1.6;
+  color:var(--body);
+}
+
+.consent input{
+  flex:none;
+  width:19px;
+  height:19px;
+  margin-top:1px;
+  accent-color:var(--blue-btn);
+  cursor:pointer;
+}
+
+.consent a{ color:var(--blue); font-weight:600; }
+.consent a:hover{ text-decoration:underline; }
+
+.consent.is-bad{ color:#CD352B; }
+
+/* --------------------------------------------------------------------------
+   What the account is for
+   -------------------------------------------------------------------------- */
+
+.auth-panel{
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--r-card);
+  padding:44px 42px;
+  color:var(--white);
+  background:
+    radial-gradient(58% 92% at 82% 16%,
+      #1C62D6 0%, rgba(20,78,184,.60) 22%, rgba(12,46,112,.26) 46%, rgba(7,19,48,0) 70%),
+    linear-gradient(145deg, #0A1634 0%, #0D1E42 46%, #060C20 100%);
+}
+
+.auth-panel::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:url("../assets/cta-waves.svg") center / cover no-repeat;
+  opacity:.22;
+  pointer-events:none;
+}
+
+.auth-panel > *{ position:relative; z-index:1; }
+
+.auth-panel-title{
+  color:var(--white);
+  font-size:29px;
+  line-height:1.25;
+}
+
+.auth-panel-sub{
+  color:rgba(255,255,255,.84);
+  font-size:15px;
+  line-height:1.7;
+  margin-top:14px;
+}
+
+.auth-points{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-top:30px;
+}
+
+.auth-point{
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+  color:rgba(255,255,255,.9);
+  font-size:14.5px;
+  line-height:1.55;
+}
+
+.auth-point-mark{
+  flex:none;
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.24);
+  color:var(--white);
+}
+
+.auth-note{
+  margin-top:32px;
+  padding-top:22px;
+  border-top:1px solid rgba(255,255,255,.16);
+  color:rgba(255,255,255,.66);
+  font-size:13px;
+  line-height:1.65;
+}
+
+/* --------------------------------------------------------------------------
+   The message after a submit that passed
+   -------------------------------------------------------------------------- */
+
+.auth-done{
+  display:none;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:22px;
+  padding:14px 16px;
+  border-radius:13px;
+  background:#E9F8F1;
+  color:#0B7F58;
+  font-size:14px;
+  line-height:1.6;
+}
+
+.auth-done.is-shown{ display:flex; }
+
+.auth-done svg{ flex:none; margin-top:1px; }
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width:991.98px){
+  /* The panel goes under the form, and under on both pages: it is the argument
+     for the account, and someone already here is reading the form first
+     whichever side it sat on. */
+  .auth-row,
+  .auth-row.is-wide{ grid-template-columns:1fr; gap:26px; }
+  .auth-panel{ order:2; padding:34px 30px; }
+  .auth-card{ order:1; }
+  .auth-main{ padding:8px 0 44px; }
+}
+
+@media (max-width:575.98px){
+  .auth-card{ padding:28px 22px 26px; }
+  .auth-title{ font-size:26px; }
+  .auth-panel{ padding:28px 24px; }
+  .auth-panel-title{ font-size:24px; }
+  .fields{ grid-template-columns:1fr; }
+  .auth-bar-aside .btn{ padding:10px 16px; font-size:14px; }
+}
