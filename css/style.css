@@ -1879,7 +1879,10 @@ a{ text-decoration:none; }
   font:inherit;
   font-size:15px;
   color:var(--navy);
-  background:var(--bg-soft);
+  /* background-COLOR, not the shorthand: the selects below carry their
+     chevron as a background image, and a shorthand here would reset its
+     repeat, position and size along with the colour. */
+  background-color:var(--bg-soft);
   border:1px solid var(--border);
   border-radius:12px;
   padding:13px 15px;
@@ -1888,9 +1891,75 @@ a{ text-decoration:none; }
 
 .field-input::placeholder{ color:#9AA7BF; }
 
+/* --------------------------------------------------------------------------
+   Selects
+   --------------------------------------------------------------------------
+   A select was the one control on these pages still drawing the browser's
+   own arrow: a thin system chevron hard against the right edge of a field
+   where every other mark is ours, at a size and colour nothing else uses.
+   appearance:none takes it off; what replaces it is the same chevron Lucide
+   draws, at the weight the leading icons use, inset to the same 15px.
+
+   It is a background image rather than a pseudo-element because the select
+   has no wrapper of its own in the profile dialog, and two images cost less
+   than making every caller add one. The colour is baked into each, so there
+   is one per state.
+   -------------------------------------------------------------------------- */
+select.field-input{
+  -webkit-appearance:none;
+  appearance:none;
+  padding-right:42px;
+  cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A3BE' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 15px center;
+  background-size:15px 15px;
+}
+
+select.field-input:focus{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230874FC' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.field.is-bad select.field-input{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D98E86' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Nothing chosen yet is a placeholder, and should read like one. Without
+   this "Choose one" sat in full navy and looked like an answer the form had
+   already been given. :invalid is the hook because the prompt option is
+   empty and disabled on a required select, so it is exactly true until a
+   real choice is made. */
+select.field-input:invalid{ color:#9AA7BF; }
+
+/* Same for the date field's format hint. A date input has no ::placeholder
+   to target — the mm/dd/yyyy is drawn in the input's own colour — so it was
+   sitting in full navy next to grey hints in every neighbouring field, and
+   looked like a date somebody had already entered. :invalid is true for a
+   required date exactly while it is incomplete. */
+input[type="date"].field-input:invalid{ color:#9AA7BF; }
+
+select.field-input:disabled{
+  cursor:not-allowed;
+  opacity:.72;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B6C2D6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* The date field already carries a calendar on its left, so the native
+   indicator on the right said the same thing twice in a heavier colour.
+   Toned down rather than hidden — hiding it leaves the picker reachable
+   only from the keyboard. */
+.field-input::-webkit-calendar-picker-indicator{
+  opacity:.45;
+  cursor:pointer;
+  transition:opacity .2s ease;
+}
+
+.field-input::-webkit-calendar-picker-indicator:hover,
+.field-input:focus::-webkit-calendar-picker-indicator{ opacity:.8; }
+
 .field-input:focus{
   outline:none;
-  background:var(--white);
+  background-color:var(--white);
   border-color:var(--blue);
   box-shadow:0 0 0 3px rgba(8,116,252,.14);
 }
@@ -1963,7 +2032,7 @@ a{ text-decoration:none; }
 
 .field.is-bad .field-input{
   border-color:#E0837B;
-  background:#FDF6F5;
+  background-color:#FDF6F5;
 }
 
 .field.is-bad .field-input:focus{ box-shadow:0 0 0 3px rgba(205,53,43,.14); }

@@ -1386,7 +1386,7 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   font:inherit;
   font-size:15px;
   color:var(--navy);
-  background:var(--bg-soft);
+  background-color:var(--bg-soft);
   border:1px solid var(--border);
   border-radius:11px;
   padding:11px 14px;
@@ -1395,10 +1395,38 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
 .detail-input:focus{
   outline:none;
-  background:var(--white);
+  background-color:var(--white);
   border-color:var(--blue);
   box-shadow:0 0 0 3px rgba(8,116,252,.14);
 }
+
+/* The dialog builds a select for the fields that have a fixed set of
+   answers, so it inherits the same problem the sign-up form had: the
+   browser's own arrow, which matches nothing else here. Same replacement,
+   one step smaller because this control is 11px shorter. */
+select.detail-input{
+  -webkit-appearance:none;
+  appearance:none;
+  padding-right:38px;
+  cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A3BE' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 13px center;
+  background-size:14px 14px;
+}
+
+select.detail-input:focus{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230874FC' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.detail-input::-webkit-calendar-picker-indicator{
+  opacity:.45;
+  cursor:pointer;
+  transition:opacity .2s ease;
+}
+
+.detail-input::-webkit-calendar-picker-indicator:hover,
+.detail-input:focus::-webkit-calendar-picker-indicator{ opacity:.8; }
 
 .detail-hint{
   color:var(--body);

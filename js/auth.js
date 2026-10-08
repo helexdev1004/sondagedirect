@@ -102,6 +102,14 @@
 
   function checkOne(input) {
     var field = input.closest('[data-field]');
+
+    // A disabled control is one the form is not asking for yet. Region is
+    // disabled until a country is chosen, and without this submitting the
+    // empty form put "Choose your region" under a select that still read
+    // "Choose a country first" and could not be opened — an error with no
+    // way to clear it, on the one field that was not the user's fault.
+    if (input.disabled) { clear(field); return true; }
+
     var rule = RULES[input.getAttribute('data-rule')] || RULES.required;
     var ok = rule(input.value);
     if (ok) clear(field); else mark(field);
