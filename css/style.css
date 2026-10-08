@@ -1780,25 +1780,37 @@ a{ text-decoration:none; }
    picture twice. */
 .auth-row.is-wide{ grid-template-columns:minmax(0,.78fr) minmax(0,1fr); }
 
+/* No border. A card on a tinted ground does not need an outline as well as a
+   shadow — the two together read as a box drawn twice. The shadow is deeper
+   and much softer than the one it replaces, so the card floats rather than
+   sits. */
 .auth-card{
   background:var(--white);
-  border:1px solid var(--border);
-  border-radius:var(--r-card);
-  box-shadow:var(--shadow-soft);
-  padding:38px 40px 34px;
+  border-radius:20px;
+  box-shadow:0 24px 60px rgba(28,82,160,.10);
+  padding:42px 44px 36px;
 }
 
+/* Sign-in centres: two fields under a greeting is a small thing, and centred
+   it reads as one object rather than a column of left edges. Sign-up has nine
+   fields and would look adrift centred, so it stays ranged left. */
+.auth-card.is-centred{ text-align:center; }
+.auth-card.is-centred .field{ text-align:left; }
+
 .auth-title{
-  font-size:31px;
-  line-height:1.2;
+  font-size:clamp(28px, 1.4rem + 1.1vw, 38px);
+  line-height:1.15;
+  letter-spacing:-.03em;
 }
 
 .auth-sub{
   color:var(--body);
-  font-size:15px;
-  line-height:1.7;
+  font-size:15.5px;
+  line-height:1.65;
   margin-top:12px;
 }
+
+.auth-card.is-centred .auth-sub{ max-width:25em; margin-inline:auto; }
 
 .auth-form{ margin-top:26px; }
 
@@ -1822,11 +1834,23 @@ a{ text-decoration:none; }
   display:block;
   text-align:right;
   font-size:13.5px;
-  margin-top:-6px;
-  margin-bottom:22px;
+  margin:14px 0 20px;
 }
 
-.auth-submit{ width:100%; }
+/* Full width and taller than a normal button: it is the only thing on the
+   page to press, so it should not look like one option among several. */
+.auth-submit{
+  width:100%;
+  min-height:56px;
+  font-size:16px;
+  border-radius:14px;
+  margin-top:4px;
+}
+
+/* Where consents come first, the button needs real distance from them. Two
+   tick boxes and a submit crowded together is how people agree to things
+   while aiming for the button. */
+.consents + .auth-submit{ margin-top:26px; }
 
 /* --------------------------------------------------------------------------
    Form fields
@@ -1851,6 +1875,7 @@ a{ text-decoration:none; }
 
 .field-input{
   width:100%;
+  min-height:52px;
   font:inherit;
   font-size:15px;
   color:var(--navy);
@@ -1870,13 +1895,34 @@ a{ text-decoration:none; }
   box-shadow:0 0 0 3px rgba(8,116,252,.14);
 }
 
-/* The wrapper exists so the eye can sit inside the box, and it has to be a
+/* The wrapper exists so the icons can sit inside the box, and it has to be a
    block to do it: as an inline span it collapses to its content and right:6px
    then measures from a box the width of the text, which put the eye outside
    the card on the wider form. */
 .field-wrap{ display:block; position:relative; }
 
-.field-wrap .field-input{ padding-right:48px; }
+/* An icon on every field. It is not decoration: nine identical boxes down a
+   form is the thing that makes a sign-up feel long, and a different mark on
+   each is what lets the eye find the one it wants without reading the labels.
+   pointer-events off, or it eats the click that should land in the field. */
+.field-icon{
+  position:absolute;
+  top:50%;
+  left:15px;
+  transform:translateY(-50%);
+  color:#93A3BE;
+  pointer-events:none;
+  transition:color .2s ease;
+}
+
+.field-wrap .field-input{ padding-left:45px; }
+
+.field-wrap:focus-within .field-icon{ color:var(--blue); }
+
+.field.is-bad .field-icon{ color:#D98E86; }
+
+/* The eye is the one thing in the box that IS clickable. */
+.field-wrap:has(.field-eye) .field-input{ padding-right:48px; }
 
 .field-eye{
   position:absolute;
@@ -2166,3 +2212,57 @@ a{ text-decoration:none; }
   .app-footer-copy{ padding-top:16px; width:100%; }
 }
 
+
+/* --------------------------------------------------------------------------
+   The sign-in portrait
+   --------------------------------------------------------------------------
+   Lit from behind rather than framed: a blurred wash of the brand blue under
+   a picture with no border. A framed photo beside a shadowed card is two
+   rectangles competing; this way the card is the only edge on the page.
+   -------------------------------------------------------------------------- */
+
+.auth-photo{
+  position:relative;
+  justify-self:center;
+}
+
+.auth-photo::before{
+  content:"";
+  position:absolute;
+  inset:8% -6% -10% -2%;
+  border-radius:50%;
+  background:radial-gradient(closest-side, rgba(8,116,252,.34), rgba(8,116,252,0) 74%);
+  filter:blur(34px);
+  pointer-events:none;
+}
+
+.auth-photo img{
+  position:relative;
+  display:block;
+  width:100%;
+  max-width:460px;
+  border-radius:24px;
+  /* The foot of the picture dissolves into the page, so it ends without a line
+     where it stops. Two masks multiplied: an ellipse that softens all four
+     corners, and a vertical fade that takes the bottom edge out entirely —
+     the ellipse alone left a visible straight edge across the base, which is
+     the one edge a photograph on an open page must not have. */
+  -webkit-mask-image:
+    radial-gradient(130% 118% at 50% 30%, #000 54%, transparent 92%),
+    linear-gradient(180deg, #000 58%, rgba(0,0,0,.35) 86%, transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    radial-gradient(130% 118% at 50% 30%, #000 54%, transparent 92%),
+    linear-gradient(180deg, #000 58%, rgba(0,0,0,.35) 86%, transparent 100%);
+  mask-composite:intersect;
+}
+
+@media (max-width:991.98px){
+  .auth-photo{ order:2; }
+  .auth-photo img{ max-width:380px; margin-inline:auto; }
+}
+
+@media (max-width:575.98px){
+  .auth-card{ padding:28px 20px 26px; border-radius:18px; }
+  .auth-photo{ display:none; }
+}

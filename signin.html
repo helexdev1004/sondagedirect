@@ -11,15 +11,37 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<script>
+  /* Hides what is about to animate, before anything paints. animations.js
+     removes this the instant it takes over; if it never does — blocked CDN,
+     script error — the timeout drops it and the page renders as plain HTML. */
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var root = document.documentElement;
+    root.classList.add('sd-anim');
+    window.setTimeout(function () {
+      if (!root.classList.contains('sd-anim-ready')) root.classList.remove('sd-anim');
+    }, 2500);
+  })();
+</script>
 </head>
 <body class="auth-body">
 
-<!-- Only the icons these two pages use. The app sprite is twenty-four symbols
-     and there is no reason to carry it here. -->
+<!-- Only what these two pages use. Geometry from Lucide 0.544 (ISC).
+     stroke-width is on each symbol here rather than in CSS: these all draw
+     at one size, so there is no range for a scale to serve. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" /><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" /></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><path d="M16 3.128a4 4 0 0 1 0 7.744" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><circle cx="9" cy="7" r="4" /></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="9" y2="9" /><line x1="4" x2="20" y1="15" y2="15" /><line x1="10" x2="8" y1="3" y2="21" /><line x1="16" x2="14" y1="3" y2="21" /></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></symbol>
-  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
   <symbol id="i-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
 </defs></svg>
 
@@ -40,42 +62,41 @@
   <div class="container">
     <div class="auth-row">
 
-      <div class="auth-card">
+      <div class="auth-card is-centred" data-anim="focus">
         <h1 class="auth-title">Welcome back</h1>
         <p class="auth-sub">Log in to see the surveys open to you and what you have earned.</p>
 
         <form class="auth-form" novalidate data-auth-form>
-      <div class="auth-done" data-done role="status">
-        <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>
-        <span data-done-text>Everything checks out. Accounts are not open yet, so nothing has been sent.</span>
-      </div>
+          <div class="auth-done" data-done role="status">
+            <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>
+            <span>Everything checks out. Accounts are not open yet, so nothing has been sent.</span>
+          </div>
 
           <div class="fields">
             <label class="field is-full" data-field>
               <span class="field-label">Email address</span>
-              <input class="field-input" id="email" name="email" type="email"
-                     autocomplete="email" placeholder="you@example.com" required
-                     data-rule="email">
-              <span class="field-error" data-error>Enter an email address in the form you@example.com.</span>
+              <span class="field-wrap">
+                <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg>
+                <input class="field-input" id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required data-rule="email">
+              </span>
+              
+              <span class="field-error">Enter an email address in the form you@example.com.</span>
             </label>
-
             <label class="field is-full" data-field>
               <span class="field-label">Password</span>
               <span class="field-wrap">
-                <input class="field-input" id="password" name="password" type="password"
-                       autocomplete="current-password" placeholder="Your password" required
-                       data-rule="required">
-                <button class="field-eye" type="button" data-eye="password" aria-label="Show password" aria-pressed="false">
-                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg>
-                </button>
+                <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lock"/></svg>
+                <input class="field-input" id="password" name="password" type="password" autocomplete="current-password" placeholder="Your password" required data-rule="required">
+                <button class="field-eye" type="button" data-eye="password" aria-label="Show password" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg></button>
               </span>
-              <span class="field-error" data-error>Enter your password.</span>
+              
+              <span class="field-error">Enter your password.</span>
             </label>
           </div>
 
-          <a href="#" class="auth-link auth-forgot" style="margin-top:14px">Forgot your password?</a>
+          <a href="#" class="auth-link auth-forgot">Forgot your password?</a>
 
-          <button type="submit" class="btn btn-brand btn-lg-cta auth-submit">
+          <button type="submit" class="btn btn-brand auth-submit">
             Log in <span class="arrow" aria-hidden="true">&rarr;</span>
           </button>
         </form>
@@ -85,24 +106,11 @@
         </p>
       </div>
 
-      <aside class="auth-panel">
-        <h2 class="auth-panel-title">Share your opinion.<br>Earn rewards.</h2>
-        <p class="auth-panel-sub">Answer short surveys on the things you already have views about, and turn a few spare minutes into something worth having.</p>
-        <ul class="auth-points list-unstyled mb-0">
-        <li class="auth-point">
-          <span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span>
-          <span>Surveys pay between 5 and 30 points, and most take under ten minutes.</span>
-        </li>
-        <li class="auth-point">
-          <span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span>
-          <span>Exchange 275 points for a gift card, PayPal or a virtual Visa.</span>
-        </li>
-        <li class="auth-point">
-          <span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span>
-          <span>We never ask for your bank details, and joining is free.</span>
-        </li>
-        </ul>
-        <p class="auth-note">Points never expire. You decide which surveys to take and can stop at any time.</p>
+      <!-- A picture rather than a pitch. Somebody with an account has decided
+           already; the arguments belong on the page that still needs to make
+           them. -->
+      <aside class="auth-photo" data-anim="swing" data-anim-delay="0.18" aria-hidden="true">
+        <img src="assets/auth-portrait.jpg" alt="">
       </aside>
 
     </div>
@@ -129,6 +137,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/animations.js"></script>
 <script src="js/auth.js"></script>
 </body>
 </html>
