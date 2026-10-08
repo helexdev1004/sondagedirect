@@ -463,102 +463,18 @@ input[type="date"].field-input:invalid{ color:#79839E; }
 .auth-done svg{ flex:none; margin-top:1px; color:#17865E; }
 
 /* --------------------------------------------------------------------------
-   The pitch, which on sign-up shares the panel with the form
+   The wide card
    --------------------------------------------------------------------------
-   One sheet divided by a hairline, not two cards. Sign-up has to make an
-   argument as well as take an answer, and standing them on the same pane
-   says they are one thing.
+   Sign-up is the same object as sign-in, just wider, and the width is not a
+   taste decision. Its fields sit two to a row, and the longest thing either
+   column must hold on one line is a select reading "Choose a country first"
+   — 158px at 15px, and a native select truncates rather than wrapping or
+   shrinking. Add 45px for the leading icon and 36px for the chevron and a
+   column needs 239px; two of those plus the 16px gap and 88px of padding is
+   582px, so 620 leaves a little room and nothing below it would.
    -------------------------------------------------------------------------- */
 
-/* The column split is set by the longest thing that must fit on one line,
-   which is a select: "Choose a country first" cannot wrap or shrink, and a
-   native select truncates rather than saying it has run out of room. At
-   15px that string is 158px, so each field column needs 158 + 45 for the
-   leading icon + 36 for the chevron. Everything here follows from that. */
-.auth-card.is-split{
-  max-width:1080px;
-  padding:0;
-  display:grid;
-  grid-template-columns:minmax(0,.72fr) minmax(0,1fr);
-}
-
-.auth-pitch{
-  padding:46px 40px 40px;
-  border-right:1px solid var(--glass-edge);
-  display:flex;
-  flex-direction:column;
-  /* A shallow extra wash of white on this half. The panel's own sheen falls
-     across it, and without this the sub-line measured 4.4:1. */
-  background:linear-gradient(118deg, rgba(255,255,255,.3) 0%, rgba(255,255,255,.08) 64%, transparent 100%);
-  border-radius:30px 0 0 30px;
-  /* Five short paragraphs stand beside nine fields, so this column is only
-     about half the height of the one next to it. Centred, the slack reads
-     as room; top-aligned it read as the bottom half of the panel being
-     empty, which is what it looked like once the drawing came out. */
-  justify-content:center;
-}
-
-.auth-card.is-split .auth-form-side{ padding:46px 44px 38px; }
-
-/* Between the tablet stack and the full-width layout the container is 960
-   and the sum above no longer holds, so the form takes a larger share and
-   both sides give up padding rather than the selects giving up words. */
-@media (min-width:992px) and (max-width:1199.98px){
-  .auth-card.is-split{ grid-template-columns:minmax(0,.58fr) minmax(0,1fr); }
-  .auth-pitch{ padding:38px 30px 32px; }
-  .auth-card.is-split .auth-form-side{ padding:38px 32px 32px; }
-}
-
-.auth-pitch-title{
-  color:var(--navy);
-  font-size:27px;
-  line-height:1.24;
-  letter-spacing:-.028em;
-}
-
-.auth-pitch-sub{
-  color:var(--on-glass-dim);
-  font-size:14.5px;
-  line-height:1.68;
-  margin-top:13px;
-}
-
-.auth-points{
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-  margin:28px 0 0;
-}
-
-.auth-point{
-  display:flex;
-  align-items:flex-start;
-  gap:12px;
-  color:var(--on-glass-dim);
-  font-size:14px;
-  line-height:1.55;
-}
-
-.auth-point-mark{
-  flex:none;
-  width:25px;
-  height:25px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(140deg, var(--blue) 0%, var(--blue-btn) 100%);
-  color:#fff;
-  box-shadow:0 4px 10px -4px rgba(11,85,206,.6);
-}
-
-.auth-note{
-  margin:26px 0 0;
-  padding-top:20px;
-  border-top:1px solid var(--glass-edge);
-  color:var(--on-glass-faint);
-  font-size:12.5px;
-  line-height:1.6;
-}
+.auth-card.is-wide{ max-width:620px; }
 
 /* --------------------------------------------------------------------------
    The footer, which belongs to the stage rather than to the page it came from
@@ -583,17 +499,6 @@ input[type="date"].field-input:invalid{ color:#79839E; }
    Narrower
    -------------------------------------------------------------------------- */
 
-@media (max-width:991.98px){
-  .auth-card.is-split{ grid-template-columns:1fr; max-width:620px; }
-  .auth-pitch{
-    border-right:0;
-    border-bottom:1px solid var(--glass-edge);
-    border-radius:30px 30px 0 0;
-    padding:38px 34px 34px;
-    justify-content:flex-start;
-  }
-  .auth-card.is-split .auth-form-side{ padding:36px 34px 34px; }
-}
 
 @media (max-width:767.98px){
   .auth-main{ padding:30px 0 40px; }
@@ -606,8 +511,6 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   .auth-bar{ padding-top:18px; }
   .auth-bar-aside{ font-size:13.5px; gap:10px; }
   .auth-card{ padding:30px 20px 26px; border-radius:22px; }
-  .auth-card.is-split .auth-pitch{ padding:30px 20px 26px; border-radius:22px 22px 0 0; }
-  .auth-card.is-split .auth-form-side{ padding:28px 20px 26px; }
   /* The blur is the most expensive thing on the page and phones are where
      it costs most, so it is roughly halved. Both background layers are
      restated: the shorthand replaces the whole stack, and listing only the

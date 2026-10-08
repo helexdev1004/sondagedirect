@@ -43,7 +43,6 @@
   <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></symbol>
-  <symbol id="i-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
 </defs></svg>
 
 <header class="auth-bar">
@@ -63,23 +62,10 @@
   <div class="container">
     <div class="auth-stage">
 
-      <!-- One sheet of glass divided by a hairline, not two cards. Sign-up
-           has to make an argument as well as take an answer, and standing
-           them on the same pane says they are one thing. -->
-      <div class="auth-card glass is-split" data-anim="up">
-
-        <aside class="auth-pitch">
-          <h2 class="auth-pitch-title">Share your opinion.<br>Earn rewards.</h2>
-          <p class="auth-pitch-sub">Answer short surveys on the things you already have views about, and turn a few spare minutes into something worth having.</p>
-          <ul class="auth-points list-unstyled">
-            <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>Surveys pay between 5 and 30 points, and most take under ten minutes.</span></li>
-            <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>Exchange 275 points for a gift card, PayPal or a virtual Visa.</span></li>
-            <li class="auth-point"><span class="auth-point-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24"><use href="#i-tick"/></svg></span><span>We never ask for your bank details, and joining is free.</span></li>
-          </ul>
-          <p class="auth-note">Points never expire. You decide which surveys to take and can stop at any time.</p>
-        </aside>
-
-        <div class="auth-form-side">
+      <!-- Wider than sign-in's, and only because of the selects: two field
+           columns each have to hold "Choose a country first" on one line,
+           which a native select will truncate rather than wrap. -->
+      <div class="auth-card glass is-wide" data-anim="up">
           <h1 class="auth-title">Create your account</h1>
           <p class="auth-sub">It takes a minute, costs nothing, and the first surveys are waiting.</p>
 
@@ -193,8 +179,6 @@
         <p class="auth-switch">
           Already have an account? <a href="signin.html" class="auth-link">Log in</a>
         </p>
-        </div>
-
       </div>
 
     </div>
