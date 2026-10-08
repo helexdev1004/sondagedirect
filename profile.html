@@ -177,149 +177,85 @@
         <span class="block-note">8 fields</span>
       </div>
       <ul class="details list-unstyled mb-0">
-        <li class="detail">
+        <li class="detail" data-edit data-field="first" data-kind="text"
+            data-label="First name" data-value="Alex">
           <div class="detail-main">
             <span class="detail-label">First name</span>
-            <span class="detail-value" data-value>Alex</span>
+            <span class="detail-value" data-value-text>Alex</span>
           </div>
-          <button class="detail-edit" type="button" aria-label="Change your first name">
+          <button class="detail-edit" type="button">
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-edit"/></svg>Edit
           </button>
-          <form class="detail-form" hidden>
-            <label class="visually-hidden" for="f-first">First name</label>
-            <input id="f-first" class="detail-input" type="text" value="Alex">
-            
-            <div class="detail-actions">
-              <button class="btn btn-brand" type="submit">Save</button>
-              <button class="btn btn-ghost" type="button" data-cancel>Cancel</button>
-            </div>
-          </form>
         </li>
-        <li class="detail">
+        <li class="detail" data-edit data-field="last" data-kind="text"
+            data-label="Last name" data-value="Carter">
           <div class="detail-main">
             <span class="detail-label">Last name</span>
-            <span class="detail-value" data-value>Carter</span>
+            <span class="detail-value" data-value-text>Carter</span>
           </div>
-          <button class="detail-edit" type="button" aria-label="Change your last name">
+          <button class="detail-edit" type="button">
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-edit"/></svg>Edit
           </button>
-          <form class="detail-form" hidden>
-            <label class="visually-hidden" for="f-last">Last name</label>
-            <input id="f-last" class="detail-input" type="text" value="Carter">
-            
-            <div class="detail-actions">
-              <button class="btn btn-brand" type="submit">Save</button>
-              <button class="btn btn-ghost" type="button" data-cancel>Cancel</button>
-            </div>
-          </form>
         </li>
-        <li class="detail">
+        <li class="detail" data-edit data-field="password" data-kind="password"
+            data-label="Password" data-value="" data-hint="At least 10 characters. Changing it signs you out everywhere else.">
           <div class="detail-main">
             <span class="detail-label">Password</span>
-            <span class="detail-value" data-value>••••••••</span>
+            <span class="detail-value" data-value-text>••••••••</span>
           </div>
-          <button class="detail-edit" type="button" aria-label="Change your password">
+          <button class="detail-edit" type="button">
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-edit"/></svg>Edit
           </button>
-          <form class="detail-form" hidden>
-            <label class="visually-hidden" for="f-pass">Password</label>
-            <input id="f-pass" class="detail-input" type="password" placeholder="New password" autocomplete="new-password">
-            <p class="detail-hint">At least 10 characters. Changing it signs you out everywhere else.</p>
-            <div class="detail-actions">
-              <button class="btn btn-brand" type="submit">Save</button>
-              <button class="btn btn-ghost" type="button" data-cancel>Cancel</button>
-            </div>
-          </form>
         </li>
-        <li class="detail">
+        <li class="detail" data-edit data-field="gender" data-kind="choice"
+            data-label="Gender" data-value="Female" data-options="Female|Male|Another term|Prefer not to say">
           <div class="detail-main">
             <span class="detail-label">Gender</span>
-            <span class="detail-value" data-value>Female</span>
+            <span class="detail-value" data-value-text>Female</span>
           </div>
-          <button class="detail-edit" type="button" aria-label="Change your gender">
+          <button class="detail-edit" type="button">
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-edit"/></svg>Edit
           </button>
-          <form class="detail-form" hidden>
-            <label class="visually-hidden" for="f-gender">Gender</label>
-            <select id="f-gender" class="detail-input"><option selected>Female</option><option>Male</option><option>Another term</option><option>Prefer not to say</option></select>
-            
-            <div class="detail-actions">
-              <button class="btn btn-brand" type="submit">Save</button>
-              <button class="btn btn-ghost" type="button" data-cancel>Cancel</button>
-            </div>
-          </form>
         </li>
-        <li class="detail">
+        <li class="detail" data-edit data-field="born" data-kind="date"
+            data-label="Birth date" data-value="1994-03-14" data-hint="Surveys are matched on your age, so this one needs to be right.">
           <div class="detail-main">
             <span class="detail-label">Birth date</span>
-            <span class="detail-value" data-value>14 March 1994</span>
+            <span class="detail-value" data-value-text>14 March 1994</span>
           </div>
-          <button class="detail-edit" type="button" aria-label="Change your birth date">
+          <button class="detail-edit" type="button">
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-edit"/></svg>Edit
           </button>
-          <form class="detail-form" hidden>
-            <label class="visually-hidden" for="f-born">Birth date</label>
-            <input id="f-born" class="detail-input" type="date" value="1994-03-14">
-            
-            <div class="detail-actions">
-              <button class="btn btn-brand" type="submit">Save</button>
-              <button class="btn btn-ghost" type="button" data-cancel>Cancel</button>
-            </div>
-          </form>
         </li>
-        <li class="detail">
+        <li class="detail" data-edit data-field="country" data-kind="country"
+            data-label="Country" data-value="Netherlands" data-hint="Your country decides which surveys you are offered.">
           <div class="detail-main">
             <span class="detail-label">Country</span>
-            <span class="detail-value" data-value>Netherlands</span>
+            <span class="detail-value" data-value-text>Netherlands</span>
           </div>
-          <button class="detail-edit" type="button" aria-label="Change your country">
+          <button class="detail-edit" type="button">
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-edit"/></svg>Edit
           </button>
-          <form class="detail-form" hidden>
-            <label class="visually-hidden" for="f-country">Country</label>
-            <select id="f-country" class="detail-input"><option selected>Netherlands</option><option>Belgium</option><option>France</option><option>Germany</option><option>Spain</option><option>Portugal</option><option>Italy</option></select>
-            <p class="detail-hint">Your country decides which surveys you are offered.</p>
-            <div class="detail-actions">
-              <button class="btn btn-brand" type="submit">Save</button>
-              <button class="btn btn-ghost" type="button" data-cancel>Cancel</button>
-            </div>
-          </form>
         </li>
-        <li class="detail">
+        <li class="detail" data-edit data-field="region" data-kind="region"
+            data-label="Region" data-value="Noord-Holland" data-hint="The regions on offer follow the country above.">
           <div class="detail-main">
             <span class="detail-label">Region</span>
-            <span class="detail-value" data-value>Noord-Holland</span>
+            <span class="detail-value" data-value-text>Noord-Holland</span>
           </div>
-          <button class="detail-edit" type="button" aria-label="Change your region">
+          <button class="detail-edit" type="button">
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-edit"/></svg>Edit
           </button>
-          <form class="detail-form" hidden>
-            <label class="visually-hidden" for="f-region">Region</label>
-            <input id="f-region" class="detail-input" type="text" value="Noord-Holland">
-            
-            <div class="detail-actions">
-              <button class="btn btn-brand" type="submit">Save</button>
-              <button class="btn btn-ghost" type="button" data-cancel>Cancel</button>
-            </div>
-          </form>
         </li>
-        <li class="detail">
+        <li class="detail" data-edit data-field="post" data-kind="text"
+            data-label="Postal code" data-value="1017 CV">
           <div class="detail-main">
             <span class="detail-label">Postal code</span>
-            <span class="detail-value" data-value>1017 CV</span>
+            <span class="detail-value" data-value-text>1017 CV</span>
           </div>
-          <button class="detail-edit" type="button" aria-label="Change your postal code">
+          <button class="detail-edit" type="button">
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-edit"/></svg>Edit
           </button>
-          <form class="detail-form" hidden>
-            <label class="visually-hidden" for="f-post">Postal code</label>
-            <input id="f-post" class="detail-input" type="text" value="1017 CV">
-            
-            <div class="detail-actions">
-              <button class="btn btn-brand" type="submit">Save</button>
-              <button class="btn btn-ghost" type="button" data-cancel>Cancel</button>
-            </div>
-          </form>
         </li>
       </ul>
     </section>
@@ -352,6 +288,30 @@
 
   </div>
 </main>
+
+<!-- One dialog for all eight fields. Bootstrap handles opening, Escape, the
+     backdrop and the focus trap; what is here is the part it cannot know —
+     which control a field wants, and what the row should read afterwards. -->
+<div class="modal fade" id="editField" tabindex="-1" aria-labelledby="editTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content app-modal">
+      <span class="modal-mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><use href="#i-edit"/></svg></span>
+      <h2 id="editTitle" data-edit-title>Edit</h2>
+      <p data-edit-sub>Change what we hold for this field.</p>
+
+      <form data-edit-form>
+        <label class="detail-label" data-edit-label for="editInput" style="display:block;margin-top:20px">Value</label>
+        <div data-edit-control style="margin-top:8px"></div>
+        <p class="detail-hint" data-edit-hint hidden></p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost btn-lg-cta" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-brand btn-lg-cta">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <!-- Deleting asks, and asks for the word rather than a click. A single button
      is too easy to reach by accident for something with no way back, and the

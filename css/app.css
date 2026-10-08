@@ -1413,16 +1413,6 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   color:#D6453B;
 }
 
-/* The form takes the whole width below the row rather than squeezing in
-   beside the label, so a long value and its buttons are not fighting for the
-   same 200px. */
-.detail-form{
-  flex:1 0 100%;
-  padding-top:14px;
-  margin-top:2px;
-  border-top:1px solid var(--border);
-}
-
 .detail-input{
   width:100%;
   max-width:420px;
@@ -1450,15 +1440,6 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   margin-top:9px;
   max-width:52ch;
 }
-
-.detail-actions{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-  flex-wrap:wrap;
-}
-
-.detail-actions .btn{ padding:10px 20px; }
 
 /* --------------------------------------------------------------------------
    Profiling topics

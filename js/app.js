@@ -225,69 +225,170 @@
 
   /* ----------------------------------------------------- editing a detail */
 
-  // Each row opens in place. One at a time, because two rows open at once is
-  // two sets of Save buttons and no way to tell which one Enter belongs to.
-  var details = [].slice.call(document.querySelectorAll('.detail'));
+  // One dialog for all eight fields. Bootstrap handles opening, Escape, the
+  // backdrop and the focus trap; what is here is the part it cannot know —
+  // which control a field wants, and what the row should read afterwards.
+  //
+  // Nothing is sent anywhere. Saving changes what the row displays and no
+  // more: there is no back end behind this, and a reload puts it all back.
+  var editBox = document.getElementById('editField');
 
-  function closeDetail(row) {
-    var form = row.querySelector('.detail-form');
-    var edit = row.querySelector('.detail-edit');
-    if (!form) return;
-    form.hidden = true;
-    if (edit) { edit.hidden = false; }
-  }
+  if (editBox && typeof window.bootstrap !== 'undefined') {
+    var editModal = bootstrap.Modal.getOrCreateInstance(editBox);
+    var eTitle = editBox.querySelector('[data-edit-title]');
+    var eSub   = editBox.querySelector('[data-edit-sub]');
+    var eLabel = editBox.querySelector('[data-edit-label]');
+    var eSlot  = editBox.querySelector('[data-edit-control]');
+    var eHint  = editBox.querySelector('[data-edit-hint]');
+    var eForm  = editBox.querySelector('[data-edit-form]');
+    var openRow = null;
+    var editOpener = null;
 
-  details.forEach(function (row) {
-    var form = row.querySelector('.detail-form');
-    var edit = row.querySelector('.detail-edit');
-    var value = row.querySelector('[data-value]');
-    if (!form || !edit) return;
+    var COUNTRIES = ['Belgium', 'France', 'Germany', 'Italy', 'Netherlands', 'Portugal', 'Spain'];
 
-    var field = form.querySelector('.detail-input');
-    var was = field ? field.value : '';
+    // Enough to make the dependency real rather than decorative. A country
+    // with no list still gets one option, so the menu is never empty.
+    var REGIONS = {
+      Belgium:     ['Antwerp', 'East Flanders', 'Flemish Brabant', 'Hainaut', 'Liège', 'Limburg', 'Namur', 'West Flanders'],
+      France:      ['Auvergne-Rhône-Alpes', 'Brittany', 'Grand Est', 'Hauts-de-France', 'Île-de-France', 'Normandy', 'Nouvelle-Aquitaine', 'Occitanie'],
+      Germany:     ['Baden-Württemberg', 'Bavaria', 'Berlin', 'Hamburg', 'Hesse', 'Lower Saxony', 'North Rhine-Westphalia', 'Saxony'],
+      Italy:       ['Campania', 'Emilia-Romagna', 'Lazio', 'Lombardy', 'Piedmont', 'Sicily', 'Tuscany', 'Veneto'],
+      Netherlands: ['Drenthe', 'Flevoland', 'Friesland', 'Gelderland', 'Groningen', 'Limburg', 'Noord-Brabant', 'Noord-Holland', 'Overijssel', 'Utrecht', 'Zeeland', 'Zuid-Holland'],
+      Portugal:    ['Aveiro', 'Braga', 'Coimbra', 'Faro', 'Lisbon', 'Porto', 'Setúbal'],
+      Spain:       ['Andalusia', 'Aragon', 'Basque Country', 'Catalonia', 'Galicia', 'Madrid', 'Valencia']
+    };
 
-    edit.addEventListener('click', function () {
-      details.forEach(function (other) { if (other !== row) closeDetail(other); });
-      form.hidden = false;
-      edit.hidden = true;
-      if (field) { field.focus(); if (field.select) field.select(); }
-    });
+    var rowFor = function (field) {
+      return document.querySelector('[data-edit][data-field="' + field + '"]');
+    };
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (field && value) {
-        // A password is never echoed back into the page. The row keeps its
-        // dots and says nothing about what the new one is.
-        if (field.type !== 'password') {
-          value.textContent = field.value;
-        }
-        was = field.value;
-      }
-      closeDetail(row);
-      edit.focus();
-    });
+    // "1994-03-14" as a reader would write it. The date input needs the first
+    // form and the row shows the second, so the two are kept apart: data-value
+    // holds the ISO one throughout.
+    var readable = function (iso) {
+      var p = String(iso).split('-');
+      if (p.length !== 3) return iso;
+      var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+    };
 
-    form.addEventListener('reset', function () { closeDetail(row); });
-
-    var cancel = form.querySelector('[data-cancel]');
-    if (cancel) {
-      cancel.addEventListener('click', function () {
-        if (field) field.value = was;   // put back what was there, not what was typed
-        closeDetail(row);
-        edit.focus();
+    var makeSelect = function (list, current) {
+      var el = document.createElement('select');
+      el.className = 'detail-input';
+      el.id = 'editInput';
+      list.forEach(function (o) {
+        var opt = document.createElement('option');
+        opt.textContent = o;
+        if (o === current) opt.selected = true;
+        el.appendChild(opt);
       });
-    }
+      return el;
+    };
 
-    // Escape closes the row the same way Cancel does. Without it the only way
-    // out of an open field is to find a small button with the mouse.
-    form.addEventListener('keydown', function (e) {
-      if (e.key !== 'Escape') return;
-      e.stopPropagation();
-      if (field) field.value = was;
-      closeDetail(row);
-      edit.focus();
+    var makeInput = function (type, value, attrs) {
+      var el = document.createElement('input');
+      el.className = 'detail-input';
+      el.id = 'editInput';
+      el.type = type;
+      el.value = value;
+      Object.keys(attrs || {}).forEach(function (k) { el.setAttribute(k, attrs[k]); });
+      return el;
+    };
+
+    var control = function (kind, value, row) {
+      if (kind === 'choice') {
+        return makeSelect((row.getAttribute('data-options') || '').split('|').filter(Boolean), value);
+      }
+      if (kind === 'country') return makeSelect(COUNTRIES, value);
+      if (kind === 'region') {
+        // Whatever the country row currently says, not whatever it said when
+        // the page loaded.
+        var c = rowFor('country');
+        return makeSelect(REGIONS[c ? c.getAttribute('data-value') : ''] || ['Not applicable'], value);
+      }
+      if (kind === 'date') {
+        // A birth date in the future is a typo, so the picker will not offer one.
+        return makeInput('date', value, { max: new Date().toISOString().slice(0, 10) });
+      }
+      if (kind === 'password') {
+        return makeInput('password', '', { placeholder: 'New password', autocomplete: 'new-password' });
+      }
+      return makeInput('text', value, { maxlength: '60', autocomplete: 'off' });
+    };
+
+    document.querySelectorAll('[data-edit]').forEach(function (row) {
+      var btn = row.querySelector('.detail-edit');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        openRow = row;
+        editOpener = btn;
+        var kind = row.getAttribute('data-kind');
+        var label = row.getAttribute('data-label');
+
+        eTitle.textContent = label;
+        eSub.textContent = kind === 'password'
+          ? 'Pick something you do not use anywhere else.'
+          : 'Change the ' + label.toLowerCase() + ' we hold for you.';
+        eLabel.textContent = kind === 'password' ? 'New password' : label;
+
+        var hint = row.getAttribute('data-hint');
+        eHint.textContent = hint || '';
+        eHint.hidden = !hint;
+
+        eSlot.innerHTML = '';
+        eSlot.appendChild(control(kind, row.getAttribute('data-value') || '', row));
+        editModal.show();
+      });
     });
-  });
+
+    editBox.addEventListener('shown.bs.modal', function () {
+      var field = eSlot.querySelector('.detail-input');
+      if (!field) return;
+      field.focus();
+      if (field.select && field.type === 'text') field.select();
+    });
+
+    eForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!openRow) return;
+      var field = eSlot.querySelector('.detail-input');
+      var kind = openRow.getAttribute('data-kind');
+      var shown = openRow.querySelector('[data-value-text]');
+      var value = field ? field.value : '';
+
+      if (kind === 'password') {
+        // Never echoed back into the page. The row keeps its dots and says
+        // nothing about what the new one is.
+        if (!value) { editModal.hide(); return; }
+      } else {
+        openRow.setAttribute('data-value', value);
+        if (shown) shown.textContent = kind === 'date' ? readable(value) : value;
+      }
+
+      // Changing the country can leave the region saying something that
+      // country does not have, so it is moved to the first one that it does.
+      if (openRow.getAttribute('data-field') === 'country') {
+        var r = rowFor('region');
+        var list = REGIONS[value] || ['Not applicable'];
+        if (r && list.indexOf(r.getAttribute('data-value')) === -1) {
+          r.setAttribute('data-value', list[0]);
+          var rt = r.querySelector('[data-value-text]');
+          if (rt) rt.textContent = list[0];
+        }
+      }
+
+      editModal.hide();
+    });
+
+    // Focus back where it came from, or a keyboard user is left on <body> and
+    // has to tab from the top of the page again.
+    editBox.addEventListener('hidden.bs.modal', function () {
+      eSlot.innerHTML = '';
+      if (editOpener) editOpener.focus();
+      openRow = null;
+    });
+  }
 
   /* -------------------------------------------------- deleting an account */
 
