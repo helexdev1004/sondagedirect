@@ -2095,28 +2095,74 @@ a{ text-decoration:none; }
   flex:none;
   border-top:1px solid var(--border);
   background:var(--white);
-  padding:22px 0;
+  padding:30px 0 26px;
 }
 
+/* Two rows out of one grid: the mark and the links sit on the first, the
+   small print runs the full width of the second. A single flex row put the
+   copyright and the links at opposite ends of the same line, which read as
+   two unrelated things rather than one footer. */
 .app-footer-inner{
-  display:flex;
+  display:grid;
+  grid-template-columns:auto 1fr;
   align-items:center;
-  justify-content:space-between;
-  gap:18px;
-  flex-wrap:wrap;
+  gap:18px 28px;
 }
 
-.app-footer p,
-.app-footer a{
-  font-size:13px;
-  color:var(--body);
-}
+.app-footer .brand-mark{ width:26px; height:26px; }
+.app-footer .brand-name{ font-size:17px; }
 
-.app-footer ul{
+.app-footer-nav{
+  justify-self:end;
   display:flex;
-  gap:22px;
+  gap:28px;
   flex-wrap:wrap;
 }
 
-.app-footer a:hover{ color:var(--blue); }
+/* The rule under a link grows from nothing rather than appearing whole —
+   the same gesture the top menu uses, at the size this one wants. */
+.app-footer-nav a{
+  position:relative;
+  font-size:13.5px;
+  font-weight:500;
+  color:var(--body);
+  padding-bottom:2px;
+  transition:color .2s ease;
+}
+
+.app-footer-nav a::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:1.5px;
+  border-radius:2px;
+  background:var(--blue);
+  transform:scaleX(0);
+  transition:transform .22s ease;
+}
+
+.app-footer-nav a:hover{ color:var(--navy); }
+.app-footer-nav a:hover::after{ transform:scaleX(1); }
+
+.app-footer-copy{
+  grid-column:1 / -1;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+  color:var(--body);
+  font-size:12.5px;
+  line-height:1.6;
+}
+
+@media (max-width:575.98px){
+  .app-footer-inner{
+    grid-template-columns:1fr;
+    justify-items:center;
+    text-align:center;
+    gap:16px;
+  }
+  .app-footer-nav{ justify-self:center; gap:20px; }
+  .app-footer-copy{ padding-top:16px; width:100%; }
+}
 
