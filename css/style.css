@@ -2073,6 +2073,24 @@ a{ text-decoration:none; }
   color:var(--white);
 }
 
+/* Sits under the small print and runs a little wider than the text measure,
+   because it is a picture and not another paragraph. The negative side
+   margins let it breathe into the panel's padding without touching the
+   rounded corners. */
+.auth-panel-art{
+  display:block;
+  width:calc(100% + 24px);
+  max-width:480px;
+  height:auto;
+  margin:30px -12px -10px;
+}
+
+/* Stacked, the panel is as wide as the page and the drawing would blow up to
+   fill it. Capped and centred instead. */
+@media (max-width:991.98px){
+  .auth-panel-art{ max-width:430px; margin-inline:auto; }
+}
+
 .auth-note{
   margin-top:32px;
   padding-top:22px;
@@ -2249,6 +2267,10 @@ a{ text-decoration:none; }
   display:block;
   width:100%;
   max-width:520px;
+  /* The width/height attributes on the tag reserve the right box before the
+     file loads, but they also pin the used height — without this the SVG
+     letterboxes inside a fixed-height box instead of scaling with it. */
+  height:auto;
   margin-inline:auto;
 }
 
