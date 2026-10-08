@@ -2214,11 +2214,13 @@ a{ text-decoration:none; }
 
 
 /* --------------------------------------------------------------------------
-   The sign-in portrait
+   The sign-in illustration
    --------------------------------------------------------------------------
-   Lit from behind rather than framed: a blurred wash of the brand blue under
-   a picture with no border. A framed photo beside a shadowed card is two
-   rectangles competing; this way the card is the only edge on the page.
+   A drawing of the thing you are logging in to reach — one survey card and
+   what answering it pays — rather than a photograph of somebody using it.
+   The photograph that was here was the homepage hero with floating data
+   cards added, so arriving from the homepage you met the same picture twice.
+   It draws its own soft wash, so all this has to do is sit it in the column.
    -------------------------------------------------------------------------- */
 
 .auth-photo{
@@ -2226,43 +2228,39 @@ a{ text-decoration:none; }
   justify-self:center;
 }
 
+/* A wider, fainter version of the wash the drawing carries, to bed it into
+   the page. It has to stay weak: two glows of the same strength stacked read
+   as a grey smudge rather than light. */
 .auth-photo::before{
   content:"";
   position:absolute;
-  inset:8% -6% -10% -2%;
+  inset:4% -8% -2% -8%;
   border-radius:50%;
-  background:radial-gradient(closest-side, rgba(8,116,252,.34), rgba(8,116,252,0) 74%);
-  filter:blur(34px);
+  background:radial-gradient(closest-side, rgba(8,116,252,.17), rgba(8,116,252,0) 72%);
+  filter:blur(40px);
   pointer-events:none;
 }
 
+/* No radius, no shadow, no mask. The drawing has a transparent ground and
+   draws its own shadows per object; a box-shadow on the element would trace
+   a rectangle around empty space. */
 .auth-photo img{
   position:relative;
   display:block;
   width:100%;
-  max-width:460px;
-  border-radius:24px;
-  /* The foot of the picture dissolves into the page, so it ends without a line
-     where it stops. Two masks multiplied: an ellipse that softens all four
-     corners, and a vertical fade that takes the bottom edge out entirely —
-     the ellipse alone left a visible straight edge across the base, which is
-     the one edge a photograph on an open page must not have. */
-  -webkit-mask-image:
-    radial-gradient(130% 118% at 50% 30%, #000 54%, transparent 92%),
-    linear-gradient(180deg, #000 58%, rgba(0,0,0,.35) 86%, transparent 100%);
-  -webkit-mask-composite:source-in;
-  mask-image:
-    radial-gradient(130% 118% at 50% 30%, #000 54%, transparent 92%),
-    linear-gradient(180deg, #000 58%, rgba(0,0,0,.35) 86%, transparent 100%);
-  mask-composite:intersect;
+  max-width:520px;
+  margin-inline:auto;
 }
 
 @media (max-width:991.98px){
   .auth-photo{ order:2; }
-  .auth-photo img{ max-width:380px; margin-inline:auto; }
+  .auth-photo img{ max-width:400px; }
 }
 
 @media (max-width:575.98px){
   .auth-card{ padding:28px 20px 26px; border-radius:18px; }
-  .auth-photo{ display:none; }
+  /* The photograph was dropped here because it cost 128KB to show a phone a
+     picture it had no room for. A drawing costs 8KB, and a phone login
+     screen with nothing under the form looks unfinished, so it stays. */
+  .auth-photo img{ max-width:270px; }
 }

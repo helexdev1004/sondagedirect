@@ -1,0 +1,130 @@
+<!-- The viewBox is cropped to what is actually drawn (plus room for the two
+     shadows to fall) rather than to round numbers. Stacked under the card on
+     a narrow screen, every unused unit of canvas becomes real empty page. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 68 448 494" width="448" height="494" role="img" aria-hidden="true">
+  <title>A survey card with a points reward</title>
+
+  <defs>
+    <linearGradient id="g-blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2E96FF"/>
+      <stop offset="1" stop-color="#0B55CE"/>
+    </linearGradient>
+
+    <linearGradient id="g-card" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F6FBFF"/>
+    </linearGradient>
+
+    <radialGradient id="g-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#0874FC" stop-opacity="0.16"/>
+      <stop offset="0.6" stop-color="#0874FC" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#0874FC" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Two shadows, not one. The chip sits closer to the viewer than the
+         card, so its shadow is tighter and darker; a single shared shadow
+         flattens the two objects onto the same plane. -->
+    <filter id="f-card" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="26" stdDeviation="24" flood-color="#0C2A62" flood-opacity="0.15"/>
+    </filter>
+
+    <filter id="f-chip" x="-60%" y="-60%" width="220%" height="220%">
+      <feDropShadow dx="0" dy="14" stdDeviation="13" flood-color="#0C2A62" flood-opacity="0.19"/>
+    </filter>
+  </defs>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       Ground. A wash, a dotted orbit and one open arc — enough to stop
+       the card floating in nothing, not so much that it competes.
+       ──────────────────────────────────────────────────────────────── -->
+  <circle cx="258" cy="272" r="212" fill="url(#g-glow)"/>
+  <circle cx="258" cy="272" r="198" fill="none" stroke="#0874FC" stroke-opacity="0.15"
+          stroke-width="1.5" stroke-dasharray="2.5 10" stroke-linecap="round"/>
+  <!-- The one solid stroke, kept on the right where the card does not reach.
+       Run along the left it vanished behind the card and came back out, which
+       read as a mistake rather than an orbit. -->
+  <path d="M437.5 188 A198 198 0 0 1 444 340" fill="none" stroke="#0874FC" stroke-opacity="0.3"
+        stroke-width="3.5" stroke-linecap="round"/>
+
+  <g fill="#0874FC" opacity="0.2">
+    <circle cx="26" cy="334" r="2.6"/><circle cx="44" cy="334" r="2.6"/><circle cx="62" cy="334" r="2.6"/>
+    <circle cx="26" cy="352" r="2.6"/><circle cx="44" cy="352" r="2.6"/><circle cx="62" cy="352" r="2.6"/>
+    <circle cx="26" cy="370" r="2.6"/><circle cx="44" cy="370" r="2.6"/><circle cx="62" cy="370" r="2.6"/>
+  </g>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       The survey card. Tilted a little so it reads as an object lying on
+       the page rather than a panel welded to it.
+       ──────────────────────────────────────────────────────────────── -->
+  <g transform="rotate(-3.2 220 289)">
+    <rect x="70" y="128" width="300" height="322" rx="26"
+          fill="url(#g-card)" stroke="#DBE8F5" stroke-width="1.5" filter="url(#f-card)"/>
+
+    <!-- header: the mark, the survey name, and what it pays -->
+    <rect x="96" y="156" width="34" height="34" rx="11" fill="url(#g-blue)"/>
+    <g fill="#FFFFFF" opacity="0.88">
+      <circle cx="105" cy="167.5" r="1.8"/><rect x="110" y="166.2" width="13" height="2.6" rx="1.3"/>
+      <circle cx="105" cy="173" r="1.8"/><rect x="110" y="171.7" width="13" height="2.6" rx="1.3"/>
+      <circle cx="105" cy="178.5" r="1.8"/><rect x="110" y="177.2" width="13" height="2.6" rx="1.3"/>
+    </g>
+
+    <rect x="142" y="161" width="106" height="10" rx="5" fill="#0B1437" opacity="0.8"/>
+    <rect x="142" y="178" width="64" height="8" rx="4" fill="#5F6787" opacity="0.4"/>
+
+    <rect x="294" y="161" width="52" height="24" rx="12" fill="#E7F1FF"/>
+    <circle cx="306" cy="173" r="4.5" fill="url(#g-blue)"/>
+    <rect x="315" y="169" width="22" height="8" rx="4" fill="#0B55CE" opacity="0.6"/>
+
+    <rect x="96" y="208" width="250" height="1.5" rx="0.75" fill="#DBE8F5"/>
+
+    <!-- the question -->
+    <rect x="96" y="228" width="236" height="11" rx="5.5" fill="#0B1437" opacity="0.85"/>
+    <rect x="96" y="248" width="150" height="11" rx="5.5" fill="#0B1437" opacity="0.85"/>
+
+    <!-- the answers, with the second one chosen -->
+    <rect x="96" y="282" width="250" height="40" rx="13" fill="#FFFFFF" stroke="#DBE8F5" stroke-width="1.5"/>
+    <circle cx="118" cy="302" r="9" fill="none" stroke="#CBDCF0" stroke-width="2"/>
+    <rect x="138" y="297.5" width="104" height="9" rx="4.5" fill="#5F6787" opacity="0.38"/>
+
+    <rect x="96" y="332" width="250" height="40" rx="13" fill="#EAF3FF" stroke="#0874FC"
+          stroke-opacity="0.8" stroke-width="2"/>
+    <circle cx="118" cy="352" r="9" fill="url(#g-blue)"/>
+    <path d="M113.9 352.3l2.8 2.8 5.5-5.9" fill="none" stroke="#FFFFFF" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="138" y="347.5" width="118" height="9" rx="4.5" fill="#0B55CE" opacity="0.7"/>
+
+    <rect x="96" y="382" width="250" height="40" rx="13" fill="#FFFFFF" stroke="#DBE8F5" stroke-width="1.5"/>
+    <circle cx="118" cy="402" r="9" fill="none" stroke="#CBDCF0" stroke-width="2"/>
+    <rect x="138" y="397.5" width="84" height="9" rx="4.5" fill="#5F6787" opacity="0.38"/>
+  </g>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       The reward, lifted off the card and tilted the other way. It is the
+       only thing on the drawing that is spelled out, which is what makes
+       it the thing you read.
+       ──────────────────────────────────────────────────────────────── -->
+  <g transform="rotate(5 326 452)">
+    <rect x="252" y="416" width="148" height="72" rx="24"
+          fill="#FFFFFF" stroke="#DBE8F5" stroke-width="1.5" filter="url(#f-chip)"/>
+
+    <circle cx="294" cy="452" r="22" fill="url(#g-blue)"/>
+    <circle cx="294" cy="452" r="16.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.5"/>
+    <path d="M294 441c0 6.2 1 7.6 7.4 7.6-6.4 0-7.4 1.4-7.4 7.4 0-6-1-7.4-7.4-7.4 6.4 0 7.4-1.4 7.4-7.6z"
+          fill="#FFFFFF" opacity="0.95" transform="translate(0 3.4)"/>
+
+    <text x="328" y="448" fill="#0B1437"
+          font-family="'Plus Jakarta Sans', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif"
+          font-size="26" font-weight="800" letter-spacing="-0.6">+25</text>
+    <text x="329" y="469" fill="#5F6787"
+          font-family="'Plus Jakarta Sans', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif"
+          font-size="13.5" font-weight="600" letter-spacing="0.1">points</text>
+  </g>
+
+  <!-- sparks -->
+  <path d="M424 154c0 9.6 1.6 11.8 11.4 11.8-9.8 0-11.4 2.2-11.4 11.4 0-9.2-1.6-11.4-11.4-11.4 9.8 0 11.4-2.2 11.4-11.8z"
+        fill="url(#g-blue)" opacity="0.9"/>
+  <path d="M60 198c0 6.2 1 7.6 7.4 7.6-6.4 0-7.4 1.4-7.4 7.4 0-6-1-7.4-7.4-7.4 6.4 0 7.4-1.4 7.4-7.6z"
+        fill="#0874FC" opacity="0.42"/>
+  <path d="M452 296c0 4.8.8 5.9 5.7 5.9-4.9 0-5.7 1.1-5.7 5.7 0-4.6-.8-5.7-5.7-5.7 4.9 0 5.7-1.1 5.7-5.9z"
+        fill="#0874FC" opacity="0.3"/>
+</svg>
