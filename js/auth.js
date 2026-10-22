@@ -1,16 +1,13 @@
-/* Sign in and sign up.
+/* Sign in / sign up forms.
  *
- * Nothing is sent anywhere. There is no back end behind these yet, so a form
- * that passes says so and stops — it does not pretend an account was made.
- *
- * The validation is written out rather than left to the browser because the
- * built-in messages cannot be styled, appear one at a time in a bubble that
- * vanishes, and say things like "Please match the requested format".
+ * No back end yet, so a valid submit just says so and stops.
+ * Validation is hand-rolled because the built-in messages can't be styled
+ * and say things like "Please match the requested format".
  */
 (function () {
   'use strict';
 
-  /* ----------------------------------------------------------- the eye */
+  /* password show/hide */
 
   document.querySelectorAll('[data-eye]').forEach(function (btn) {
     var field = document.getElementById(btn.getAttribute('data-eye'));
@@ -22,19 +19,17 @@
       btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
       btn.setAttribute('aria-pressed', String(show));
       btn.querySelector('use').setAttribute('href', show ? '#i-eye-off' : '#i-eye');
-      // Back to the field, at the end of what is written there. Clicking the
-      // eye otherwise takes the caret away mid-word.
+      // put the caret back at the end, otherwise clicking the eye drops it mid-word
       field.focus();
       var at = field.value.length;
       if (field.setSelectionRange && field.type !== 'date') field.setSelectionRange(at, at);
     });
   });
 
-  /* ------------------------------------------------------ region by country */
+  /* region list follows country */
 
-  // The same table the profile screen uses. Duplicated rather than shared
-  // because app.js does not load here and loading it for one object would
-  // bring the whole signed-in app with it.
+  // same list the profile screen uses. copied rather than shared because app.js
+  // isn't loaded on these pages.
   var REGIONS = {
     Belgium:     ['Antwerp', 'East Flanders', 'Flemish Brabant', 'Hainaut', 'Liège', 'Limburg', 'Namur', 'West Flanders'],
     France:      ['Auvergne-Rhône-Alpes', 'Brittany', 'Grand Est', 'Hauts-de-France', 'Île-de-France', 'Normandy', 'Nouvelle-Aquitaine', 'Occitanie'],
@@ -49,8 +44,8 @@
   var region = document.querySelector('[data-region]');
 
   if (country && region) {
-    // Disabled until a country is chosen, because a region menu with nothing
-    // in it is a worse answer than one that says why.
+    // stays disabled until a country is picked - an empty region menu is worse
+    // than one that says why
     country.addEventListener('change', function () {
       var list = REGIONS[country.value] || [];
       region.innerHTML = '';
@@ -73,18 +68,16 @@
     });
   }
 
-  /* -------------------------------------------------------------- checking */
+  /* validation */
 
   var RULES = {
     required: function (v) { return v.trim() !== ''; },
 
-    // Deliberately loose. The only honest test of an address is sending to
-    // it, and every tighter pattern rejects something real — plus-addressing,
-    // long new top-level domains, apostrophes in a name.
+    // loose on purpose. tighter patterns reject real addresses: plus-addressing,
+    // the newer long TLDs, apostrophes.
     email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); },
 
-    // Length alone. Composition rules push people toward Passw0rd! and away
-    // from the long ordinary phrases that are actually harder to guess.
+    // length only. composition rules just get you Passw0rd!
     password: function (v) { return v.length >= 10; },
 
     age16: function (v) {
@@ -103,11 +96,8 @@
   function checkOne(input) {
     var field = input.closest('[data-field]');
 
-    // A disabled control is one the form is not asking for yet. Region is
-    // disabled until a country is chosen, and without this submitting the
-    // empty form put "Choose your region" under a select that still read
-    // "Choose a country first" and could not be opened — an error with no
-    // way to clear it, on the one field that was not the user's fault.
+    // skip disabled controls. region is disabled until a country is chosen, and
+    // without this an empty submit flagged it with an error you couldn't clear.
     if (input.disabled) { clear(field); return true; }
 
     var rule = RULES[input.getAttribute('data-rule')] || RULES.required;
@@ -123,10 +113,7 @@
     var touched = false;
 
     inputs.forEach(function (input) {
-      // Nothing is marked red until the form has been submitted once. Telling
-      // someone their email is invalid while they are still typing the @ is
-      // not help, it is nagging — but once they have been told, correcting it
-      // as they fix it is exactly what they want.
+      // nothing goes red until the first submit. after that, validate as they type.
       var live = function () { if (touched) checkOne(input); };
       input.addEventListener('blur', live);
       input.addEventListener('input', live);
@@ -153,8 +140,7 @@
       });
 
       if (bad.length) {
-        // To the first thing that is wrong, not the top of the form. On
-        // sign-up the first bad field can be six rows down.
+        // jump to the first bad field, not the top - on signup it can be six rows down
         bad[0].focus();
         if (bad[0].scrollIntoView) bad[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
         return;

@@ -13,9 +13,9 @@
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/auth.css">
 <script>
-  /* Hides what is about to animate, before anything paints. animations.js
-     removes this the instant it takes over; if it never does — blocked CDN,
-     script error — the timeout drops it and the page renders as plain HTML. */
+  /* hide what's about to animate before anything paints. animations.js drops
+     the class as soon as it takes over; the timeout is the failsafe for when
+     it never does (blocked CDN, script error) so the page still renders. */
   (function () {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var root = document.documentElement;
@@ -28,9 +28,8 @@
 </head>
 <body class="auth-body">
 
-<!-- Only what these two pages use. Geometry from Lucide 0.544 (ISC).
-     stroke-width is on each symbol here rather than in CSS: these all draw
-     at one size, so there is no range for a scale to serve. -->
+<!-- just what these two pages use. Lucide 0.544 (ISC). stroke-width is on each
+     symbol here rather than in CSS - they all draw at one size. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" /><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" /></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>

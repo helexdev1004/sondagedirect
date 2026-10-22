@@ -1,22 +1,14 @@
-/* ==========================================================================
-   SondageDirect — the signed-in app
-   --------------------------------------------------------------------------
-   Loaded after style.css and depends on it. Every colour, radius, shadow and
-   button here comes from the tokens defined there, so the app and the
-   marketing pages cannot drift apart: change --blue once and both move.
+/* Signed-in app. Loaded after style.css and depends on it - every colour,
+   radius, shadow and button here comes from the tokens defined there, so
+   changing --blue moves the app and the marketing pages together.
 
-   What is deliberately NOT re-declared here: .btn and its variants, .eyebrow,
-   .container, the header, the type scale. The app uses the page's components
-   rather than a second set that looks nearly the same.
-   ========================================================================== */
+   Deliberately not redeclared: .btn and variants, .eyebrow, .container, the
+   header, the type scale. */
 
-/* --------------------------------------------------------------------------
-   Shell
-   -------------------------------------------------------------------------- */
+/* ---- shell ---- */
 
-/* The app sits on the soft tint rather than white. It is a workspace you come
-   back to, not a page you read once, and the tint is what separates the cards
-   from the ground they sit on without giving any of them a border. */
+/* app sits on the soft tint, not white. it's a workspace you come back to, and
+   the tint separates the cards from the ground without giving them borders. */
 .app-body{
   background:var(--bg-soft);
   min-height:100vh;
@@ -46,8 +38,8 @@
   max-width:620px;
 }
 
-/* A head that carries something on the right — a balance, a count — and
-   stacks it underneath when there is no room for both. */
+/* head with something on the right (a balance, a count) that stacks underneath
+   when there's no room for both */
 .screen-head-split{
   display:flex;
   align-items:flex-end;
@@ -71,8 +63,7 @@
 
 .section-block{ margin-top:44px; }
 
-/* The line above a section of the screen: title on the left, a count or a
-   control on the right. */
+/* line above a section: title left, count or control right */
 .block-head{
   display:flex;
   align-items:center;
@@ -92,9 +83,7 @@
   font-size:13.5px;
 }
 
-/* --------------------------------------------------------------------------
-   App bar — the marketing header's glass, with the app's own contents
-   -------------------------------------------------------------------------- */
+/* ---- app bar ---- */
 
 .app-actions{
   display:flex;
@@ -119,8 +108,8 @@
 
 .icon-btn:hover{ background:rgba(8,116,252,.09); color:var(--blue); }
 
-/* The unread mark. Ringed in the bar's own tint so it stays legible against
-   whatever has scrolled under the glass behind it. */
+/* unread mark. ringed in the bar's own tint so it stays legible against
+   whatever has scrolled under the glass. */
 .icon-btn .dot{
   position:absolute;
   top:8px;
@@ -212,9 +201,7 @@
   opacity:1;
 }
 
-/* --------------------------------------------------------------------------
-   Panels — the one surface everything in the app is built from
-   -------------------------------------------------------------------------- */
+/* ---- panels ---- */
 
 .panel{
   background:var(--white);
@@ -225,10 +212,9 @@
 
 .panel-pad{ padding:26px 28px; }
 
-/* Bento. Not a row of equal tiles: the first cell is the one you came to the
-   screen for and is given the room to say so, and the rest fill in around it.
-   Equal tiles make every number look equally important, which is the one
-   thing a dashboard must not do. */
+/* Bento, not a row of equal tiles. The first cell is the one you came for and
+   gets the room to say so. Equal tiles make every number look equally
+   important, which is the one thing a dashboard mustn't do. */
 .bento{
   display:grid;
   grid-template-columns:repeat(12,1fr);
@@ -240,9 +226,7 @@
 .bento > .third{ grid-column:span 4; }
 .bento > .half{ grid-column:span 6; }
 
-/* --------------------------------------------------------------------------
-   Stat tiles
-   -------------------------------------------------------------------------- */
+/* ---- stat tiles ---- */
 
 .stat{
   padding:22px 24px;
@@ -267,8 +251,7 @@
   letter-spacing:-.025em;
   color:var(--navy);
   line-height:1.15;
-  /* Figures line up column to column while they are counting as well as
-     after, which plain proportional digits do not. */
+  /* tabular so the figures line up while they're counting, not just after */
   font-variant-numeric:tabular-nums;
 }
 
@@ -288,23 +271,18 @@
   margin-top:6px;
 }
 
-/* --------------------------------------------------------------------------
-   The balance hero
-   -------------------------------------------------------------------------- */
+/* ---- balance hero ---- */
 
 .balance-hero{
   position:relative;
   overflow:hidden;
   color:var(--white);
   border:0;
-  /* Two layers, and the second is what makes it.
-
-     A linear gradient alone only ever gets lighter along ONE axis, which is
-     why the last version read as a flat slab however dark it was. Underneath
-     is a near-black indigo; over it, a violet light pooled off-centre toward
-     the top right and falling away in every direction. Light that comes from
-     somewhere is what gives a dark panel depth — the corners go dark on their
-     own because they are simply further from it. */
+  /* Two layers, and the second is what makes it. A linear gradient only gets
+     lighter along ONE axis, which is why the last version read as a flat slab
+     however dark it was. Near-black indigo underneath; over it a violet light
+     pooled off-centre toward the top right, falling away in every direction.
+     The corners go dark on their own because they're further from it. */
   background:
     radial-gradient(58% 92% at 82% 16%,
       #1C62D6 0%, rgba(20,78,184,.60) 22%, rgba(12,46,112,.26) 46%, rgba(7,19,48,0) 70%),
@@ -316,8 +294,8 @@
   flex-wrap:wrap;
 }
 
-/* The same folds of light the closing band uses, so the one dark-blue surface
-   in the app belongs to the same family as the one on the homepage. */
+/* same folds of light as the closing band, so the one dark surface in the app
+   belongs to the same family as the one on the homepage */
 .balance-hero::before{
   content:"";
   position:absolute;
@@ -362,8 +340,8 @@
   flex-wrap:wrap;
 }
 
-/* A ghost button on a blue ground. .btn-ghost is white-on-light and would
-   disappear into the panel here. */
+/* ghost button on a blue ground - .btn-ghost is white-on-light and would
+   disappear into the panel here */
 .btn-on-blue{
   background:rgba(255,255,255,.14);
   color:var(--white);
@@ -378,14 +356,11 @@
   border-color:rgba(255,255,255,.46);
 }
 
-/* --------------------------------------------------------------------------
-   The arc — how far along you are toward the payout minimum
-   --------------------------------------------------------------------------
+/* ---- progress arc ----
    An arc rather than a bar. A bar says "some of a line is filled"; an arc with
-   the figure inside it says "this much of what you need", which is the actual
-   question being asked on the wallet screen. Drawn with stroke-dasharray on a
-   circle, so the sweep is one number for the script to set.
-   -------------------------------------------------------------------------- */
+   the figure inside says "this much of what you need", which is the actual
+   question on the wallet screen. stroke-dasharray on a circle, so the sweep is
+   one number for the script to set. */
 
 .arc{
   position:relative;
@@ -443,9 +418,7 @@
   margin-top:14px;
 }
 
-/* --------------------------------------------------------------------------
-   Segmented control — the nav pill's gesture, at a smaller size
-   -------------------------------------------------------------------------- */
+/* ---- segmented control ---- */
 
 .segments{
   position:relative;
@@ -483,9 +456,8 @@
 .segment:hover{ color:var(--navy); }
 .segment.is-on{ color:var(--navy); }
 
-/* The travelling part. Same idea as the menu's — one indicator for the whole
-   control rather than a background that appears and disappears on each
-   button — so the two read as the same gesture at two sizes. */
+/* the travelling part. same as the menu's - one indicator for the whole
+   control rather than a background appearing and disappearing on each button. */
 .segment-pill{
   position:absolute;
   top:4px;
@@ -504,9 +476,7 @@
 
 .segments:not(.pill-ready) .segment-pill{ transition:none; }
 
-/* --------------------------------------------------------------------------
-   Rows — surveys, ledger entries, anything that is a list of one-line facts
-   -------------------------------------------------------------------------- */
+/* ---- rows (surveys, ledger, any list of one-line facts) ---- */
 
 .rows{
   display:flex;
@@ -514,14 +484,12 @@
   gap:10px;
 }
 
-/* One survey to a line, and everything on that line: the figure, what it is
-   for, how long it takes. Two to a row left each card too narrow for its own
-   contents, so every one of them wrapped onto a second line — which is how a
-   list of four short facts ends up eight lines tall.
+/* One survey per line with everything on it: figure, what it's for, how long.
+   Two to a row left each card too narrow for its contents so every one wrapped
+   onto a second line - four short facts, eight lines tall.
 
-   The figure is given a fixed column so the numbers stack into a line down the
-   left edge. Ragged figures are the thing that makes a list of prices look
-   untidy no matter what else is right. */
+   Figure gets a fixed column so the numbers stack into a line down the left.
+   Ragged figures are what make a list of prices look untidy. */
 .row-card.is-inline{ gap:20px; }
 
 .row-card.is-inline .row-pay{
@@ -554,34 +522,26 @@ a.row-card:hover{
   transform:translateY(-2px);
 }
 
-/* --------------------------------------------------------------------------
-   Icon tiles
-   --------------------------------------------------------------------------
+/* ---- icon tiles ----
    Every row used to carry the same pale blue square with the same one-colour
-   line in it, so a referral, a survey and a gift card were indistinguishable
-   until you read them. Each kind has its own hue now, and the icon inside is
-   drawn in two tones of it.
+   line in it, so a referral, a survey and a gift card looked identical until
+   you read them. Each kind has its own hue now, drawn in two tones of it.
 
-   The two tones are custom properties the sprite reads: --ic-1 for the line
-   and --ic-2 for the shape behind it. Both have defaults that matter —
-   currentColor and TRANSPARENT — so the very same symbol is still a plain
-   line icon in the nav and in buttons, where neither is set. One sprite,
-   two appearances, decided by where the icon is rather than which id it uses.
+   The tones are custom properties the sprite reads: --ic-1 for the line, --ic-2
+   for the shape behind it. Both default to something that matters -
+   currentColor and TRANSPARENT - so the same symbol is still a plain line icon
+   in the nav and in buttons where neither is set.
 
-   One hue per CATEGORY, and a category means a real kind of thing — a survey,
-   a profiling survey, a referral, a gift card, a cash payout. Five in total
-   across the whole app, and never more than three on any one screen.
+   One hue per CATEGORY, and category means a real kind of thing: survey,
+   profiling survey, referral, gift card, cash payout. Five across the app,
+   never more than three on a screen.
 
-   That is the difference from the version that was too loud: it coloured by
-   whichever panel was buying the survey and then by how much it paid, so four
-   consecutive rows of the same kind came out four different colours and the
-   palette meant nothing. Tie it to the kind and two rows of the same kind look
-   the same, which is the whole point of colouring them at all.
+   That's the difference from the version that was too loud - it coloured by
+   whichever panel bought the survey and then by how much it paid, so four
+   consecutive rows of the same kind came out four colours and the palette meant
+   nothing.
 
-   The classes below are named for what a thing IS, not for its colour, so the
-   palette can change in one place without touching a page. Each sits on the
-   same rule as the colour name it uses, so neither is a copy of the other.
-   -------------------------------------------------------------------------- */
+   Classes are named for what a thing IS, not its colour. */
 
 .row-icon,
 .reward-logo,
@@ -589,8 +549,8 @@ a.row-card:hover{
 .modal-mark{
   --ic-1:var(--blue);
   --ic-2:#CFE3FB;
-  /* A shorter trip between the two stops than before. The tile should read as
-     one tinted surface, not as a little gradient of its own. */
+  /* short trip between the two stops - the tile should read as one tinted
+     surface, not a little gradient of its own */
   --ic-bg1:#EDF5FE;
   --ic-bg2:#E1EDFD;
   --ic-ring:rgba(8,116,252,.10);
@@ -618,8 +578,8 @@ a.row-card:hover{
 
 .is-amber,
 .is-giftcard{
-  /* The line is a shade darker than the others' because amber is the
-     lightest hue here and was the one graphic that missed 3:1 on its tile. */
+  /* line is a shade darker here. amber is the lightest hue and was the one
+     graphic that missed 3:1 on its own tile. */
   --ic-1:#B8760C; --ic-2:#F8DCA4; --ic-ink:#9D650A;
   --ic-solid1:#D08A14; --ic-solid2:#96600A; --ic-glow:rgba(150,96,10,.42);
   --ic-bg1:#FEF6E7; --ic-bg2:#FDECCF; --ic-ring:rgba(184,118,12,.16);
@@ -650,9 +610,8 @@ a.row-card:hover{
   transition:transform .25s cubic-bezier(.22,.8,.3,1);
 }
 
-/* The tile leans in a little when the row it belongs to is one you can
-   follow. Rows that are only a record of something — the ledger — do not,
-   because there is nothing to lean toward. */
+/* the tile leans in when its row is one you can follow. ledger rows don't,
+   there's nothing to lean toward. */
 a.row-card:hover .row-icon{ transform:scale(1.07) rotate(-3deg); }
 
 .row-body{ flex:1 1 auto; min-width:0; }
@@ -666,8 +625,8 @@ a.row-card:hover .row-icon{ transform:scale(1.07) rotate(-3deg); }
   font-variant-numeric:tabular-nums;
 }
 
-/* "points" after the figure, on every surface that shows one. Sized in em so
-   it keeps its proportion wherever the figure is scaled up or down. */
+/* "points" after the figure, on every surface that shows one. sized in em so
+   it keeps proportion wherever the figure is scaled. */
 .unit{
   font-size:.52em;
   font-weight:600;
@@ -724,10 +683,10 @@ a.row-card:hover .row-icon{ transform:scale(1.07) rotate(-3deg); }
 
 a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
-/* A tag on a row — the survey's source, a payment's state. */
-/* The tag reads the same two custom properties the icon tiles do, so putting
-   a hue class on a row's tag and on its tile keeps the pair in step without
-   either of them naming a colour. Bare, it falls back to the brand blue. */
+/* tag on a row - survey source, payment state */
+/* reads the same two custom properties the icon tiles do, so putting a hue
+   class on a row's tag and its tile keeps them in step without either naming a
+   colour. bare, it falls back to brand blue. */
 .tag{
   display:inline-flex;
   align-items:center;
@@ -737,19 +696,16 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   font-size:11.5px;
   font-weight:600;
   background:var(--ic-bg1,var(--tint));
-  /* --ic-ink, not --ic-1. The line in an icon is a graphic and clears at
-     3:1; 11.5px text needs 4.5:1, which none of these hues reached at the
-     weight the icons use — the tag that was here before this change did not
-     either, at 3.85:1 on its own tint. */
+  /* --ic-ink, not --ic-1. the line in an icon is a graphic and clears at 3:1;
+     11.5px text needs 4.5:1, which none of these hues reached at the weight
+     the icons use - the old tag didn't either, at 3.85:1. */
   color:var(--ic-ink,#0368E7);
 }
 
 .tag.is-good{ background:#E9F8F1; color:#0B7F58; }
 .tag.is-wait{ background:#FEF6E7; color:#9D650A; }
 
-/* --------------------------------------------------------------------------
-   Reward options — cards, not table rows
-   -------------------------------------------------------------------------- */
+/* ---- reward options ---- */
 
 .reward-grid{
   display:grid;
@@ -816,9 +772,7 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   font-variant-numeric:tabular-nums;
 }
 
-/* --------------------------------------------------------------------------
-   The invitation link
-   -------------------------------------------------------------------------- */
+/* ---- invite link ---- */
 
 .linkbox{
   display:flex;
@@ -862,9 +816,7 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
 .copy-btn.is-done{ background:#E7F7EE; color:#0E9F6E; }
 
-/* --------------------------------------------------------------------------
-   Tables
-   -------------------------------------------------------------------------- */
+/* ---- tables ---- */
 
 .table-card{
   background:var(--white);
@@ -874,8 +826,8 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   overflow:hidden;
 }
 
-/* The only thing on these screens allowed to scroll sideways, and only inside
-   its own card — never the page. */
+/* only thing on these screens allowed to scroll sideways, and only inside its
+   own card - never the page */
 .table-scroll{ overflow-x:auto; }
 
 .data-table{
@@ -925,9 +877,7 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
 .who .avatar{ width:30px; height:30px; font-size:11.5px; }
 
-/* --------------------------------------------------------------------------
-   Empty states and small print
-   -------------------------------------------------------------------------- */
+/* ---- empty states + small print ---- */
 
 .empty{
   text-align:center;
@@ -974,9 +924,7 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 .more-btn .chev{ transition:transform .25s ease; }
 .more-btn[aria-expanded="true"] .chev{ transform:rotate(180deg); }
 
-/* --------------------------------------------------------------------------
-   Modal
-   -------------------------------------------------------------------------- */
+/* ---- modal ---- */
 
 .app-modal{
   border:0;
@@ -995,7 +943,7 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   margin-bottom:16px;
 }
 
-/* .is-green below gives it the green family; nothing else needed. */
+/* .is-green below gives it the green family, nothing else needed */
 
 .app-modal h2{
   font-size:21px;
@@ -1017,9 +965,7 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
 .modal-actions .btn{ flex:1 1 140px; }
 
-/* --------------------------------------------------------------------------
-   Responsive
-   -------------------------------------------------------------------------- */
+/* ---- responsive ---- */
 
 @media (max-width:991.98px){
   .bento > .wide,
@@ -1032,19 +978,19 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   .screen-title{ font-size:26px; }
   .app-main{ padding:28px 0 56px; }
 
-  /* The app bar's nav is the collapsed menu down here, and the bell and
-     account belong beside the toggle rather than inside it.
+  /* the nav is the collapsed menu down here, and the bell and account belong
+     beside the toggle rather than inside it.
 
-     The push has to come from the brand, not from these. margin-left:auto
-     here claims every spare pixel on the line for itself, which left the
-     toggler nothing and wrapped it onto a row of its own. */
+     the push has to come from the brand, not from these - margin-left:auto
+     here claims every spare pixel for itself, which left the toggler nothing
+     and wrapped it onto its own row. */
   .app-body .navbar-brand{ margin-right:auto; }
   .app-actions{ margin-right:10px; gap:6px; }
 }
 
 @media (max-width:767.98px){
-  /* No room for one line on a phone. The figure goes back above the rest
-     rather than being squeezed into a column beside it. */
+  /* no room for one line on a phone. the figure goes back above the rest
+     instead of being squeezed into a column beside it. */
   .row-card.is-inline{
     flex-wrap:wrap;
     gap:4px 14px;
@@ -1055,12 +1001,10 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 }
 
 @media (max-width:575.98px){
-  /* The bar has four things on one line on a small phone — brand, bell,
-     account, toggle — and at 360px they no longer fit, which wrapped the
-     toggle onto a row of its own and made the header half as tall again.
-     Each of these takes a little back. The chevron goes entirely: the avatar
-     beside it already reads as a menu, and it was the cheapest 22px on the
-     line. */
+  /* four things on one line in the bar (brand, bell, account, toggle) and at
+     360 they stop fitting, which wraps the toggle onto its own row and makes
+     the header half again as tall. each of these gives a little back. the
+     chevron goes entirely - the avatar already reads as a menu. */
   .app-body .brand-name{ font-size:16px; }
   .app-body .brand-lockup{ gap:8px; }
   .icon-btn{ width:36px; height:36px; }
@@ -1078,14 +1022,10 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   .reward-grid{ grid-template-columns:1fr; }
 }
 
-/* --------------------------------------------------------------------------
-   App bar nav — the marketing menu's links, with an icon each
-   --------------------------------------------------------------------------
-   The homepage's links are words alone; in the app an icon in front of each
-   is what makes the bar scannable at a glance rather than read. Everything
-   else about them — the padding, the radius, the travelling pill — is
-   inherited from style.css, so the two bars stay the same control.
-   -------------------------------------------------------------------------- */
+/* ---- app bar nav ----
+   Homepage links are words alone; in the app an icon in front of each makes the
+   bar scannable rather than read. Padding, radius and the travelling pill are
+   all inherited from style.css so the two bars stay the same control. */
 
 .app-body .primary-nav .nav-link{
   display:inline-flex;
@@ -1102,40 +1042,34 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 .app-body .primary-nav .nav-link.active svg,
 .app-body .primary-nav .nav-link:hover svg{ opacity:1; }
 
-/* Stacked, the links fill the row, so the icon wants to lead rather than sit
-   in the middle of a centred label. */
+/* stacked, the links fill the row, so the icon leads rather than sitting in
+   the middle of a centred label */
 @media (max-width:991.98px){
   .app-body .primary-nav .nav-link{ justify-content:flex-start; }
 }
 
-/* --------------------------------------------------------------------------
-   Icon weight
-   --------------------------------------------------------------------------
-   The sprite carries no stroke-width of its own, so it is set here — and it
-   has to be set more than once.
+/* ---- icon weight ----
+   The sprite carries no stroke-width of its own, so it's set here, and it has to
+   be set more than once.
 
-   A stroke is in viewBox units, and the box is 24 wide but rendered anywhere
-   from 13px to 26px. One value cannot serve that range: at 1.9 the 13px icons
-   draw a 1.03px line, which falls below what a screen can put down cleanly and
-   greys out into a smear, while the same value at 26px is a 2.06px line that
-   reads as heavy. So the weight goes up as the icon gets smaller, which is
-   what keeps the OPTICAL weight the same everywhere — the thing that actually
-   makes a set look like one set.
+   A stroke is in viewBox units and the box is 24 wide but rendered anywhere from
+   13px to 26px. One value can't serve that: at 1.9 the 13px icons draw a 1.03px
+   line, which falls below what a screen can put down cleanly and greys into a
+   smear, while the same value at 26px is 2.06px and reads heavy. Weight goes up
+   as the icon gets smaller, which keeps the OPTICAL weight constant.
 
-   stroke-width is an inherited SVG property, so a value on the <svg> element
-   reaches the shapes inside the shadow tree that <use> builds. That only works
-   because no path in the sprite carries the attribute itself: a presentation
-   attribute would beat the inherited value.
-   -------------------------------------------------------------------------- */
+   stroke-width is inherited in SVG, so a value on the <svg> reaches the shapes
+   inside the shadow tree <use> builds. Only works because no path in the sprite
+   carries the attribute itself - a presentation attribute would beat it. */
 
 .app-body svg{
   stroke-width:1.9;
-  /* Keeps the curves true at small sizes instead of letting the renderer trade
-     accuracy for speed on shapes this small. */
+  /* keeps curves true at small sizes instead of letting the renderer trade
+     accuracy for speed */
   shape-rendering:geometricPrecision;
 }
 
-/* 13-16px: the meta line's clock, the segmented control, the small buttons. */
+/* 13-16px: meta line clock, segmented control, small buttons */
 .row-meta svg,
 .segment svg,
 .copy-btn svg,
@@ -1144,26 +1078,22 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 .account-btn > svg,
 .btn svg{ stroke-width:2.35; }
 
-/* 17-18px: the menu and the row chevrons. */
+/* 17-18px: menu and row chevrons */
 .primary-nav .nav-link svg,
 .menu-item svg,
 .row-go svg{ stroke-width:2.15; }
 
-/* 21px and up: the tiles and the marks, where 1.9 is already a 1.7px line. */
+/* 21px up: tiles and marks, where 1.9 is already a 1.7px line */
 .row-icon svg,
 .reward-logo svg,
 .empty-mark svg,
 .modal-mark svg,
 .icon-btn svg{ stroke-width:1.85; }
 
-/* --------------------------------------------------------------------------
-   The two panels at the top of the dashboard
-   --------------------------------------------------------------------------
-   These are the first thing the screen says, and they were saying it on an
-   empty white rectangle and a flat blue one. Neither gains a word here — the
-   brief was to take copy OFF this screen — so both are given something to look
-   at instead.
-   -------------------------------------------------------------------------- */
+/* ---- the two panels at the top of the dashboard ----
+   First thing the screen says, and it was saying it on an empty white rectangle
+   and a flat blue one. Neither gains a word (the brief was to take copy OFF
+   this screen) so both get something to look at instead. */
 
 .welcome{
   position:relative;
@@ -1174,11 +1104,10 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   align-items:flex-start;
 }
 
-/* Concentric rings running off the top-right corner, masked so they fade out
-   before they reach the text rather than stopping at an edge. Drawn in the
-   brand blue at a few percent: present when you look at the panel, gone when
-   you read it. A repeating gradient rather than markup, so it costs one
-   pseudo-element and no DOM. */
+/* concentric rings off the top-right corner, masked so they fade before they
+   reach the text rather than stopping at an edge. brand blue at a few percent:
+   there when you look at the panel, gone when you read it. repeating gradient
+   rather than markup - one pseudo-element, no DOM. */
 .welcome::after{
   content:"";
   position:absolute;
@@ -1187,10 +1116,10 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   width:460px;
   height:460px;
   border-radius:50%;
-  /* Rings only, no filled centre: with a disc in the middle the whole thing
-     reads as a target sitting on the panel rather than as texture behind it.
-     Wider spacing and lower alpha for the same reason — at 25px apart and .07
-     they were a pattern you looked at instead of a surface you looked past. */
+  /* rings only, no filled centre: with a disc in the middle the whole thing
+     reads as a target sitting on the panel rather than texture behind it.
+     wider spacing and lower alpha for the same reason - at 25px and .07 it
+     was a pattern you looked at instead of a surface you looked past. */
   background:repeating-radial-gradient(circle, transparent 0 33px, rgba(8,116,252,.055) 33px 34.5px);
   -webkit-mask-image:radial-gradient(circle, #000 0 34%, transparent 70%);
   mask-image:radial-gradient(circle, #000 0 34%, transparent 70%);
@@ -1199,26 +1128,21 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
 .welcome > *{ position:relative; z-index:1; }
 
-/* The date wears the same pill the marketing pages put above every section
-   title. It was a line of grey capitals doing the same job with none of the
-   same vocabulary. */
+/* the date wears the same pill the marketing pages put above section titles.
+   it was a line of grey capitals doing the same job with none of the vocabulary. */
 .welcome .eyebrow{ margin-bottom:14px; }
 
 .welcome .screen-title{ margin:0; }
 
-/* --------------------------------------------------------------------------
-   How far along the balance is
-   --------------------------------------------------------------------------
+/* ---- balance progress ----
    The card said "172 more to reach the 275 point minimum" and left you to
-   picture it. The bar is the same fact in the form the eye reads first, and it
-   is the dashboard's echo of the arc on the wallet — same information, told
-   twice in two shapes rather than the same shape twice.
-   -------------------------------------------------------------------------- */
+   picture it. Same fact in the form the eye reads first, and the dashboard's
+   echo of the wallet arc - same information, two shapes. */
 
 .balance-bar{
-  /* Explicitly a block. It is a <span>, and on the dashboard it only took its
-     width and height because the flex parent blockified it — dropped into a
-     plain div on the profile screen it stayed inline and collapsed to nothing. */
+  /* explicitly a block. it's a <span> and on the dashboard it only took its
+     width and height because the flex parent blockified it - dropped into a
+     plain div on the profile screen it stayed inline and collapsed. */
   display:block;
   width:100%;
   height:7px;
@@ -1234,23 +1158,21 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   border-radius:100px;
   background:linear-gradient(90deg,#4A95FF 0%,#C6E2FF 100%);
   box-shadow:0 0 14px rgba(74,149,255,.5);
-  /* Set in the markup, so the bar is correct with no script at all. */
+  /* set in the markup, so the bar is right with no script */
   transition:width 1.1s cubic-bezier(.22,.8,.3,1);
 }
 
 .balance-hero .balance-gap{ margin-top:0; }
 
-/* --------------------------------------------------------------------------
-   The profile screen
-   -------------------------------------------------------------------------- */
+/* ---- profile screen ---- */
 
 .profile-hero{
   align-items:center;
   gap:40px;
 }
 
-/* With the strength meter gone the hero holds one thing, and a flex row with
-   one item in it stretches that item across the whole panel. */
+/* with the strength meter gone the hero holds one thing, and a flex row with
+   one item stretches it across the whole panel */
 .profile-hero.is-solo .whoami{ flex:0 1 auto; }
 
 .whoami{
@@ -1291,14 +1213,11 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
 .whoami-since{ color:rgba(255,255,255,.62); }
 
-/* --------------------------------------------------------------------------
-   Editable details
-   --------------------------------------------------------------------------
+/* ---- editable details ----
    Edited in place rather than in a dialog. A modal for one field puts a whole
-   screen between you and a two-character change, and loses the other seven
-   fields while you make it — the point of a list like this is that you can see
-   what you are changing it relative to.
-   -------------------------------------------------------------------------- */
+   screen between you and a two-character change, and hides the other seven
+   fields while you make it - the point of a list like this is seeing what
+   you're changing it relative to. */
 
 .details{
   display:flex;
@@ -1400,10 +1319,9 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   box-shadow:0 0 0 3px rgba(8,116,252,.14);
 }
 
-/* The dialog builds a select for the fields that have a fixed set of
-   answers, so it inherits the same problem the sign-up form had: the
-   browser's own arrow, which matches nothing else here. Same replacement,
-   one step smaller because this control is 11px shorter. */
+/* the dialog builds a select for fields with a fixed set of answers, so it
+   inherits the same problem the signup form had - the browser's own arrow,
+   which matches nothing else. same replacement, one step smaller. */
 select.detail-input{
   -webkit-appearance:none;
   appearance:none;
@@ -1436,9 +1354,7 @@ select.detail-input:focus{
   max-width:52ch;
 }
 
-/* --------------------------------------------------------------------------
-   Profiling topics
-   -------------------------------------------------------------------------- */
+/* ---- profiling topics ---- */
 
 .topics{
   display:grid;
@@ -1480,9 +1396,7 @@ select.detail-input:focus{
 .topic .row-go{ color:#9FB4CE; }
 .topic:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
-/* --------------------------------------------------------------------------
-   The one destructive button in the app
-   -------------------------------------------------------------------------- */
+/* ---- the one destructive button ---- */
 
 .btn-danger-solid{
   background:#C9372C;
@@ -1511,18 +1425,14 @@ select.detail-input:focus{
 }
 
 
-/* --------------------------------------------------------------------------
-   A survey row
-   --------------------------------------------------------------------------
-   Built on the shape VivaPoll uses, which is heavier than what was here and
-   reads from further away — right for a list you are choosing from rather than
-   reading. A SOLID tile instead of a pale tint, the figure stacked over the
-   facts instead of beside them, a round badge on each fact, and a circular
-   button rather than a bare chevron.
+/* ---- survey row ----
+   Heavier than what was here and reads from further away, which is right for a
+   list you're choosing from rather than reading. Solid tile instead of a pale
+   tint, figure stacked over the facts instead of beside them, round badge on
+   each fact, circular button rather than a bare chevron.
 
-   Kept from the version before it: the length as four bars, the rate the pay
-   and the time work out to, and the category as an edge down the left.
-   -------------------------------------------------------------------------- */
+   Kept from before: length as four bars, the rate the pay and time work out to,
+   and the category as an edge down the left. */
 
 .survey{
   position:relative;
@@ -1539,9 +1449,9 @@ select.detail-input:focus{
              border-color .25s ease, background .3s ease;
 }
 
-/* The wash comes in from the right on hover, in the row's own category colour.
-   A tint rather than a tone change: the card stays white where the text is and
-   only picks up colour where there is nothing to read. */
+/* wash comes in from the right on hover in the row's category colour. a tint
+   rather than a tone change - the card stays white where the text is and only
+   picks up colour where there's nothing to read. */
 .survey:hover{
   transform:translateY(-3px);
   border-color:#C9E0FB;
@@ -1563,9 +1473,9 @@ select.detail-input:focus{
 
 .survey:hover::before{ top:0; bottom:0; }
 
-/* Filled, not tinted. The icon inside goes white — the two custom properties
-   the sprite reads are reset here, so the same symbol that is a blue line on a
-   pale tile is a white line on a solid one, with no second sprite. */
+/* filled, not tinted. the icon goes white - the two custom properties the
+   sprite reads are reset here, so the same symbol that's a blue line on a pale
+   tile is a white line on a solid one, no second sprite. */
 .survey-icon{
   --ic-1:#FFFFFF;
   --ic-2:rgba(255,255,255,.28);
@@ -1619,8 +1529,8 @@ select.detail-input:focus{
   font-variant-numeric:tabular-nums;
 }
 
-/* A small round chip on each fact, which is what stops the line reading as one
-   run-on string of numbers. */
+/* small round chip on each fact, which is what stops the line reading as one
+   run-on string of numbers */
 .fact-badge{
   display:grid;
   place-items:center;
@@ -1653,10 +1563,9 @@ select.detail-input:focus{
 
 .len-meter i.on{ background:var(--ic-solid2,var(--blue)); }
 
-/* A button that says what it does, not an arrow you have to infer it from.
-   Tinted at rest so it does not shout over the figure, and it FILLS with the
-   row's colour as you arrive — the one piece of the row that changes state
-   outright, which is what makes the whole card read as live. */
+/* a button that says what it does, not an arrow you infer it from. tinted at
+   rest so it doesn't shout over the figure, and it FILLS with the row's colour
+   on hover - the one piece that changes state outright. */
 .survey-go{
   flex:none;
   display:inline-flex;
@@ -1690,7 +1599,6 @@ select.detail-input:focus{
   .survey-icon{ width:48px; height:48px; border-radius:14px; }
   .survey-pay{ font-size:23px; }
   .survey-meta{ gap:3px 16px; font-size:13px; }
-  /* The button drops to its own line rather than squeezing the facts into
-     two words each. */
+  /* button drops to its own line rather than squeezing the facts into two words */
   .survey-go{ order:3; margin-left:auto; padding:9px 13px 9px 15px; }
 }

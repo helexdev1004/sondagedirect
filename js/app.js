@@ -1,28 +1,22 @@
-/* The signed-in app.
+/* Signed-in app.
  *
- * Everything here is driven off data- attributes in the markup, so a screen
- * that wants a segmented control or a copy button gets one by writing the
- * markup — there is nothing to register in this file.
+ * Everything is wired off data- attributes, so adding a segmented control or a
+ * copy button is a markup change, nothing to register here.
  *
- * Each block checks for its own elements and leaves if there are none, so the
- * same file loads on every app page without any of them needing to know which
- * page they are on.
+ * Each block bails out if its elements aren't on the page, so one file can load
+ * on all of them.
  */
 (function () {
   'use strict';
 
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ------------------------------------------------------- segmented control */
+  /* segmented control */
 
-  // Tabs, with the menu's travelling indicator at a smaller size — one pill
-  // that slides rather than a background appearing and disappearing on each
-  // button, so the two controls read as the same gesture.
+  // Tabs with a sliding pill, same idea as the nav but smaller.
   //
-  // The panes are switched with the hidden property rather than a class: it
-  // takes the pane out of the accessibility tree as well as off the screen,
-  // which display:none in a stylesheet would do only by accident of the rule
-  // still being there.
+  // Panes toggle with the hidden property rather than a class - takes them out
+  // of the a11y tree too, which display:none only does by accident.
   [].slice.call(document.querySelectorAll('.segments')).forEach(function (bar) {
     var segs = [].slice.call(bar.querySelectorAll('.segment'));
     if (!segs.length) return;
@@ -36,8 +30,7 @@
       var r = seg.getBoundingClientRect();
       var base = bar.getBoundingClientRect();
       pill.style.width = r.width + 'px';
-      // bar.scrollLeft, because the control scrolls sideways when the segments
-      // do not fit and the pill is positioned against the scrolled content.
+      // + scrollLeft: the bar scrolls sideways when the segments don't fit
       pill.style.transform = 'translateX(' + (r.left - base.left + bar.scrollLeft) + 'px)';
       pill.style.opacity = '1';
     };
@@ -60,8 +53,7 @@
 
     segs.forEach(function (seg) {
       seg.addEventListener('click', function () { show(seg); });
-      // Left and right move between tabs, which is what a tablist is expected
-      // to do and what arrow keys do nothing at all for otherwise.
+      // arrow keys move between tabs (expected on a tablist)
       seg.addEventListener('keydown', function (e) {
         var i = segs.indexOf(seg);
         var next = e.key === 'ArrowRight' ? segs[i + 1] : e.key === 'ArrowLeft' ? segs[i - 1] : null;
@@ -73,21 +65,19 @@
     });
 
     settle();
-    // Not animated into place on load — the pill would be seen flying in from
-    // the left edge. The class turns the transition on afterwards.
+    // no transition on the first placement or the pill flies in from the left
     requestAnimationFrame(function () { bar.classList.add('pill-ready'); });
 
-    // Inter arrives after first paint and every label changes width with it.
+    // Inter loads after first paint and every label changes width
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle);
     window.addEventListener('resize', settle);
     bar.addEventListener('scroll', settle, { passive: true });
   });
 
-  /* --------------------------------------------------------------- the arc */
+  /* wallet arc */
 
-  // The markup already carries the true dash offset, so the ring is correct
-  // and still with no script at all. This winds it back to empty and hands it
-  // straight back, and the CSS transition on stroke-dashoffset draws it.
+  // Markup already holds the real dash offset so the ring is right with no JS.
+  // Wind it back to empty, hand it straight back, CSS transition draws it.
   var arcs = [].slice.call(document.querySelectorAll('.arc .fill[data-arc]'));
 
   if (arcs.length && !reduced) {
@@ -95,15 +85,14 @@
       var to = arc.getAttribute('data-arc');
       var full = arc.getAttribute('stroke-dasharray');
       arc.style.strokeDashoffset = full;
-      // Two frames, not one: the first is the paint that establishes "empty"
-      // as the value being transitioned away from.
+      // two frames: the first one is the paint that makes "empty" the start value
       requestAnimationFrame(function () {
         requestAnimationFrame(function () { arc.style.strokeDashoffset = to; });
       });
     });
   }
 
-  /* ----------------------------------------------------------- copy a link */
+  /* copy to clipboard */
 
   [].slice.call(document.querySelectorAll('[data-copy]')).forEach(function (btn) {
     var src = document.getElementById(btn.getAttribute('data-copy'));
@@ -119,11 +108,9 @@
       }, 2000);
     };
 
-    // Selecting the text and asking the document to copy it. This is the old
-    // way and it still works where the clipboard API does not: over plain
-    // http, from a file, and when the permission is refused. Either way the
-    // text ends up selected, so there is something to copy by hand even if
-    // nothing else works.
+    // Old select-and-execCommand route. Still works where the clipboard API
+    // doesn't: plain http, file://, permission denied. Either way the text ends up
+    // selected so there's something to copy by hand.
     var fallback = function () {
       select(src);
       try { return document.execCommand('copy'); } catch (e) { return false; }
@@ -131,10 +118,9 @@
 
     btn.addEventListener('click', function () {
       var text = src.textContent.trim();
-      // The clipboard API needs a secure context, and even in one it can be
-      // refused. Both paths end at the same fallback — an earlier version
-      // selected the text on rejection but never said so, which looked from
-      // the outside exactly like the button doing nothing at all.
+      // clipboard API needs a secure context and can still be refused. both paths
+      // end at the same fallback - an earlier version selected the text on reject
+      // but never reported it, which looked identical to the button doing nothing.
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(done, function () {
           if (fallback()) done();
@@ -153,7 +139,7 @@
     sel.addRange(range);
   }
 
-  /* ------------------------------------------------------- show more / less */
+  /* show more / less */
 
   [].slice.call(document.querySelectorAll('[data-more]')).forEach(function (btn) {
     var box = document.getElementById(btn.getAttribute('data-more'));
@@ -169,7 +155,7 @@
     });
   });
 
-  /* ------------------------------------------------------ choosing a reward */
+  /* payout method picker */
 
   var payoutModal = document.getElementById('confirmPayout');
 
@@ -182,18 +168,14 @@
     var names = [].slice.call(payoutModal.querySelectorAll('[data-reward-name]'));
     var opener = null;
 
-    // Switching pane has to take the focus with it. Hiding the pane the
-    // focused button lives in drops focus onto <body>, which is outside the
-    // dialog — and Bootstrap listens for Escape on the modal element, so from
-    // there Escape stopped closing it and a keyboard user was shut in with
-    // nothing to tab to. Moving focus to the new pane fixes the trap and the
-    // reading order at once.
+    // Focus has to move with the pane. Hiding the pane the focused button is in
+    // drops focus to <body>, outside the dialog, and Bootstrap listens for Escape
+    // on the modal - so Escape stopped closing it and you were stuck.
     var pane = function (which) {
       panes.confirm.hidden = which !== 'confirm';
       panes.done.hidden = which !== 'done';
-      // Only once the dialog is actually up. Focusing something inside a
-      // modal that has not been shown yet scrolls the page to it behind the
-      // backdrop, and the reset on close focuses the opener instead.
+      // only once the dialog is actually shown. focusing inside a modal that isn't
+      // up yet scrolls the page to it behind the backdrop.
       if (!payoutModal.classList.contains('show')) return;
       var first = panes[which].querySelector('a, button');
       if (first) first.focus();
@@ -202,9 +184,8 @@
     document.querySelectorAll('[data-reward]').forEach(function (opt) {
       opt.addEventListener('click', function () {
         opener = opt;
-        // innerHTML, not textContent: the names carry entities — the
-        // apostrophe in McDonald's, the accent in Assaí — and setting them as
-        // text would print the entity rather than the character.
+        // innerHTML not textContent - the names carry entities (McDonald's, Assaí)
+        // and as text you'd see the entity instead of the character
         names.forEach(function (n) { n.innerHTML = opt.getAttribute('data-reward'); });
         pane('confirm');
         modal.show();
@@ -214,23 +195,21 @@
     var confirmBtn = payoutModal.querySelector('[data-confirm-payout]');
     if (confirmBtn) confirmBtn.addEventListener('click', function () { pane('done'); });
 
-    // Back to the first pane for the next time, and focus back where it came
-    // from — otherwise it is left on <body> and a keyboard user has to tab
-    // from the top of the page again.
+    // reset to the first pane and put focus back on the opener, otherwise it's
+    // left on <body> and you tab from the top again
     payoutModal.addEventListener('hidden.bs.modal', function () {
       pane('confirm');
       if (opener) opener.focus();
     });
   }
 
-  /* ----------------------------------------------------- editing a detail */
+  /* edit a profile detail */
 
-  // One dialog for all eight fields. Bootstrap handles opening, Escape, the
-  // backdrop and the focus trap; what is here is the part it cannot know —
-  // which control a field wants, and what the row should read afterwards.
+  // One dialog for all eight fields. Bootstrap does open/Escape/backdrop/focus
+  // trap; this handles what it can't know - which control a field needs and what
+  // the row should read afterwards.
   //
-  // Nothing is sent anywhere. Saving changes what the row displays and no
-  // more: there is no back end behind this, and a reload puts it all back.
+  // Nothing is sent anywhere. Saving updates the row and that's it.
   var editBox = document.getElementById('editField');
 
   if (editBox && typeof window.bootstrap !== 'undefined') {
@@ -246,8 +225,8 @@
 
     var COUNTRIES = ['Belgium', 'France', 'Germany', 'Italy', 'Netherlands', 'Portugal', 'Spain'];
 
-    // Enough to make the dependency real rather than decorative. A country
-    // with no list still gets one option, so the menu is never empty.
+    // enough to make the dependency real. a country with no list still gets one
+    // option so the menu is never empty.
     var REGIONS = {
       Belgium:     ['Antwerp', 'East Flanders', 'Flemish Brabant', 'Hainaut', 'Liège', 'Limburg', 'Namur', 'West Flanders'],
       France:      ['Auvergne-Rhône-Alpes', 'Brittany', 'Grand Est', 'Hauts-de-France', 'Île-de-France', 'Normandy', 'Nouvelle-Aquitaine', 'Occitanie'],
@@ -262,9 +241,7 @@
       return document.querySelector('[data-edit][data-field="' + field + '"]');
     };
 
-    // "1994-03-14" as a reader would write it. The date input needs the first
-    // form and the row shows the second, so the two are kept apart: data-value
-    // holds the ISO one throughout.
+    // "14 March 1994" for the row, ISO for the input. data-value keeps the ISO one.
     var readable = function (iso) {
       var p = String(iso).split('-');
       if (p.length !== 3) return iso;
@@ -302,13 +279,12 @@
       }
       if (kind === 'country') return makeSelect(COUNTRIES, value);
       if (kind === 'region') {
-        // Whatever the country row currently says, not whatever it said when
-        // the page loaded.
+        // whatever the country row says now, not what it said on load
         var c = rowFor('country');
         return makeSelect(REGIONS[c ? c.getAttribute('data-value') : ''] || ['Not applicable'], value);
       }
       if (kind === 'date') {
-        // A birth date in the future is a typo, so the picker will not offer one.
+        // a birth date in the future is a typo
         return makeInput('date', value, { max: new Date().toISOString().slice(0, 10) });
       }
       if (kind === 'password') {
@@ -358,16 +334,15 @@
       var value = field ? field.value : '';
 
       if (kind === 'password') {
-        // Never echoed back into the page. The row keeps its dots and says
-        // nothing about what the new one is.
+        // never echoed back into the page - the row keeps its dots
         if (!value) { editModal.hide(); return; }
       } else {
         openRow.setAttribute('data-value', value);
         if (shown) shown.textContent = kind === 'date' ? readable(value) : value;
       }
 
-      // Changing the country can leave the region saying something that
-      // country does not have, so it is moved to the first one that it does.
+      // changing country can leave the region saying something that country doesn't
+      // have, so move it to the first one that it does
       if (openRow.getAttribute('data-field') === 'country') {
         var r = rowFor('region');
         var list = REGIONS[value] || ['Not applicable'];
@@ -381,8 +356,7 @@
       editModal.hide();
     });
 
-    // Focus back where it came from, or a keyboard user is left on <body> and
-    // has to tab from the top of the page again.
+    // focus back to the opener or you're left on <body>
     editBox.addEventListener('hidden.bs.modal', function () {
       eSlot.innerHTML = '';
       if (editOpener) editOpener.focus();
@@ -390,10 +364,10 @@
     });
   }
 
-  /* -------------------------------------------------- deleting an account */
+  /* delete account */
 
-  // The button stays dead until the word is typed. A single click is too easy
-  // to reach by accident for the one action in the app with no way back.
+  // button stays dead until the word is typed. one click is too easy to hit by
+  // accident for the only action with no way back.
   var word = document.querySelector('[data-confirm-word]');
   var go = document.querySelector('[data-confirm-delete]');
 

@@ -1,17 +1,14 @@
-/* ==========================================================================
-   SondageDirect — homepage
-   ========================================================================== */
+/* SondageDirect - shared styles */
 
 :root{
   --navy:#0B1437;
   --blue:#0874FC;
   --blue-deep:#1F5EF0;
 
-  /* The solid button's own face. It used to be --blue, which is pitched to be
-     read as a LINE — a link, an icon, a figure — against white or a pale
-     tint. Reversed into a filled button it has to hold a white label instead,
-     and at #0874FC that label sat at 4.27:1, under the bar for its size. This
-     is the same hue taken down until it clears. */
+  /* solid button face. was --blue, which is tuned to be read as a LINE (link,
+     icon, figure) on white. reversed into a filled button holding a white
+     label it came out at 4.27:1, under the bar. same hue taken down till it
+     clears. */
   --blue-btn:#0B55CE;
   --blue-btn-hover:#0A46A8;
   --tint:#E8F4FD;
@@ -33,8 +30,7 @@
 *::before,
 *::after{ box-sizing:border-box; }
 
-/* Anchor jumps glide, and [id]{scroll-margin-top} below keeps them clear of
-   the sticky header. */
+/* anchor jumps glide; [id]{scroll-margin-top} below keeps them off the sticky header */
 html{ scroll-behavior:smooth; }
 
 body{
@@ -65,9 +61,7 @@ a{ text-decoration:none; }
   padding-inline:24px;
 }
 
-/* --------------------------------------------------------------------------
-   Shared components
-   -------------------------------------------------------------------------- */
+/* ---- shared components ---- */
 
 .eyebrow{
   display:inline-block;
@@ -133,9 +127,9 @@ a{ text-decoration:none; }
   box-shadow:0 8px 22px rgba(11,85,206,.28);
 }
 
-/* Darker on hover, not lighter. The old hover was --blue-deep, which is
-   brighter than the new face — so pointing at the button would have lifted it
-   toward the colour it had just been taken off. */
+/* darker on hover, not lighter. the old hover was --blue-deep, which is
+   brighter than the new face - pointing at the button would have lifted it back
+   toward the colour we just took it off. */
 .btn-brand:hover{
   background:var(--blue-btn-hover);
   color:var(--white);
@@ -178,21 +172,16 @@ a{ text-decoration:none; }
 
 .text-accent{ color:var(--blue-deep); }
 
-/* --------------------------------------------------------------------------
-   Header
-   -------------------------------------------------------------------------- */
+/* ---- header ---- */
 
-/* Frosted, and tinted rather than white. Two things make it read as glass
-   instead of a white slab:
+/* Frosted, and tinted rather than white.
 
-   The opacity has to be low enough for the blur to have something to do. At
-   .88 the bar was very nearly solid, so the backdrop-filter behind it was
-   doing almost nothing and paying for the privilege — the giveaway was that
-   turning the filter off changed nothing you could see.
+   Opacity has to stay low enough for the blur to have something to do. At .88
+   the bar was near solid and the backdrop-filter was doing nothing you could
+   see while still costing.
 
-   And the tint is the page's own cool white, not #fff. Pure white over a page
-   whose every surface is faintly blue reads as a separate sheet laid on top;
-   a few degrees of blue and it reads as the page seen through something. */
+   Tint is the page's cool white, not #fff. Pure white over a page whose every
+   surface is faintly blue reads as a separate sheet laid on top. */
 .site-header{
   position:sticky;
   top:0;
@@ -205,16 +194,14 @@ a{ text-decoration:none; }
 
 .site-header.is-stuck{
   background:rgba(245,250,255,.80);
-  /* Tight and blue-cast rather than a grey halo — it reads as the bar sitting
-     just above the page rather than floating well over it. */
+  /* tight and blue-cast, not a grey halo - reads as the bar sitting just above
+     the page rather than floating over it */
   box-shadow:0 8px 28px -10px rgba(16,64,140,.22);
 }
 
-/* The rule under the bar, fading out before it reaches either end. A hairline
-   running the full width cuts the page in two; one that arrives and leaves
-   lets the bar sit on the page instead. Drawn here rather than as a
-   border-bottom so it can carry a gradient, and so there is no 1px of layout
-   to animate. */
+/* hairline under the bar, faded out at both ends. a full-width rule cuts the
+   page in two. drawn as a pseudo-element so it can carry a gradient and so
+   there's no 1px of layout to animate. */
 .site-header::after{
   content:"";
   position:absolute;
@@ -234,18 +221,17 @@ a{ text-decoration:none; }
 
 .site-header.is-stuck::after{ opacity:1; }
 
-/* With the menu open the bar stops being a bar and becomes a panel over the
-   page, and a panel you can see the page through reads as unfinished. Glass is
-   right for a 76px strip and wrong for half a screen, so the tint goes nearly
-   solid for as long as it is open. Browsers without :has() simply keep the
-   translucent one, which the blur already makes legible. */
+/* with the menu open the bar is a panel, not a bar, and you shouldn't see the
+   page through a panel. glass is right for a 76px strip and wrong for half a
+   screen. browsers without :has() keep the translucent one, which the blur
+   already makes legible. */
 .site-header:has(#primaryNav.show){
   background:rgba(249,252,255,.97);
 }
 
 .site-header .navbar{ min-height:76px; }
 
-/* Anchored sections would otherwise land under the sticky bar. */
+/* anchored sections would land under the sticky bar */
 [id]{ scroll-margin-top:96px; }
 
 .brand-lockup{
@@ -269,12 +255,9 @@ a{ text-decoration:none; }
   line-height:1;
 }
 
-/* One indicator for the whole menu, which slides. Every link having its own
-   underline means five things that each fade in and out on their own and
-   nothing that connects them; one pill that travels from the link you left to
-   the link you are on makes the menu read as a single control. The gap is
-   small now because the links carry their own padding — the pill has to have
-   something to wrap. */
+/* One sliding indicator for the whole menu. Five separate underlines fading in
+   and out don't connect to each other; one pill travelling from the link you
+   left to the one you're on makes the menu read as a single control. */
 .primary-nav{
   position:relative;
   gap:4px;
@@ -294,19 +277,17 @@ a{ text-decoration:none; }
 .primary-nav .nav-link:hover,
 .primary-nav .nav-link:focus-visible{ color:var(--navy); }
 
-/* .active is what main.js sets. */
+/* .active is set by main.js */
 .primary-nav .nav-link.active{
   color:var(--navy);
   font-weight:600;
 }
 
-/* Built by main.js, so a page with no script gets no stray element. It is
-   sized and placed from whichever link it is following; everything here is
-   only how it looks and how it travels.
+/* Built by main.js so a no-script page gets no stray element. Sized and placed
+   from whichever link it's following - this is only how it looks and travels.
 
-   transform carries the position and width carries the size, rather than
-   animating left and right, so the trip across the menu is one compositor
-   property and one layout one instead of two layout ones. */
+   transform for position, width for size, rather than animating left/right:
+   one compositor property and one layout one instead of two layout ones. */
 .nav-pill{
   position:absolute;
   top:0;
@@ -321,8 +302,8 @@ a{ text-decoration:none; }
              opacity .2s ease;
 }
 
-/* The first placement must not be animated, or the pill is seen flying in
-   from the corner on load. The class goes on once it has been put somewhere. */
+/* first placement must not animate or the pill flies in from the corner on
+   load. the class goes on once it's been put somewhere. */
 .primary-nav:not(.pill-ready) .nav-pill{ transition:none; }
 
 .header-actions{
@@ -353,9 +334,7 @@ a{ text-decoration:none; }
 
 .navbar-toggler:focus{ box-shadow:none; }
 
-/* --------------------------------------------------------------------------
-   Hero
-   -------------------------------------------------------------------------- */
+/* ---- hero ---- */
 
 .hero-section{
   position:relative;
@@ -369,8 +348,8 @@ a{ text-decoration:none; }
   overflow:hidden;
 }
 
-/* A soft wash that lifts the copy off the wave. It has no edge of its own —
-   it only brightens what sits behind the text, so nothing reads as a panel. */
+/* soft wash to lift the copy off the wave. no edge of its own, it only
+   brightens what's behind the text, so nothing reads as a panel. */
 .hero-section::before{
   content:"";
   position:absolute;
@@ -397,15 +376,13 @@ a{ text-decoration:none; }
   max-width:560px;
 }
 
-/* The photograph is the band's right-hand background rather than a panel:
-   it bleeds off the right edge and its left side is masked away so it
-   dissolves into the gradient behind the copy. */
-/* The frame the photograph lives in. The dissolve into the page is masked
-   HERE rather than on the <img>, and that placement is the point: the image
-   drifts inside this frame as you scroll, and a mask carried on the image
-   would drift with it — which pulled the bottom fade down past the section's
-   overflow:hidden and left the photograph ending in a hard sliced edge. The
-   frame never moves, so the fade never moves. */
+/* the photo is the band's right-hand background, not a panel: bleeds off the
+   right edge, left side masked away so it dissolves into the gradient */
+/* The frame the photo lives in. The dissolve is masked HERE, not on the <img>,
+   and that matters: the image drifts inside this frame on scroll, and a mask on
+   the image would drift with it - which pulled the bottom fade past the
+   section's overflow:hidden and left the photo ending in a hard sliced edge.
+   The frame never moves, so the fade never moves. */
 .hero-visual-col{
   position:absolute;
   top:0;
@@ -505,30 +482,25 @@ a{ text-decoration:none; }
 
 .hero-visual-img{
   width:100%;
-  /* Taller than the frame on purpose. The photograph drifts vertically as the
-     page scrolls, and with height:100% it exactly filled the frame, so any
-     drift at all pulled an empty edge into view. The extra 12%, pulled up by
-     half of it, is the headroom that drift moves within. */
+  /* taller than the frame on purpose. the photo drifts vertically on scroll and
+     at height:100% it exactly filled the frame, so any drift pulled an empty
+     edge into view. the extra 12%, pulled up by half, is the headroom. */
   height:112%;
   position:relative;
   top:-6%;
   object-fit:cover;
-  /* Pinned to the right edge so the dissolve on the left lands on the plain
-     wall and shelving rather than on the potted plants further into the
-     frame. At 56% those plants sat right in the fade, and a contrasty green
-     shape held at fifteen percent opacity reads as a smudge on the page
-     rather than as background. Pinning also makes the crop deterministic:
-     the photograph's right edge meets the column's at every width. */
+  /* pinned right so the left-hand dissolve lands on plain wall and shelving
+     rather than on the potted plants further in. at 56% those plants sat in
+     the fade, and a contrasty green shape at 15% opacity reads as a smudge.
+     pinning also makes the crop deterministic at every width. */
   object-position:100% 46%;
   display:block;
 }
 
-/* --------------------------------------------------------------------------
-   Rewards
-   -------------------------------------------------------------------------- */
+/* ---- rewards ---- */
 
-/* Tinted with a rule top and bottom: white cards on a white page left the
-   band with no edge, so where it started and stopped was unreadable. */
+/* tinted with a rule top and bottom - white cards on a white page left the
+   band with no edge at all */
 .rewards-section{
   background:#F1F7FE;
   border-top:1px solid var(--border);
@@ -536,9 +508,8 @@ a{ text-decoration:none; }
   padding:78px 0 84px;
 }
 
-/* The trusted line used to sit between the head and the cards and carried
-   the gap below it. With that line gone the head owns the spacing, so it
-   matches every other section rather than crowding the grid. */
+/* the trusted-by line used to sit between the head and the cards and carried
+   the gap below it. with that gone the head owns the spacing. */
 .rewards-section .section-head{ margin-bottom:56px; }
 
 .rewards-grid{
@@ -549,9 +520,8 @@ a{ text-decoration:none; }
   margin:0 auto;
 }
 
-/* The reference stands each brand on its own coloured card; on a light page
-   that reads as ten competing blocks, so the card is ours and the colour
-   stays in the logo. */
+/* reference puts each brand on its own coloured card; on a light page that's
+   ten competing blocks, so the card is ours and the colour stays in the logo */
 .reward-card{
   display:flex;
   flex-direction:column;
@@ -567,11 +537,8 @@ a{ text-decoration:none; }
   transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
-/* Held, not lifted — and the same hold on every card on the page. A surface
-   under the cursor stays exactly where the grid put it and only firms up
-   slightly, rather than jumping out of its row. This used to be three
-   different things: a lift here, a different lift there, and a 3D tilt on
-   top of both. */
+/* held, not lifted, and the same on every card on the page. used to be three
+   different things: a lift here, a different lift there, and a 3D tilt on top. */
 .reward-card:hover{
   transform:scale(1.03);
   border-color:#BBDCF7;
@@ -584,15 +551,14 @@ a{ text-decoration:none; }
   justify-content:center;
 }
 
-/* The marks are official single-path artwork on a 24x24 grid, so they stay
-   crisp at any size instead of relying on a webfont to draw a wordmark. */
+/* official single-path artwork on a 24x24 grid so they stay crisp at any size */
 .reward-mark{
   width:46px;
   height:46px;
   display:block;
 }
 
-/* IKEA's wordmark only reads inside its yellow field. */
+/* IKEA's wordmark only reads inside its yellow field */
 .reward-logo--pill{
   background:#FFDA1A;
   border-radius:8px;
@@ -609,9 +575,7 @@ a{ text-decoration:none; }
 
 .rewards-cta{ margin-top:32px; }
 
-/* --------------------------------------------------------------------------
-   How it works
-   -------------------------------------------------------------------------- */
+/* ---- how it works ---- */
 
 .how-section{
   padding:112px 0 124px;
@@ -660,14 +624,12 @@ a{ text-decoration:none; }
   gap:20px;
 }
 
-/* The rail between one marker and the next. Three numbered paragraphs are
-   three separate facts; joined up they are one route, which is what a list
-   called "3 steps" is actually describing.
+/* The rail between one marker and the next. Three numbered paragraphs are three
+   facts; joined up they're one route.
 
-   It is two pseudo-elements on each step rather than one element down the
-   whole list because the steps are different heights, and only the step
-   itself knows where its own marker stops and the gap to the next begins.
-   ::before is the track, ::after the line that draws along it. */
+   Two pseudo-elements per step rather than one element down the whole list,
+   because the steps are different heights and only the step knows where its own
+   marker stops. ::before is the track, ::after the line drawn along it. */
 .step:not(:last-child)::before,
 .step:not(:last-child)::after{
   content:"";
@@ -704,8 +666,8 @@ a{ text-decoration:none; }
   transition:background-color .42s ease, color .42s ease, box-shadow .42s ease;
 }
 
-/* The ring that blooms out of a marker as it lights. Sized off the marker
-   with inset, so it stays concentric at any size. */
+/* ring that blooms out of a marker as it lights. sized off the marker with
+   inset so it stays concentric at any size. */
 .step-num::after{
   content:"";
   position:absolute;
@@ -715,11 +677,9 @@ a{ text-decoration:none; }
   transition:opacity .55s ease, transform .55s cubic-bezier(.22,.8,.3,1);
 }
 
-/* Everything above is the FINISHED state, deliberately. A page where the
-   animation layer never arrives shows a complete path — which is how this
-   list looked before any of this existed. The unlit state below only applies
-   while something is actually there to light it, and animations.js adds
-   .is-on to each step in turn once the list is reached. */
+/* Everything above is the FINISHED state on purpose - if animations.js never
+   arrives you get a complete path. The unlit state below only applies while
+   something is there to light it. */
 .sd-anim-ready .step:not(.is-on) .step-num{
   background:var(--white);
   color:var(--blue);
@@ -733,9 +693,8 @@ a{ text-decoration:none; }
 
 .sd-anim-ready .step:not(.is-on)::after{ transform:scaleY(0); }
 
-/* A light hold under the pointer. The body moves and the step does not —
-   the rail is drawn on the step, and shifting that would pull the route out
-   of line with the markers it joins. */
+/* light hold under the pointer. the body moves, the step doesn't - the rail is
+   drawn on the step and shifting it would pull the route out of line. */
 .step-body{ transition:transform .3s cubic-bezier(.22,.8,.3,1); }
 
 .step:hover .step-body{ transform:translateX(5px); }
@@ -762,9 +721,8 @@ a{ text-decoration:none; }
   aspect-ratio:1100 / 966;
 }
 
-/* The illustration carries its own lavender backdrop, near-identical to the
-   band's. Feathering every edge lets it sit in the section rather than on it,
-   with no rectangle to give it away. */
+/* the illustration carries its own lavender backdrop, near enough the band's.
+   feather every edge and it sits in the section rather than on it. */
 .how-main-img{
   width:100%;
   height:100%;
@@ -780,9 +738,7 @@ a{ text-decoration:none; }
   mask-composite:intersect;
 }
 
-/* --------------------------------------------------------------------------
-   Use cases
-   -------------------------------------------------------------------------- */
+/* ---- use cases ---- */
 
 .usecases-section{
   background:var(--bg-soft);
@@ -843,9 +799,7 @@ a{ text-decoration:none; }
 }
 
 
-/* --------------------------------------------------------------------------
-   Impact / metrics
-   -------------------------------------------------------------------------- */
+/* ---- impact / metrics ---- */
 
 .impact-section{
   background:linear-gradient(180deg,#EAF4FD 0%,#F1F8FE 100%);
@@ -868,7 +822,7 @@ a{ text-decoration:none; }
   transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
 }
 
-/* A wash of the card's own accent bleeding in from the top corner. */
+/* wash of the card's own accent bleeding in from the top corner */
 .stat::before{
   content:"";
   position:absolute;
@@ -916,9 +870,7 @@ a{ text-decoration:none; }
 .stat--answers{ --accent:#10B981; --glow:rgba(16,185,129,.15); }
 .stat--free   { --accent:#F59E0B; --glow:rgba(245,158,11,.17); }
 
-/* --------------------------------------------------------------------------
-   Testimonials
-   -------------------------------------------------------------------------- */
+/* ---- testimonials ---- */
 
 .testimonials-section{
   position:relative;
@@ -938,13 +890,11 @@ a{ text-decoration:none; }
   align-items:stretch;
 }
 
-/* Hidden by default: all three reviews are on screen at once up here, so a
-   marker for which one you are on would be marking nothing. The breakpoint
-   that turns the track into a swipe strip turns these on with it. */
+/* hidden up here - all three reviews are on screen so there's nothing to mark.
+   the breakpoint that makes the track swipeable turns these on. */
 .testimonial-dots{ display:none; }
 
-/* The button is 26px so it is a real tap target; the dot you see is the 8px
-   pill inside it. */
+/* button is 26px for a real tap target; the dot you see is the 8px pill inside */
 .testimonial-dot{
   width:26px;
   height:26px;
@@ -1003,8 +953,7 @@ a{ text-decoration:none; }
   margin-bottom:14px;
 }
 
-/* A round avatar beside the name, the way a review actually carries a face —
-   not a photograph filling half the card. */
+/* round avatar beside the name, the way a review actually carries a face */
 .testimonial-person{
   display:flex;
   align-items:center;
@@ -1029,7 +978,7 @@ a{ text-decoration:none; }
   line-height:1.3;
 }
 
-/* What they actually walked away with — the point of the whole page. */
+/* what they walked away with - the point of the whole page */
 .redeemed-chip{
   display:inline-flex;
   align-items:center;
@@ -1053,7 +1002,7 @@ a{ text-decoration:none; }
   display:block;
 }
 
-/* IKEA's mark is an outline that disappears at this size without its field. */
+/* IKEA's mark is an outline that vanishes at this size without its field */
 .redeemed-mark--ikea{
   background:#FFDA1A;
   border-radius:3px;
@@ -1064,9 +1013,7 @@ a{ text-decoration:none; }
 .testimonials-section .section-title{ font-size:46px; }
 .testimonials-section .section-sub{ font-size:16.5px; }
 
-/* --------------------------------------------------------------------------
-   FAQ
-   -------------------------------------------------------------------------- */
+/* ---- FAQ ---- */
 
 .faq-section{
   background:var(--bg-soft);
@@ -1109,7 +1056,7 @@ a{ text-decoration:none; }
   transition:color .2s ease;
 }
 
-/* Safari and Chrome each need their own opt-out of the default marker. */
+/* Safari and Chrome each need their own opt-out of the default marker */
 .faq-q::-webkit-details-marker{ display:none; }
 .faq-q::marker{ content:""; }
 
@@ -1121,7 +1068,7 @@ a{ text-decoration:none; }
   border-radius:16px;
 }
 
-/* A plus that becomes a minus, drawn from two bars so it can rotate. */
+/* plus that becomes a minus, two bars so it can rotate */
 .faq-icon{
   position:relative;
   flex:none;
@@ -1161,9 +1108,7 @@ a{ text-decoration:none; }
   max-width:70ch;
 }
 
-/* --------------------------------------------------------------------------
-   Final CTA
-   -------------------------------------------------------------------------- */
+/* ---- closing CTA ---- */
 
 .cta-section{
   background:var(--white);
@@ -1180,11 +1125,10 @@ a{ text-decoration:none; }
   background:linear-gradient(120deg,#0874FC 0%,#1F5EF0 52%,#005FE0 100%);
 }
 
-/* One drawing covering the whole band rather than three sheets at three
-   opacities. Every strand already carries its own weight and fade, so there is
-   nothing left for a layer opacity to do, and object-fit lets it hold its
-   proportions at any band size — the artwork is 4:1 and the band is not.
-   max-width off, or the global img{max-width:100%} fights the cover. */
+/* one drawing over the whole band rather than three sheets at three opacities -
+   every strand already carries its own weight and fade. object-fit so it keeps
+   its proportions (artwork is 4:1, the band isn't). max-width off or the global
+   img{max-width:100%} fights cover. */
 .cta-shape{
   position:absolute;
   inset:0;
@@ -1213,14 +1157,10 @@ a{ text-decoration:none; }
   margin:18px 0 32px;
 }
 
-/* --------------------------------------------------------------------------
-   Footer
-   -------------------------------------------------------------------------- */
+/* ---- footer ---- */
 
-/* Built on the shape VivaPoll's footer uses — brand, a list of links, and a
-   third column, on a tinted wash rather than plain white. The differences are
-   deliberate: no app badges, because there is no app, and the third column
-   carries the company rather than social icons, which were asked to go. */
+/* brand, link lists, company column, on a tinted wash. no app badges (there's
+   no app) and the third column is the company rather than social icons. */
 .site-footer{
   background:linear-gradient(180deg, rgba(232,244,253,.55) 0%, rgba(232,244,253,.9) 100%);
   border-top:1px solid var(--border);
@@ -1245,8 +1185,8 @@ a{ text-decoration:none; }
   line-height:1.6;
 }
 
-/* The rule down the left is the detail that makes this read as one footer
-   rather than three stacked blocks. */
+/* the rule down the left is what makes this read as one footer rather than
+   three stacked blocks */
 .footer-nav{
   flex:1 1 auto;
   padding-left:56px;
@@ -1288,13 +1228,9 @@ a{ text-decoration:none; }
   font-size:13.5px;
 }
 
-/* --------------------------------------------------------------------------
-   Responsive — large desktop
-
-   The reference is a 1440px design. Past ~1500px the page scales up with the
-   viewport instead of stranding a 1220px column in the middle: the hero
-   photograph keeps its share of the width and the band grows to fit it.
-   -------------------------------------------------------------------------- */
+/* ---- responsive: large desktop ----
+   Reference is a 1440 design. Past ~1500 the page scales with the viewport
+   instead of stranding a 1220 column in the middle. */
 
 @media (min-width:1500px){
   .container{ max-width:min(92vw, 1440px); }
@@ -1307,9 +1243,7 @@ a{ text-decoration:none; }
   .how-title{ font-size:44px; }
 }
 
-/* --------------------------------------------------------------------------
-   Responsive — tablet
-   -------------------------------------------------------------------------- */
+/* ---- responsive: tablet ---- */
 
 @media (max-width:1199.98px){
   .hero-heading{ font-size:48px; }
@@ -1317,9 +1251,8 @@ a{ text-decoration:none; }
   .section-title{ font-size:38px; }
   .how-title{ font-size:36px; }
   .cta-title{ font-size:34px; }
-  /* Tightened by closing the gap and the links' own padding, not by shrinking
-     the gap alone — most of the space between two links is their padding now,
-     so that is what has to give. */
+  /* tighten by closing the gap AND the links' own padding - most of the space
+     between two links is padding now, so that's what has to give */
   .primary-nav{ gap:0; }
   .primary-nav .nav-link{ padding-inline:11px; }
   .header-actions{ gap:18px; }
@@ -1343,9 +1276,8 @@ a{ text-decoration:none; }
 
   .primary-nav .nav-link{ padding:11px 14px; font-size:16px; }
 
-  /* Stacked, a pill that slides between rows would be travelling vertically
-     through a list rather than along a bar, which is not the same gesture at
-     all. Down here the current row just wears the tint itself. */
+  /* stacked, a pill sliding between rows is travelling vertically through a
+     list, not along a bar. down here the current row just wears the tint. */
   .nav-pill{ display:none; }
 
   .primary-nav .nav-link.active{ background:rgba(8,116,252,.10); }
@@ -1377,13 +1309,11 @@ a{ text-decoration:none; }
 
   .hero-copy-col{ width:100%; }
 
-  /* Stacked layout: the photograph returns to the flow as a normal image
-     rather than a background the copy would have to sit on top of, so the
-     blurred echo behind the copy is no longer needed. */
+  /* stacked: the photo goes back into the flow as a normal image, so the
+     blurred echo behind the copy isn't needed */
   .hero-section::before{ display:none; }
 
-  /* Back in the flow as a normal image, so the frame gives up both the mask
-     and the drift headroom the absolute layout needed. */
+  /* back in the flow, so the frame gives up the mask and the drift headroom */
   .hero-visual-col{
     position:static;
     width:100%;
@@ -1413,8 +1343,7 @@ a{ text-decoration:none; }
 
   .section-head{ margin-bottom:42px; }
 
-  /* Three cards no longer fit side by side — swipe one at a time, which is
-     what the dots below the track drive. */
+  /* three cards don't fit side by side - swipe one at a time */
   .testimonial-track{
     display:flex;
     grid-template-columns:none;
@@ -1432,9 +1361,8 @@ a{ text-decoration:none; }
     scroll-snap-align:center;
   }
 
-  /* The scrollbar is hidden just above, and a card and a half fills the
-     screen, so without these there is nothing at all to say two more reviews
-     are sitting off to the right. */
+  /* scrollbar is hidden just above and a card and a half fills the screen, so
+     without these nothing says there are two more reviews off to the right */
   .testimonial-dots{
     display:flex;
     justify-content:center;
@@ -1445,9 +1373,7 @@ a{ text-decoration:none; }
   .cta-band{ min-height:0; padding:60px 0 64px; }
 }
 
-/* --------------------------------------------------------------------------
-   Responsive — mobile
-   -------------------------------------------------------------------------- */
+/* ---- responsive: mobile ---- */
 
 @media (max-width:767.98px){
   .container{ padding-inline:20px; }
@@ -1496,19 +1422,18 @@ a{ text-decoration:none; }
 
   .cta-band{ padding:52px 0 56px; }
 
-  /* The band is nearly square on a phone and the artwork is 4:1, so cover
-     zooms deep into it — and dead centre is the one part drawn empty, to keep
-     the heading legible on a desktop. Pulling the crop left lands it on the
-     fold coming out of the bottom corner instead, which is the strongest thing
-     in the picture. */
+  /* band is near square on a phone and the artwork is 4:1, so cover zooms deep
+     in - and dead centre is the part drawn empty to keep the desktop heading
+     legible. pull the crop left and it lands on the fold out of the bottom
+     corner instead. */
   .cta-shape{ object-position:18% 50%; }
 
   .cta-title{ font-size:27px; }
   .cta-text br{ display:none; }
   .cta-inner .btn{ width:100%; max-width:320px; }
 
-  /* Centred and stacked, the way the reference does it at this width: the
-     rule down the side of the links only makes sense beside something. */
+  /* centred and stacked at this width - the rule down the side of the links
+     only makes sense beside something */
   .site-footer{ padding:46px 0 40px; text-align:center; }
   .footer-row{ flex-direction:column; align-items:center; gap:30px; }
   .footer-brand,
@@ -1524,27 +1449,24 @@ a{ text-decoration:none; }
   .section-title{ font-size:27px; }
 }
 
-/* ============ ANIMATION SUPPORT ============ */
+/* ---- animation support ---- */
 
 
-/* The start state only applies while .sd-anim is on <html>, which the inline
-   script in the head adds and animations.js removes the instant it takes
-   over. If GSAP never arrives, a failsafe drops the class after 2.5s and the
-   page renders normally. */
+/* start state only applies while .sd-anim is on <html>. the inline script in
+   the head adds it, animations.js removes it as soon as it takes over, and a
+   2.5s failsafe drops it if GSAP never arrives. */
 .sd-anim [data-anim]:not([data-anim-group]),
 .sd-anim [data-anim-group] > *{
   opacity:0;
   visibility:hidden;
 }
 
-/* Letters dropping into a headline. Each word is a box that hides what
-   overflows it, so a letter is invisible until it has fallen past the top of
-   its own line. The padding gives the mask room for ascenders and descenders,
-   and the matching negative margin takes that room back out of the layout, so
-   the heading sets exactly as it did before it was split. */
-/* The stamp brings each letter in oversized, and a box that clips would cut
-   the corners off it on the way down — so the clipping only applies once the
-   line has landed, when there is nothing left to clip. */
+/* letters dropping into a headline. each word is a box that hides overflow, so
+   a letter is invisible until it's fallen past the top of its line. the padding
+   gives the mask room for ascenders/descenders and the matching negative margin
+   takes it back out of the layout, so the heading sets exactly as before. */
+/* the stamp brings each letter in oversized and a clipping box would cut its
+   corners on the way down - so clip only once the line has landed */
 .word{
   display:inline-block;
   overflow:visible;
@@ -1559,13 +1481,12 @@ a{ text-decoration:none; }
   transform-origin:50% 100%;
 }
 
-/* A rotation only reads as a hinge rather than a squash if there is a camera
-   in front of it. */
+/* a rotation only reads as a hinge rather than a squash with a camera in front */
 [data-anim="tilt"],
 [data-anim="flip"]{ perspective:1200px; }
 
-/* A card that leans as it arrives, and the pointer tilt, both only read as
-   depth if the parent supplies a vanishing point. */
+/* the arriving lean and the pointer tilt only read as depth if the parent
+   supplies a vanishing point */
 .rewards-grid,
 .stats-row,
 .usecase-grid,
@@ -1621,16 +1542,11 @@ a{ text-decoration:none; }
   }
 }
 
-/* --------------------------------------------------------------------------
-   Legal pages
-   --------------------------------------------------------------------------
-   Terms and the privacy policy. Continuous prose under plain headings, which
-   is how the source documents are written and how they are set here — no
-   numbered clauses, no section index, no accordion. A legal page is read
-   start to finish or searched with ctrl-F, and both of those are hindered by
-   chrome. The only concessions to reading are a narrow measure and headings
-   you can see coming.
-   -------------------------------------------------------------------------- */
+/* ---- legal pages ----
+   Terms and privacy. Continuous prose under plain headings, the way the source
+   documents are written: no numbered clauses, no index, no accordion. These get
+   read start to finish or searched with ctrl-F and chrome hinders both. The
+   only concessions are a narrow measure and visible headings. */
 
 .legal-main{
   background:linear-gradient(180deg,var(--bg-soft) 0%,var(--white) 420px);
@@ -1655,8 +1571,8 @@ a{ text-decoration:none; }
   margin-top:14px;
 }
 
-/* 68 characters or so. Past about 75 the eye loses the start of the next line
-   on the way back, and a document this long is exactly where that tells. */
+/* ~68 characters. past about 75 the eye loses the start of the next line on
+   the way back, and a document this long is where that tells. */
 .legal{
   max-width:760px;
   margin:0 auto;
@@ -1705,8 +1621,8 @@ a{ text-decoration:none; }
 
 .legal a:hover{ text-decoration-color:var(--blue); }
 
-/* The two documents refer to each other constantly, so each ends with the way
-   to the other rather than making you go back to the footer for it. */
+/* the two documents refer to each other constantly, so each ends with the way
+   to the other instead of sending you back to the footer */
 .legal-switch{
   margin-top:48px;
   padding-top:26px;
@@ -1722,15 +1638,10 @@ a{ text-decoration:none; }
   .legal li{ font-size:15px; }
 }
 
-/* --------------------------------------------------------------------------
-   The compact footer
-   --------------------------------------------------------------------------
-   Lives here rather than in app.css because it is not the app's. Sign in and
-   sign up use it too, and they do not load app.css — so from their side the
-   whole thing was unstyled: a column of browser-default purple links under a
-   line of serif. Both halves of the site load this file, so this is where
-   anything shared between them belongs.
-   -------------------------------------------------------------------------- */
+/* ---- compact footer ----
+   Here rather than app.css because signin/signup use it too and they don't load
+   app.css - from their side the whole thing was unstyled, default purple links
+   under a line of serif. Both halves of the site load this file. */
 
 .app-footer{
   flex:none;
@@ -1739,10 +1650,9 @@ a{ text-decoration:none; }
   padding:30px 0 26px;
 }
 
-/* Two rows out of one grid: the mark and the links sit on the first, the
-   small print runs the full width of the second. A single flex row put the
-   copyright and the links at opposite ends of the same line, which read as
-   two unrelated things rather than one footer. */
+/* two rows out of one grid: mark and links on the first, small print full
+   width on the second. a single flex row put the copyright and the links at
+   opposite ends of one line, which read as two unrelated things. */
 .app-footer-inner{
   display:grid;
   grid-template-columns:auto 1fr;
@@ -1760,8 +1670,8 @@ a{ text-decoration:none; }
   flex-wrap:wrap;
 }
 
-/* The rule under a link grows from nothing rather than appearing whole —
-   the same gesture the top menu uses, at the size this one wants. */
+/* the rule under a link grows from nothing rather than appearing whole - same
+   gesture as the top menu, at the size this one wants */
 .app-footer-nav a{
   position:relative;
   font-size:13.5px;

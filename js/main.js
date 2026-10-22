@@ -24,28 +24,21 @@
 
   var hasBootstrap = typeof window.bootstrap !== 'undefined';
 
-  // The stylesheet drops scroll-behavior to auto under prefers-reduced-motion,
-  // but that only governs scrolls the browser starts. A scroll asked for in
-  // script with behavior:'smooth' glides anyway, so the two scripted ones here
-  // have to check for themselves.
+  // prefers-reduced-motion only kills scrolls the browser starts, not ones we
+  // ask for with behavior:'smooth'. so check it here too.
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var glide = reduced ? 'auto' : 'smooth';
 
-  // Which nav link is lit. This was Bootstrap's ScrollSpy and it never worked
-  // here: it stayed on the first link at every scroll position, and its
-  // smoothScroll option stopped the links scrolling at all — clicking one left
-  // the page exactly where it was.
+  // Highlight the current nav link.
   //
-  // The marking failed because the nav was not in the page's order: Rewards
-  // sat above How it works in the document but second in the menu, and
-  // ScrollSpy compares each section against the one it saw last, so the two
-  // orders disagreeing was enough to pin it. The menu has since been put in
-  // document order, but the sort below stays — it is what makes the marking
-  // independent of how the links happen to be written.
+  // Was Bootstrap ScrollSpy, which never worked here - stuck on the first link
+  // and its smoothScroll option stopped the anchors scrolling at all.
+  // It compares each section against the last one it saw, so the nav being in a
+  // different order from the document was enough to pin it. Nav is in document
+  // order now, but the sort stays so it can't break again.
   //
-  // Scrolling is left to the browser: an href to an id already scrolls, the
-  // stylesheet's scroll-behavior makes it glide, and [id]{scroll-margin-top}
-  // keeps the landing clear of the sticky bar.
+  // Scrolling itself is left to the browser: href to an id, scroll-behavior in
+  // the CSS, and scroll-margin-top to clear the sticky bar.
   var navLinks = [].slice.call(document.querySelectorAll('.primary-nav .nav-link[href^="#"]'));
 
   var spied = navLinks
@@ -61,10 +54,8 @@
 
   if (spied.length) {
     var markNav = function () {
-      // About a third of the way down, not just under the sticky bar. Put the
-      // line right below the bar and a section only counts once its top has
-      // gone past it, so the menu lags a whole section behind what fills the
-      // screen. A third down, it lights as the section takes over the view.
+      // a third of the way down, not right under the bar. any higher and the nav
+      // lags a whole section behind whatever fills the screen.
       var bar = header ? header.getBoundingClientRect().height : 0;
       var line = Math.max(bar + 28, window.innerHeight * 0.32);
       var current = null;
@@ -73,8 +64,7 @@
         if (s.el.getBoundingClientRect().top <= line) current = s;
       });
 
-      // The last section is usually too short to ever reach that line, so at
-      // the foot of the page it is the one that counts.
+      // last section is usually too short to reach that line, so it wins at the bottom
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
         current = spied[spied.length - 1];
       }
@@ -89,18 +79,13 @@
     window.addEventListener('resize', markNav);
   }
 
-  // The indicator that follows the menu. It rests under whichever link is
-  // current and travels to whatever you point at, returning when you leave.
+  // Sliding pill under the nav. Sits on the current link, follows the hover.
   //
-  // Built here rather than written into the markup so a page with no script
-  // has no stray element to explain. It is an <li> because its parent is a
-  // <ul>, which may take nothing else.
+  // Built in JS so there's no stray element in the markup for a no-script page.
+  // <li> because the parent is a <ul>.
   //
-  // Every link in the menu, not just the ones pointing at a section of this
-  // page. On the homepage .active is moved by markNav above as you scroll; in
-  // the app it is written into the markup, because there "current" means the
-  // page you are on. The pill follows .active and does not care which put it
-  // there, which is what lets one implementation serve both.
+  // Works off .active, whoever set it: markNav moves it on the homepage, the app
+  // pages hardcode it. One implementation, both cases.
   var navList = document.querySelector('.primary-nav');
   var pillLinks = [].slice.call(document.querySelectorAll('.primary-nav .nav-link'));
 
@@ -121,8 +106,7 @@
       pill.style.opacity = '1';
     };
 
-    // Back to whichever link is current — which may be none of them, at the
-    // very top of the page, and then the pill has nowhere to be.
+    // back to the current link. might be none at the very top of the page.
     var settle = function () {
       var current = null;
       pillLinks.forEach(function (l) { if (l.classList.contains('active')) current = l; });
@@ -137,26 +121,23 @@
     navList.addEventListener('focusout', settle);
 
     settle();
-    // Only now may it animate: the first placement would otherwise be seen as
-    // a flight in from the corner.
+    // transitions off for the first placement or it flies in from the corner
     requestAnimationFrame(function () { navList.classList.add('pill-ready'); });
 
-    // Inter arrives after first paint (the stylesheet asks for display:swap),
-    // and every link changes width when it does. Without this the pill keeps
-    // the fallback font's measurements and sits visibly off its link.
+    // Inter loads after first paint (display:swap) and every link changes width.
+    // without this the pill keeps the fallback metrics and sits off its link.
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(settle);
     }
 
     window.addEventListener('resize', settle);
-    // markNav moves .active as you scroll; the pill has to follow it there too.
+    // markNav moves .active on scroll, pill needs to follow
     window.addEventListener('scroll', settle, { passive: true });
   }
 
-  // A reward card shows a logo and the words "Gift card", so the brand name is
-  // only in the mark's aria-label. Sighted pointer users are the ones missing
-  // it — screen readers already read the label, and the cards are not
-  // interactive, so no tabindex and no focus trigger.
+  // Reward cards only have the brand name in the mark's aria-label, so pointer
+  // users get a tooltip. Screen readers already read it. Not interactive, so no
+  // tabindex and no focus handler.
   if (hasBootstrap) {
     document.querySelectorAll('.reward-card').forEach(function (card) {
       var mark = card.querySelector('[aria-label]');
@@ -165,22 +146,18 @@
         title: mark.getAttribute('aria-label'),
         placement: 'top',
         trigger: 'hover',
-        container: 'body'      // out of the grid, so no ancestor can clip it
+        container: 'body'      // outside the grid so nothing can clip it
       });
     });
   }
 
-  // The reviews sit side by side on a desktop and become a swipe track under
-  // 992px, where the scrollbar is hidden — so nothing says the other two are
-  // there. These mark which one you are on and jump to the rest.
+  // Dots for the reviews. They're a swipe track under 992px with the scrollbar
+  // hidden, so otherwise nothing tells you the other two are there.
   //
-  // Built here rather than written into the markup so the count cannot drift
-  // from the number of reviews, and so a page with no script still swipes.
+  // Built in JS so the count can't drift from the number of reviews.
   //
-  // Everything is measured off bounding rects and scrolled by a delta.
-  // offsetLeft would be the obvious way and it is relative to the nearest
-  // positioned ancestor, which is not the track — the numbers would only
-  // agree with scrollLeft by accident.
+  // Measured with getBoundingClientRect and scrolled by a delta - offsetLeft is
+  // relative to the nearest positioned ancestor, which isn't the track.
   var track = document.getElementById('testimonialTrack');
   var dotsBox = document.getElementById('testimonialDots');
 
@@ -197,8 +174,7 @@
       dot.className = 'testimonial-dot';
       dot.setAttribute('aria-label', 'Review ' + (i + 1) + ' of ' + cards.length);
       dot.addEventListener('click', function () {
-        // scrollBy on the track, not scrollIntoView, which would take the
-        // whole page with it.
+        // scrollBy on the track, not scrollIntoView - that drags the whole page
         track.scrollBy({ left: mid(card) - mid(track), behavior: glide });
       });
       dotsBox.appendChild(dot);
@@ -223,7 +199,7 @@
     window.addEventListener('resize', markDots);
   }
 
-  // Back to the top, once there is a page behind you.
+  // back-to-top, once there's something above you
   var toTop = document.getElementById('toTop');
 
   if (toTop) {
@@ -237,9 +213,8 @@
     });
   }
 
-  // Only one answer open at a time, so the list never runs away down the page.
-  // If the animation layer loaded it drives the accordion itself, sliding the
-  // panels rather than snapping them, and this stays out of the way.
+  // one answer open at a time. if animations.js loaded it drives the accordion
+  // itself and this keeps out of the way.
   var faqItems = [].slice.call(document.querySelectorAll('.faq-item'));
 
   faqItems.forEach(function (item) {

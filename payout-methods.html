@@ -13,9 +13,9 @@
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/app.css">
 <script>
-  /* Hides what is about to animate, before anything paints. animations.js
-     removes this the instant it takes over; if it never does — blocked CDN,
-     script error — the timeout drops it and the page renders as plain HTML. */
+  /* hide what's about to animate before anything paints. animations.js drops
+     the class as soon as it takes over; the timeout is the failsafe for when
+     it never does (blocked CDN, script error) so the page still renders. */
   (function () {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var root = document.documentElement;
@@ -28,23 +28,18 @@
 </head>
 <body class="app-body">
 
-<!-- The app's icons, once per page.
+<!-- Icon sprite. Geometry from Lucide 0.544 (ISC licence).
+     Inlined rather than fetched - one sprite, no extra request, no flash of
+     missing icons.
 
-     Geometry from Lucide 0.544 (ISC licence) — a designed set at the 24-unit
-     box, 2px stroke and round caps this app was already reaching for. Inlined
-     rather than fetched at runtime: one sprite, no network dependency, no
-     flash of missing icons. The colouring is the only part that is ours.
+     No stroke-width in here on purpose: it's set in css/app.css, heavier for
+     the small sizes, because one weight in a 24-unit box can't serve 14px to
+     26px. stroke-width is inherited in SVG so a value on the <svg> reaches
+     into the shadow tree <use> builds - but only while no shape carries the
+     attribute itself.
 
-     Note what is NOT here: stroke-width. It is set in css/app.css, heavier for
-     the small icons than the large ones, because one weight in a 24-unit box
-     cannot serve a range rendered from 14px to 26px. stroke-width is an
-     inherited SVG property, so a value on the <svg> reaches into the shadow
-     tree a <use> builds — but only while no shape carries the attribute
-     itself, since a presentation attribute beats an inherited value.
-
-     Eight of these carry a second shape filled with --ic-2, the ones that sit
-     in a coloured tile. Elsewhere --ic-2 is unset and resolves to transparent,
-     so the same symbol is a plain line icon. -->
+     Eight of these have a second shape filled with --ic-2 for the coloured
+     tiles. Elsewhere --ic-2 is unset and resolves to transparent. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" stroke="var(--ic-1,currentColor)" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="var(--ic-1,currentColor)" /></symbol>
   <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" stroke="var(--ic-1,currentColor)" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" stroke="var(--ic-1,currentColor)" /></symbol>
@@ -72,7 +67,7 @@
   <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" stroke="var(--ic-1,currentColor)" /><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" stroke="var(--ic-1,currentColor)" /></symbol>
 </defs></svg>
 
-<!-- ============ APP BAR ============ -->
+<!-- ---- app bar ---- -->
 <header class="site-header" id="siteHeader">
   <div class="container">
     <nav class="navbar navbar-expand-lg p-0">
@@ -81,10 +76,9 @@
         <span class="brand-name">SondageDirect</span>
       </a>
 
-      <!-- Before the toggler in the document so that on a phone these stay on
-           the top row with the brand, rather than disappearing into the
-           collapsed menu. The order utility puts them back on the right once
-           the menu expands. -->
+      <!-- before the toggler in the document so these stay on the top row with
+           the brand on a phone instead of vanishing into the collapsed menu.
+           the order utility puts them back on the right once it expands. -->
       <div class="app-actions order-lg-3">
         <button type="button" class="icon-btn" aria-label="Notifications">
           <svg width="21" height="21" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-bell"/></svg>
@@ -196,9 +190,8 @@
   </div>
 </main>
 
-<!-- Confirm, then acknowledge. Two panes inside one modal rather than two
-     modals, so the second does not have to wait for the first to finish
-     closing before it can open. -->
+<!-- confirm then acknowledge. two panes in one modal rather than two modals,
+     so the second doesn't have to wait for the first to finish closing. -->
 <div class="modal fade" id="confirmPayout" tabindex="-1" aria-labelledby="confirmTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content app-modal">

@@ -1,18 +1,16 @@
-"""Draws the closing band's backdrop: strands of light, as in the reference.
+"""Draws the closing band's backdrop - strands of light.
 
-The look wanted is silk, not waves — long strands that taper to nothing at both
-ends, cross each other, and have no edge anywhere. Three things make that:
+Silk rather than waves: long strands that taper to nothing at both ends, cross
+each other, and have no hard edge anywhere. Three things do it:
 
   * each strand is a filled shape, not a stroke, so its width can swell in the
-    middle and come to a point at both ends. A stroke is one width end to end
-    and always reads as a drawn line.
-  * a gradient down its length takes it to fully transparent at both tips, so
-    it arrives and leaves rather than starting.
-  * a gaussian blur per weight class. The broad washes are blurred far more
-    than the fine threads, which is what separates "haze" from "filament".
+    middle and come to a point. A stroke is one width end to end and always
+    reads as a drawn line.
+  * a gradient down its length takes it to fully transparent at both tips.
+  * a gaussian blur per weight class - the broad washes blurred far more than
+    the fine threads, which is what separates haze from filament.
 
-The centre is left clear on purpose. The heading and the button sit there, and
-the strands are placed around them, which is also how the reference is built.
+Centre left clear on purpose; the heading and button sit there.
 
 Writes assets/cta-waves.svg. Re-run after editing STRANDS.
 """
@@ -21,36 +19,30 @@ import math
 
 W, H = 1600, 400
 
-# Weight classes: (max half-width, blur, base alpha, samples per segment). The
-# blur is what makes a class read as haze or thread; the widths alone do not.
+# weight classes: (max half-width, blur, base alpha, samples per segment).
 #
-# The sample count is set by the blur, not by the curve. A wash blurred by 30px
-# cannot show faceting however coarsely it is walked, so it is walked coarsely —
-# sampling all three classes alike put most of the file into points that get
-# smeared away.
+# sample count is set by the blur, not the curve - a wash blurred by 30px can't
+# show faceting however coarsely it's walked, so walk it coarsely. sampling all
+# three alike put most of the file into points that get smeared away.
 #
-# The widths matter as much as the blur. A half-width of 5 at high alpha does
-# not read as a filament of silk, it reads as a laser — the reference has
-# almost no hairlines in it. What it has is folds: broad, soft, and only a
-# little brighter than the ground. So every class is wider and dimmer than the
-# obvious choice, and the brightest thing in the picture is still barely
-# brighter than what it sits on.
+# widths matter as much as the blur. half-width 5 at high alpha reads as a
+# laser, not silk. what the reference has is folds: broad, soft, barely
+# brighter than the ground.
 CLASS = {
     'wash': (132, 34, 0.105, 14),
     'mid':  (48,  16, 0.142, 26),
     'fine': (12,  5,  0.178, 40),
 }
 
-# (class, alpha multiplier, waypoints). Points run off both edges so nothing
+# (class, alpha multiplier, waypoints). points run off both edges so nothing
 # starts or stops inside the band.
 #
-# Every one of these turns back on itself somewhere. Waypoints that only climb
-# or only fall give a Catmull-Rom nothing to bend around and it returns what is
-# effectively a straight line, which is what makes a strand read as a
-# searchlight beam instead of a fold of cloth. The S is the whole effect.
+# every one turns back on itself somewhere - waypoints that only climb or only
+# fall give Catmull-Rom nothing to bend around and you get a straight line,
+# which reads as a searchlight beam instead of a fold of cloth.
 STRANDS = [
-    # the long fold across the whole band: down into the left, up through the
-    # middle, flattening off at the right
+    # the long fold across the band: down left, up through the middle, flattening
+        # off at the right
     ('wash', 0.95, [(-240, 262), (170, 366), (620, 344), (1060, 224), (1480, 168), (1860, 206)]),
     ('mid',  0.70, [(-220, 286), (200, 388), (640, 366), (1080, 246), (1500, 192)]),
 
@@ -76,7 +68,7 @@ STRANDS = [
     # a faint thread high across the whole width, rising then easing
     ('fine', 0.50, [(-140, 310), (280, 338), (720, 268), (1160, 184), (1800, 158)]),
 
-    # upper left, barely there — keeps that corner from going flat
+    # upper left, barely there - stops that corner going flat
     ('wash', 0.60, [(-240, 64), (160, 142), (520, 112), (900, 176)]),
 
     # along the foot, a slow undulation
@@ -105,7 +97,7 @@ def spline(points, steps):
 
 
 def taper(t):
-    """Fat in the middle, a point at both ends — but not symmetrically, or
+    """Fat in the middle, a point at both ends, but not symmetrically or
     every strand looks like the same leaf. The power pushes the belly off
     centre."""
     return math.sin(math.pi * t) ** 0.62

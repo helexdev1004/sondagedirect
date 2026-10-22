@@ -1,27 +1,19 @@
-/* ==========================================================================
-   SondageDirect — sign in and sign up
-   --------------------------------------------------------------------------
-   Loaded after style.css, by these two pages only.
+/* Sign in / sign up only. Loaded after style.css.
 
-   One bright blue stage with a sheet of frosted glass standing on it. The
-   stage is assets/auth-sky.svg: crisp overlapping bands, no blur anywhere in
-   it, so every edge stays a clean line at any size. The glass is white and
-   the type on it is the site's own navy — a dark panel would fight a bright
-   ground, and white text on frosted white is unreadable at any opacity.
+   Frosted white panel on the blue artwork in assets/auth-sky.svg. The panel is
+   white with navy type - a dark panel fights a bright ground, and white text on
+   frosted white is unreadable whatever the opacity.
 
-   Two things decide how transparent the panel can be. It has to let enough
-   of the bands through to look like glass, and it has to keep the smallest
-   grey text above 4.5:1 over the most saturated corner of the background.
-   The second one wins where they disagree, and the numbers below were
-   measured against the rendered page rather than guessed.
-   ========================================================================== */
+   How transparent it can be is set by contrast, not taste: the smallest grey
+   text has to stay above 4.5:1 over the most saturated corner of the artwork.
+   The values here were measured off the rendered page. */
 
 :root{
   --glass-face:rgba(255,255,255,.66);
   --glass-line:rgba(255,255,255,.85);
   --glass-edge:rgba(120,165,225,.28);
-  /* The site's body grey is a touch light once there is blue behind it, so
-     these two pages use a darker one. Everything else is the shared token. */
+  /* body grey needs to be a bit darker with blue behind it. everything else
+     uses the shared tokens. */
   --on-glass-dim:#434B66;
   --on-glass-faint:#515A75;
   --field-face:rgba(255,255,255,.74);
@@ -30,9 +22,7 @@
   --bad:#C4382C;
 }
 
-/* --------------------------------------------------------------------------
-   The stage
-   -------------------------------------------------------------------------- */
+/* ---- stage ---- */
 
 .auth-body{
   min-height:100vh;
@@ -45,10 +35,8 @@
   isolation:isolate;
 }
 
-/* Fixed, so a tall sign-up form scrolls over the light rather than dragging
-   it along. cover, because the artwork is drawn at 1600x1100 and every band
-   runs off all four edges — it can be cropped anywhere without showing a
-   loose end. */
+/* fixed so a tall signup form scrolls over the artwork instead of dragging it.
+   cover is safe - every band runs off all four edges so it crops anywhere. */
 .auth-body::before{
   content:"";
   position:fixed;
@@ -57,9 +45,8 @@
   background:url("../assets/auth-sky.svg") center / cover no-repeat, #CFE4FA;
 }
 
-/* A little grain. Two and a half per cent is far below where it reads as
-   texture and just enough to stop a wide pale blue ramp banding into steps
-   on an 8-bit screen. soft-light rather than normal, or it greys the page. */
+/* grain. ~2.5%, below where it reads as texture, enough to stop a wide pale
+   blue ramp banding on an 8-bit screen. soft-light or it greys the page. */
 .auth-body::after{
   content:"";
   position:fixed;
@@ -71,12 +58,9 @@
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E") repeat 0 0 / 160px 160px;
 }
 
-/* --------------------------------------------------------------------------
-   The floating bar
-   --------------------------------------------------------------------------
-   No bar. A band across the top would cut the stage in half; the two things
-   that have to be up there stand on the background.
-   -------------------------------------------------------------------------- */
+/* ---- top bar ----
+   No bar as such; a band across the top would cut the artwork in half. The two
+   things that need to be up there just sit on the background. */
 
 .auth-bar{
   flex:none;
@@ -101,8 +85,7 @@
   font-size:14.5px;
 }
 
-/* The same material as the panel, so the two read as one thing rather than
-   a button dropped onto a picture. */
+/* same material as the panel so they read as one thing */
 .auth-bar-aside .btn-ghost{
   background:var(--glass-face);
   border:1px solid var(--glass-line);
@@ -118,9 +101,7 @@
   color:var(--navy);
 }
 
-/* --------------------------------------------------------------------------
-   Layout
-   -------------------------------------------------------------------------- */
+/* ---- layout ---- */
 
 .auth-main{
   flex:1 0 auto;
@@ -136,32 +117,30 @@
   justify-content:center;
 }
 
-/* --------------------------------------------------------------------------
-   The glass
-   -------------------------------------------------------------------------- */
+/* ---- the glass ---- */
 
 .glass{
   position:relative;
   z-index:1;
   border-radius:30px;
-  /* A white sheet with a diagonal fall across it, over a flat white floor.
-     The floor is what guarantees the contrast; the gradient is what stops
-     the panel looking like a plain translucent rectangle. */
+  /* white sheet with a diagonal fall, over a flat white floor. the floor is
+     what guarantees contrast, the gradient stops it looking like a plain
+     translucent rectangle. */
   background:
     linear-gradient(152deg, rgba(255,255,255,.3) 0%, rgba(255,255,255,0) 54%, rgba(255,255,255,.22) 100%),
     linear-gradient(0deg, var(--glass-face), var(--glass-face));
   border:1px solid var(--glass-line);
   -webkit-backdrop-filter:blur(26px) saturate(180%);
   backdrop-filter:blur(26px) saturate(180%);
-  /* The cast shadow is blue rather than black. A grey shadow on a blue
-     ground is the single thing that makes a light panel look pasted on. */
+  /* blue shadow, not black. a grey shadow on a blue ground is what makes a
+     light panel look pasted on. */
   box-shadow:
     0 40px 90px -30px rgba(14,56,132,.42),
     0 2px 10px -4px rgba(14,56,132,.18),
     inset 0 1px 0 rgba(255,255,255,.92);
 }
 
-/* The lit rim along the top corner. Real glass is never evenly lit. */
+/* lit rim on the top corner - real glass isn't evenly lit */
 .glass::before{
   content:"";
   position:absolute;
@@ -173,15 +152,14 @@
 
 .glass > *{ position:relative; }
 
-/* Where the browser cannot blur what is behind it, transparency is a
-   liability rather than an effect — the bands would run straight through
-   the labels. The panel stops being glass and becomes a white card. */
+/* no backdrop-filter: transparency is a liability, the bands would run
+   through the labels. falls back to a plain white card. */
 @supports not ((-webkit-backdrop-filter:blur(2px)) or (backdrop-filter:blur(2px))){
   .glass{ background:rgba(255,255,255,.96); }
   .auth-bar-aside .btn-ghost{ background:rgba(255,255,255,.95); }
 }
 
-/* Asked for by the reader, so honoured: same layout, same colours, opaque. */
+/* honour the preference: same layout, same colours, opaque */
 @media (prefers-reduced-transparency: reduce){
   .glass{
     background:rgba(255,255,255,.97);
@@ -196,9 +174,7 @@
   padding:46px 44px 38px;
 }
 
-/* --------------------------------------------------------------------------
-   Type
-   -------------------------------------------------------------------------- */
+/* ---- type ---- */
 
 .auth-title{
   color:var(--navy);
@@ -245,9 +221,7 @@
   margin:14px 0 22px;
 }
 
-/* --------------------------------------------------------------------------
-   Fields
-   -------------------------------------------------------------------------- */
+/* ---- fields ---- */
 
 .fields{
   display:grid;
@@ -293,9 +267,8 @@
 
 .field-input:hover:not(:focus){ border-color:rgba(84,132,200,.5); }
 
-/* A different mark on every field. Nine identical boxes down a form is what
-   makes a sign-up feel long; this is what lets the eye find the one it wants
-   without reading the labels. */
+/* a different icon on every field. nine identical boxes is what makes a signup
+   feel long; this lets the eye find the one it wants without reading labels. */
 .field-icon{
   position:absolute;
   top:50%;
@@ -333,9 +306,8 @@
 .field-eye:hover{ color:var(--blue); background:rgba(8,116,252,.1); }
 .field-eye:focus-visible{ outline:2px solid var(--blue); outline-offset:1px; }
 
-/* Selects get our own chevron rather than the browser's. background-COLOR
-   everywhere below, never the shorthand — the shorthand resets the
-   chevron's repeat, position and size along with the colour. */
+/* our own chevron instead of the browser's. background-COLOR below, never the
+   shorthand - the shorthand resets the chevron's repeat/position/size too. */
 select.field-input{
   -webkit-appearance:none;
   appearance:none;
@@ -358,8 +330,8 @@ select.field-input:focus{
 
 select.field-input:disabled{ cursor:not-allowed; opacity:.62; }
 
-/* Nothing chosen yet is a placeholder and reads like one. :invalid is true
-   for a required control exactly while it is empty. */
+/* nothing chosen yet should read as a placeholder. :invalid is true for a
+   required control exactly while it's empty. */
 select.field-input:invalid,
 input[type="date"].field-input:invalid{ color:#79839E; }
 
@@ -396,9 +368,7 @@ input[type="date"].field-input:invalid{ color:#79839E; }
 .field.is-bad .field-error{ display:block; }
 .field.is-bad .field-hint{ display:none; }
 
-/* --------------------------------------------------------------------------
-   Consents and submit
-   -------------------------------------------------------------------------- */
+/* ---- consents + submit ---- */
 
 .consents{
   display:flex;
@@ -417,8 +387,7 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   cursor:pointer;
 }
 
-/* accent-color keeps the control the one the platform draws — right size,
-   right keyboard behaviour — while still being ours. */
+/* accent-color keeps the native control (right size, right keyboard) but ours */
 .consent input{
   flex:none;
   width:19px;
@@ -462,23 +431,15 @@ input[type="date"].field-input:invalid{ color:#79839E; }
 .auth-done.is-shown{ display:flex; }
 .auth-done svg{ flex:none; margin-top:1px; color:#17865E; }
 
-/* --------------------------------------------------------------------------
-   The wide card
-   --------------------------------------------------------------------------
-   Sign-up is the same object as sign-in, just wider, and the width is not a
-   taste decision. Its fields sit two to a row, and the longest thing either
-   column must hold on one line is a select reading "Choose a country first"
-   — 158px at 15px, and a native select truncates rather than wrapping or
-   shrinking. Add 45px for the leading icon and 36px for the chevron and a
-   column needs 239px; two of those plus the 16px gap and 88px of padding is
-   582px, so 620 leaves a little room and nothing below it would.
-   -------------------------------------------------------------------------- */
+/* ---- wide card (signup) ----
+   620px isn't arbitrary. Fields sit two to a row and the longest thing a column
+   has to hold on one line is "Choose a country first" - 158px at 15px, and a
+   native select truncates rather than wrapping. +45 for the leading icon, +36
+   for the chevron = 239 per column; x2, +16 gap, +88 padding = 582. */
 
 .auth-card.is-wide{ max-width:620px; }
 
-/* --------------------------------------------------------------------------
-   The footer, which belongs to the stage rather than to the page it came from
-   -------------------------------------------------------------------------- */
+/* ---- footer (belongs to the stage, not the page it came from) ---- */
 
 .auth-body .app-footer{
   background:rgba(255,255,255,.55);
@@ -495,9 +456,7 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   color:var(--on-glass-faint);
 }
 
-/* --------------------------------------------------------------------------
-   Narrower
-   -------------------------------------------------------------------------- */
+/* ---- narrow ---- */
 
 
 @media (max-width:767.98px){
@@ -511,11 +470,9 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   .auth-bar{ padding-top:18px; }
   .auth-bar-aside{ font-size:13.5px; gap:10px; }
   .auth-card{ padding:30px 20px 26px; border-radius:22px; }
-  /* The blur is the most expensive thing on the page and phones are where
-     it costs most, so it is roughly halved. Both background layers are
-     restated: the shorthand replaces the whole stack, and listing only the
-     sheen here would silently drop the white floor that carries the
-     contrast — which is exactly what went wrong in the dark version. */
+  /* blur is the most expensive thing here and phones feel it most, so halve it.
+     both layers restated - the shorthand replaces the whole stack, and listing
+     only the sheen drops the white floor that carries the contrast. */
   .glass{
     -webkit-backdrop-filter:blur(16px) saturate(165%);
     backdrop-filter:blur(16px) saturate(165%);

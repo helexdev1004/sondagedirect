@@ -5,10 +5,10 @@ SRC = 'assets/@why/main-hero.png'
 DST = 'assets/hero-main.jpg'
 
 # The violet the sweater sits on (270-280) and the magenta fringe where hair
-# meets it (300-340) both have to land in blue. A flat hue shift cannot do
-# that: -50deg moves the fringe to 250-290, which is still violet. So the
-# whole violet-to-magenta band is REMAPPED onto the blue band instead, which
-# collapses it rather than sliding it.
+# meets it (300-340) both have to end up blue. A flat hue shift can't do it:
+# -50deg puts the fringe at 250-290, still violet. So the whole violet-magenta
+# band gets REMAPPED onto the blue band, which collapses it rather than sliding
+# it.
 IN_LO,  IN_HI  = 245.0, 330.0     # violet .. magenta
 OUT_LO, OUT_HI = 208.0, 238.0     # brand blue band; 275 lands on ~219
 EDGE           = 10.0             # feather either end so the band has no seam
@@ -36,8 +36,8 @@ t = np.clip((h - IN_LO) / (IN_HI - IN_LO), 0.0, 1.0)
 h_target = OUT_LO + t * (OUT_HI - OUT_LO)
 h = h * (1.0 - w) + h_target * w
 
-# the fringe is an artefact, not a garment: take some saturation out of the
-# part of the band that was magenta so it reads as hair rather than colour
+# the fringe is an artefact, not a garment - pull some saturation out of the
+# part of the band that was magenta so it reads as hair
 fringe = np.clip((h_target - 228.0) / 6.0, 0.0, 1.0) * w
 s = s * (1.0 - 0.45 * fringe)
 

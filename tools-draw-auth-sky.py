@@ -1,26 +1,17 @@
-"""Draws the bright blue backdrop behind the sign in / sign up glass.
+"""Draws the blue backdrop behind the sign in / sign up panels.
 
-This replaces the dark silk. The brief was bright, blue, sharp and artful,
-and the word that changes the most is sharp — the silk was built entirely
-out of gaussian blur, and nothing blurred can be sharp. So the construction
-is the opposite of that one:
+No filters anywhere in it - every edge is the edge of a filled path, so it
+stays crisp at any size and renders far quicker than the blurred version this
+replaces.
 
-  * no filters at all. Every edge is the edge of a filled path, so it stays
-    a clean line at any zoom and the file renders in a fraction of the time
-    a stack of 46px blurs took.
-  * the modulation that the blur used to provide comes from gradients along
-    and across each band instead, and from the alpha compounding where
-    bands cross. Three translucent sheets over one another make a colour
-    none of them has on its own, which is what keeps it from reading as
-    flat vector clip art.
-  * hairlines. A few single-stroke curves following the big shapes are what
-    actually sells "sharp" — the eye finds the thinnest crisp thing in the
-    picture and judges the whole image by it.
+What the blur used to provide comes from gradients along and across each band
+instead, plus the alpha compounding where bands cross: three translucent sheets
+over one another make a colour none of them has alone, which is what stops it
+looking like flat vector clip art. The hairlines matter more than they look -
+the eye finds the thinnest crisp thing in a picture and judges the rest by it.
 
-The palette is bright: a pale sky at the top left falling to a saturated
-brand blue at the bottom right, with white bands lifting it and deeper blue
-bands giving it somewhere to fall to. It has to stay bright under a sheet
-of white glass without the glass disappearing into it.
+Pale sky top left falling to saturated brand blue bottom right. Has to stay
+bright under a sheet of white glass without the glass disappearing into it.
 
 Writes assets/auth-sky.svg. Re-run after editing BANDS.
 """
@@ -30,26 +21,26 @@ import math
 W, H = 1600, 1100
 
 # (max half-width, base alpha, samples per segment, kind)
-#   sheet  — the broad folds that carry the colour
-#   blade  — narrower, brighter, crossing the sheets
-#   line   — a single stroked curve, no width of its own
+#   sheet - broad folds carrying the colour
+#   blade - narrower, brighter, crossing them
+#   line  - a single stroked curve
 CLASS = {
     'sheet': (210, 0.17, 18, 'fill'),
     'blade': (64,  0.22, 30, 'fill'),
     'line':  (2.0, 0.42, 40, 'stroke'),
 }
 
-# Three inks. Named rather than per-band so the picture keeps to a palette.
+# three inks, named rather than set per band so it keeps to a palette
 INK = {
     'white': ('#FFFFFF', '#EAF5FF'),
     'cyan':  ('#5FD4FF', '#1FA8F0'),
     'deep':  ('#1F6FE0', '#0B46B4'),
 }
 
-# (class, ink, alpha multiplier, waypoints). Points run off every edge so
-# nothing begins or ends inside the picture. Each curve turns back on itself
-# somewhere, or the spline returns a straight line and the band reads as a
-# stripe rather than a fold.
+# (class, ink, alpha multiplier, waypoints). points run off every edge so
+# nothing starts or stops inside the picture. each curve has to turn back on
+# itself somewhere or the spline returns a straight line and you get a stripe
+# instead of a fold.
 BANDS = [
     # the main fold, low left to high right
     ('sheet', 'white', 1.15, [(-300, 900), (170, 968), (640, 772), (1090, 462), (1500, 286), (1900, 320)]),
@@ -87,7 +78,7 @@ BANDS = [
 
 
 def spline(points, steps):
-    """Catmull-Rom through the waypoints, sampled evenly."""
+    """Catmull-Rom through the waypoints, evenly sampled."""
     pts = [points[0]] + list(points) + [points[-1]]
     out = []
     for i in range(len(pts) - 3):
@@ -107,7 +98,7 @@ def spline(points, steps):
 
 
 def taper(t):
-    """Fat in the middle, a point at both ends, belly off centre."""
+    """Fat in the middle, point at both ends, belly off centre."""
     return math.sin(math.pi * t) ** 0.58
 
 
@@ -119,9 +110,11 @@ def centre_path(points, steps):
 
 
 def ribbon(points, half, steps):
-    """The centreline offset either side by the tapering half-width. One
-    decimal place, not zero: with no blur to hide it, integer rounding shows
-    as faceting along the edge of a 200-unit sheet."""
+    """Centreline offset either side by the tapering half-width.
+    
+        One decimal place, not zero - with no blur to hide it, integer rounding
+        shows as faceting along the edge of a 200-unit sheet.
+        """
     pts = spline(points, steps)
     n = len(pts) - 1
     top, bottom = [], []
@@ -144,8 +137,8 @@ def ribbon(points, half, steps):
 
 defs = ['<defs>']
 
-# The ground: pale sky falling to brand blue, with two bright spots placed
-# off the corners so the field is not an even ramp.
+# ground: pale sky down to brand blue, two bright spots off the corners so the
+# field isn't an even ramp
 defs.append(
     '<linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">'
     '<stop offset="0" stop-color="#E8F4FF"/>'
@@ -172,8 +165,8 @@ for i, (cls, ink, mult, waypoints) in enumerate(BANDS):
     c1, c2 = INK[ink]
     x1, y1 = waypoints[0]
     x2, y2 = waypoints[-1]
-    # Along the band: nothing at both tips, so it arrives and leaves rather
-    # than starting. Two colours down its length so it is never one flat tint.
+    # nothing at either tip so the band arrives and leaves rather than starting.
+        # two colours down its length so it's never one flat tint.
     defs.append(
         '<linearGradient id="b%d" gradientUnits="userSpaceOnUse" '
         'x1="%.0f" y1="%.0f" x2="%.0f" y2="%.0f">'
