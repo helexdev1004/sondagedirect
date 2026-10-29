@@ -24,9 +24,12 @@ Then <http://localhost:8123>.
 
 ```
 index.html              marketing homepage
+recruitment.html        two-step join: what this is + consent, then the form
 signin.html             log in
 signup.html             create an account
 dashboard.html          available surveys, balance, activity
+profiling-survey.html   a profiling survey: the three question types
+finish.html             where a survey leaves you when it ends
 wallet.html             balance, progress to the payout minimum, ledger
 payout-methods.html     gift cards / PayPal / virtual card
 invite.html             referral link and how it works
@@ -35,12 +38,34 @@ terms-conditions.html   legal
 privacy-policy.html     legal
 ```
 
+### Pages with more than one state
+
+`finish.html` is both versions of the survey-finished page, picked by the same
+query the live site uses:
+
+- `finish.html` - did not qualify
+- `finish.html?s=completed` - finished it
+
+An inline script in the `<head>` sets a class on `<html>` before first paint, so
+neither version is ever briefly visible as the other. The completed version
+states the points earned; that figure has to be passed in on the redirect.
+
+`recruitment.html` holds both steps. Step one is the explanation and the two
+consent checkboxes; the Continue button stays disabled until both are ticked.
+Step two is the account form. Going back keeps what was typed, because nothing
+is reloaded.
+
+`profiling-survey.html` has one question of each type - single choice, multiple
+choice, open text - and swaps itself for the confirmation on submit. "None of
+these" clears the other answers and any other answer clears it.
+
 ## Files
 
 ```
 css/style.css   shared: tokens, header, footer, marketing sections, legal pages
 css/app.css     signed-in screens only, loaded after style.css
-css/auth.css    signin + signup only, loaded after style.css
+css/auth.css    the four pages on the blue stage: signin, signup,
+                recruitment, finish. loaded after style.css
 js/main.js      header, nav marking, sliding pill, review dots, FAQ
 js/animations.js  scroll and entrance animation (GSAP + ScrollTrigger)
 js/app.js       segmented controls, wallet arc, copy, modals, profile editing

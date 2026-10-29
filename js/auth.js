@@ -68,6 +68,60 @@
     });
   }
 
+  /* two-step recruitment */
+
+  // Step one is reading and two checkboxes; step two is the account. Both are
+  // in the markup and this swaps which one is on, rather than loading a second
+  // page - going back then costs nothing and keeps what was typed.
+  (function () {
+    var gate = document.querySelector('[data-consent-form]');
+    if (!gate) return;
+
+    var go    = gate.querySelector('[data-consent-go]');
+    var boxes = [].slice.call(gate.querySelectorAll('[data-consent] input'));
+    var panes = {
+      info: document.querySelector('[data-pane="info"]'),
+      form: document.querySelector('[data-pane="form"]')
+    };
+    var label = document.querySelector('[data-step-label]');
+    var fill  = document.querySelector('[data-step-fill]');
+    var back  = document.querySelector('[data-step-back]');
+
+    var allTicked = function () {
+      return boxes.every(function (b) { return b.checked; });
+    };
+
+    var sync = function () { go.disabled = !allTicked(); };
+    boxes.forEach(function (b) { b.addEventListener('change', sync); });
+    sync();
+
+    var show = function (which) {
+      panes.info.hidden = which !== 'info';
+      panes.form.hidden = which !== 'form';
+      if (label) label.textContent = which === 'info' ? 'Step 1 of 2' : 'Step 2 of 2';
+      if (fill)  fill.style.width  = which === 'info' ? '50%' : '100%';
+
+      // The card changes height, so anything measured against the old one is
+      // now wrong. Same reason the FAQ refreshes after it slides.
+      if (window.ScrollTrigger) window.requestAnimationFrame(function () { window.ScrollTrigger.refresh(); });
+
+      // Back to the top of the panel. Switching pane mid-scroll otherwise
+      // drops you into the middle of whichever one is now showing.
+      var card = gate.closest('.auth-card');
+      if (card && card.scrollIntoView) card.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    };
+
+    gate.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!allTicked()) return;
+      show('form');
+      var first = panes.form.querySelector('.field-input');
+      if (first) window.setTimeout(function () { first.focus(); }, 320);
+    });
+
+    if (back) back.addEventListener('click', function () { show('info'); });
+  })();
+
   /* validation */
 
   var RULES = {

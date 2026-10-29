@@ -439,6 +439,195 @@ input[type="date"].field-input:invalid{ color:#79839E; }
 
 .auth-card.is-wide{ max-width:620px; }
 
+/* ---- recruitment ----
+   Two steps on one sheet of glass. Wider than sign-in because step one is
+   prose and prose needs a measure. */
+
+.recruit{ max-width:680px; }
+.recruit .auth-title{ font-size:clamp(27px, 1.35rem + 1vw, 35px); }
+
+/* how far through you are. the live page says nothing at all, and a form you
+   cannot see the end of is a form people leave. */
+.steps-head{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:24px;
+}
+
+.steps-count{
+  flex:none;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:var(--accent);
+}
+
+.steps-bar{
+  flex:1;
+  height:5px;
+  border-radius:3px;
+  background:rgba(103,148,210,.26);
+  overflow:hidden;
+}
+
+.steps-fill{
+  display:block;
+  height:100%;
+  width:50%;
+  border-radius:3px;
+  background:linear-gradient(90deg,var(--blue) 0%,var(--blue-btn) 100%);
+  transition:width .45s cubic-bezier(.22,.8,.3,1);
+}
+
+/* the three facts worth pulling out of the wall of text */
+.facts{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin:28px 0 0;
+}
+
+.fact{
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+  color:var(--on-glass-dim);
+  font-size:14px;
+  line-height:1.55;
+}
+
+.fact strong{
+  display:block;
+  color:var(--navy);
+  font-size:15px;
+  margin-bottom:2px;
+}
+
+.fact-mark{
+  flex:none;
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.5);
+}
+
+.fact-mark.is-blue { background:linear-gradient(145deg,#E7F1FF,#D5E6FF); color:#0B55CE; }
+.fact-mark.is-green{ background:linear-gradient(145deg,#E9F8F1,#D7F1E5); color:#0B7F58; }
+.fact-mark.is-amber{ background:linear-gradient(145deg,#FEF6E7,#FDECCF); color:#9D650A; }
+
+/* The two things to accept, set apart from the reading. On the live page they
+   are two checkboxes at the end of a long scroll with nothing marking them as
+   the thing that actually gates the button. */
+.consent-block{
+  margin-top:30px;
+  padding:24px 24px 22px;
+  border-radius:18px;
+  background:rgba(255,255,255,.5);
+  border:1px solid var(--glass-edge);
+}
+
+.consent-title{
+  font-size:17px;
+  font-weight:700;
+  color:var(--navy);
+  margin:0;
+}
+
+.consent-lead{
+  color:var(--on-glass-faint);
+  font-size:13.5px;
+  line-height:1.6;
+  margin:7px 0 0;
+}
+
+.consent-block .consents{ margin-top:16px; }
+
+/* a disabled submit has to look disabled, or it reads as a broken button */
+.auth-submit:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+
+.back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:16px;
+  padding:0;
+  border:0;
+  background:none;
+  color:var(--on-glass-dim);
+  font-size:13.5px;
+  font-weight:600;
+  cursor:pointer;
+  transition:color .2s ease, transform .2s ease;
+}
+
+.back-link:hover{ color:var(--navy); transform:translateX(-3px); }
+
+/* ---- survey finished ----
+   One file, two outcomes. The <html> class is set by an inline script before
+   first paint, so neither version is ever briefly visible as the other. */
+
+.only-done, .only-screened{ display:none; }
+.is-done .only-done{ display:block; }
+.is-screened .only-screened{ display:block; }
+.is-done .earned.only-done,
+.earned.is-shown{ display:inline-flex; }
+
+.result{ max-width:540px; }
+.result .auth-title{ font-size:clamp(26px, 1.3rem + 1vw, 34px); }
+.result .auth-sub + .auth-sub{ margin-top:10px; }
+.result .auth-submit{ margin-top:28px; }
+
+/* the big badge at the top. two of them in the markup, one shown. */
+.result-mark{
+  display:none;
+  width:76px;
+  height:76px;
+  margin:0 auto 24px;
+  border-radius:50%;
+  place-items:center;
+  color:#fff;
+}
+
+.is-done .result-mark.is-good,
+.is-screened .result-mark.is-screen{ display:grid; }
+
+.result-mark.is-good{
+  background:linear-gradient(145deg,#2BC48A 0%,#0E8F63 100%);
+  box-shadow:0 14px 30px -12px rgba(14,143,99,.75), inset 0 1px 0 rgba(255,255,255,.4);
+}
+
+/* Not a failure, so not red. Amber would read as a warning and grey as an
+   error page; this is the brand blue saying the survey simply wasn't looking
+   for them. */
+.result-mark.is-screen{
+  background:linear-gradient(145deg,#5B9BFF 0%,#1F5EF0 100%);
+  box-shadow:0 14px 30px -12px rgba(31,94,240,.7), inset 0 1px 0 rgba(255,255,255,.4);
+}
+
+/* the points, stated rather than left to the dashboard */
+.earned{
+  align-items:center;
+  gap:9px;
+  margin:18px auto 14px;
+  padding:9px 16px 9px 13px;
+  border-radius:100px;
+  background:rgba(214,247,233,.9);
+  border:1px solid rgba(46,170,120,.38);
+  color:#0B543A;
+  font-size:14.5px;
+}
+
+.earned svg{ flex:none; color:#17865E; }
+.earned strong{ font-weight:700; }
+
 /* ---- footer (belongs to the stage, not the page it came from) ---- */
 
 .auth-body .app-footer{

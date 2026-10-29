@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My wallet — SondageDirect</title>
+<meta name="description" content="Answer a short profiling survey. The answers decide which paid surveys you are sent.">
+<link rel="icon" href="assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/app.css">
+<script>
+  /* hide what's about to animate before anything paints. animations.js drops
+     the class as soon as it takes over; the timeout is the failsafe for when
+     it never does (blocked CDN, script error) so the page still renders. */
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var root = document.documentElement;
+    root.classList.add('sd-anim');
+    window.setTimeout(function () {
+      if (!root.classList.contains('sd-anim-ready')) root.classList.remove('sd-anim');
+    }, 2500);
+  })();
+</script>
+</head>
+<body class="app-body">
+
+<!-- Icon sprite. Geometry from Lucide 0.544 (ISC licence).
+     Inlined rather than fetched - one sprite, no extra request, no flash of
+     missing icons.
+
+     No stroke-width in here on purpose: it's set in css/app.css, heavier for
+     the small sizes, because one weight in a 24-unit box can't serve 14px to
+     26px. stroke-width is inherited in SVG so a value on the <svg> reaches
+     into the shadow tree <use> builds - but only while no shape carries the
+     attribute itself.
+
+     Eight of these have a second shape filled with --ic-2 for the coloured
+     tiles. Elsewhere --ic-2 is unset and resolves to transparent. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" stroke="var(--ic-1,currentColor)" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" stroke="var(--ic-1,currentColor)" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-invite" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4" fill="var(--ic-2,transparent)" stroke="none" /><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="var(--ic-1,currentColor)" /><circle cx="9" cy="7" r="4" stroke="var(--ic-1,currentColor)" /><line x1="19" x2="19" y1="8" y2="14" stroke="var(--ic-1,currentColor)" /><line x1="22" x2="16" y1="11" y2="11" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" fill="var(--ic-2,transparent)" stroke="none" /><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke="var(--ic-1,currentColor)" /><circle cx="12" cy="7" r="4" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0" stroke="var(--ic-1,currentColor)" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" fill="var(--ic-2,transparent)" stroke="none" /><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" stroke="var(--ic-1,currentColor)" /><path d="M14 2v4a2 2 0 0 0 2 2h4" stroke="var(--ic-1,currentColor)" /><path d="M10 9H8" stroke="var(--ic-1,currentColor)" /><path d="M16 13H8" stroke="var(--ic-1,currentColor)" /><path d="M16 17H8" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2" stroke="var(--ic-1,currentColor)" /><circle cx="12" cy="12" r="10" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="var(--ic-2,transparent)" stroke="none" /><circle cx="12" cy="12" r="10" stroke="var(--ic-1,currentColor)" /><path d="m9 12 2 2 4-4" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" stroke="var(--ic-1,currentColor)" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" stroke="var(--ic-1,currentColor)" /><path d="m21.854 2.147-10.94 10.939" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1" fill="var(--ic-2,transparent)" stroke="none" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" fill="var(--ic-2,transparent)" stroke="none" /><rect x="3" y="8" width="18" height="4" rx="1" stroke="var(--ic-1,currentColor)" /><path d="M12 8v13" stroke="var(--ic-1,currentColor)" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" stroke="var(--ic-1,currentColor)" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" fill="var(--ic-2,transparent)" stroke="none" /><rect width="20" height="14" x="2" y="5" rx="2" stroke="var(--ic-1,currentColor)" /><line x1="2" x2="22" y1="10" y2="10" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-cash" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2" fill="var(--ic-2,transparent)" stroke="none" /><rect width="20" height="12" x="2" y="6" rx="2" stroke="var(--ic-1,currentColor)" /><circle cx="12" cy="12" r="2" stroke="var(--ic-1,currentColor)" /><path d="M6 12h.01M18 12h.01" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6" stroke="var(--ic-1,currentColor)" /><path d="m22 7-8.5 8.5-5-5L2 17" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="var(--ic-1,currentColor)" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="var(--ic-1,currentColor)" /><path d="M12 17h.01" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m16 17 5-5-5-5" stroke="var(--ic-1,currentColor)" /><path d="M21 12H9" stroke="var(--ic-1,currentColor)" /><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" fill="var(--ic-2,transparent)" stroke="none" /><polyline points="22 12 16 12 14 15 10 15 8 12 2 12" stroke="var(--ic-1,currentColor)" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" stroke="var(--ic-1,currentColor)" /><path d="m15 5 4 4" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 11v6" fill="var(--ic-2,transparent)" stroke="none" /><path d="M10 11v6" stroke="var(--ic-1,currentColor)" /><path d="M14 11v6" stroke="var(--ic-1,currentColor)" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="var(--ic-1,currentColor)" /><path d="M3 6h18" stroke="var(--ic-1,currentColor)" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="var(--ic-1,currentColor)" /></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" stroke="var(--ic-1,currentColor)" /><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" stroke="var(--ic-1,currentColor)" /></symbol>
+</defs></svg>
+
+<!-- ---- app bar ---- -->
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg p-0">
+      <a class="navbar-brand brand-lockup p-0 m-0" href="dashboard.html">
+        <img src="assets/logo-mark.png" alt="" class="brand-mark">
+        <span class="brand-name">SondageDirect</span>
+      </a>
+
+      <!-- before the toggler in the document so these stay on the top row with
+           the brand on a phone instead of vanishing into the collapsed menu.
+           the order utility puts them back on the right once it expands. -->
+      <div class="app-actions order-lg-3">
+        <button type="button" class="icon-btn" aria-label="Notifications">
+          <svg width="21" height="21" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-bell"/></svg>
+          <span class="dot" aria-hidden="true"></span>
+        </button>
+        <div class="dropdown">
+          <button type="button" class="account-btn" data-bs-toggle="dropdown" data-bs-offset="0,14" aria-expanded="false" aria-label="Your account">
+            <span class="avatar" aria-hidden="true">AC</span>
+            <svg width="16" height="16" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chev-d"/></svg>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end account-menu">
+            <div class="who">
+              <span class="avatar" aria-hidden="true">AC</span>
+              <span>
+                <strong>Alex Carter</strong>
+                <span>alex.carter@example.com</span>
+              </span>
+            </div>
+            <a class="menu-item" href="profile.html"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-user"/></svg>My profile</a>
+            <a class="menu-item" href="wallet.html"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wallet"/></svg>My wallet</a>
+            <a class="menu-item" href="index.html#faq"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-help"/></svg>Help</a>
+            <hr class="menu-rule">
+            <a class="menu-item is-out" href="signin.html"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-out"/></svg>Log out</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="navbar-toggler order-lg-3" type="button" data-bs-toggle="collapse" data-bs-target="#primaryNav"
+              aria-controls="primaryNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse order-lg-2" id="primaryNav">
+        <ul class="navbar-nav primary-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="dashboard.html"><svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-home"/></svg>Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="wallet.html"><svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-wallet"/></svg>Wallet</a></li>
+          <li class="nav-item"><a class="nav-link" href="invite.html"><svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-invite"/></svg>Invite</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html"><svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-user"/></svg>Profile</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<main class="app-main">
+  <div class="container screen">
+
+    <div class="screen-head">
+      <a class="back-link" href="dashboard.html">
+        <svg width="16" height="16" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chev-l"/></svg>
+        Back to surveys
+      </a>
+
+      <div class="screen-head-split">
+        <div>
+          <h1 class="screen-title">Profiling survey #3100845</h1>
+          <p class="screen-sub">
+            Three questions about your household. Nobody buying a survey sees your
+            name &mdash; these only decide which surveys you are offered.
+          </p>
+        </div>
+        <span class="quiz-pay">
+          <span class="quiz-pay-figure">9 <span class="unit">points</span></span>
+          <span class="quiz-pay-note"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-clock"/></svg> about 6 minutes</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- ---- the questions ---- -->
+    <form class="quiz" data-quiz novalidate>
+
+      <!-- single choice -->
+      <fieldset class="panel question" data-question>
+        <legend class="q-head">
+          <span class="q-num">Question 1 of 3</span>
+          <span class="q-text">Which of these best describes the household you live in?</span>
+          <span class="q-note">Choose one.</span>
+        </legend>
+
+        <div class="choices">
+          <label class="choice">
+            <input type="radio" name="household" value="alone" data-required>
+            <span class="choice-text">I live on my own</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="household" value="partner" data-required>
+            <span class="choice-text">With a partner, no children at home</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="household" value="children" data-required>
+            <span class="choice-text">With children living at home</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="household" value="shared" data-required>
+            <span class="choice-text">Shared with flatmates or other family</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="household" value="na" data-required>
+            <span class="choice-text">Prefer not to say</span>
+          </label>
+        </div>
+        <p class="q-error" data-q-error>Choose one of these to carry on.</p>
+      </fieldset>
+
+      <!-- multiple choice -->
+      <fieldset class="panel question" data-question>
+        <legend class="q-head">
+          <span class="q-num">Question 2 of 3</span>
+          <span class="q-text">Which of these have you bought in the last three months?</span>
+          <span class="q-note">Choose as many as apply, or none of them.</span>
+        </legend>
+
+        <div class="choices">
+          <label class="choice">
+            <input type="checkbox" name="bought" value="groceries" data-group="bought" data-required>
+            <span class="choice-text">Groceries delivered to your door</span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="bought" value="streaming" data-group="bought" data-required>
+            <span class="choice-text">A streaming or music subscription</span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="bought" value="petfood" data-group="bought" data-required>
+            <span class="choice-text">Pet food or pet supplies</span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="bought" value="phone" data-group="bought" data-required>
+            <span class="choice-text">A phone, tablet or laptop</span>
+          </label>
+          <!-- "none of these" has to clear the rest, or people tick it on top of
+               an answer and the row contradicts itself. -->
+          <label class="choice is-apart">
+            <input type="checkbox" name="bought" value="none" data-group="bought" data-exclusive data-required>
+            <span class="choice-text">None of these</span>
+          </label>
+        </div>
+        <p class="q-error" data-q-error>Pick at least one, or &ldquo;None of these&rdquo;.</p>
+      </fieldset>
+
+      <!-- open text -->
+      <fieldset class="panel question" data-question>
+        <legend class="q-head">
+          <span class="q-num">Question 3 of 3</span>
+          <span class="q-text">Is there a brand you have stopped buying recently? Tell us which, and why.</span>
+          <span class="q-note">In your own words. Leave it blank if nothing comes to mind.</span>
+        </legend>
+
+        <label class="open">
+          <span class="visually-hidden">Your answer</span>
+          <textarea class="open-input" name="brand" rows="4" maxlength="500"
+                    placeholder="A sentence or two is plenty." data-count-max="500"></textarea>
+        </label>
+        <p class="open-count"><span data-count-now>0</span> / 500</p>
+      </fieldset>
+
+      <div class="quiz-foot panel">
+        <p class="quiz-foot-note">
+          Your answers are saved against your profile, not against your name. You can
+          change any of them later from <a href="profile.html">your profile</a>.
+        </p>
+        <button type="submit" class="btn btn-brand quiz-submit">
+          Submit answers <span class="arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- ---- what replaces it once it is sent ---- -->
+    <section class="panel quiz-done" data-quiz-done hidden tabindex="-1">
+      <span class="result-mark is-good" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24"><use href="#i-check"/></svg>
+      </span>
+      <h2 class="quiz-done-title">Thank you &mdash; that is all three</h2>
+      <p class="quiz-done-sub">
+        <strong>9 points</strong> have been added to your balance. Your answers are in,
+        and the surveys you are offered will start matching them from today.
+      </p>
+
+      <div class="quiz-done-sums">
+        <span class="sum">
+          <span class="sum-label">Balance now</span>
+          <span class="sum-figure">112 <span class="unit">points</span></span>
+        </span>
+        <span class="sum">
+          <span class="sum-label">To your next reward</span>
+          <span class="sum-figure">163 <span class="unit">points</span></span>
+        </span>
+      </div>
+
+      <div class="quiz-done-go">
+        <a href="dashboard.html" class="btn btn-brand">See what else is open <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a href="wallet.html" class="btn btn-ghost">Go to my wallet</a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="app-footer">
+  <div class="container app-footer-inner">
+    <a class="brand-lockup" href="index.html">
+      <img src="assets/logo-mark.png" alt="" class="brand-mark">
+      <span class="brand-name">SondageDirect</span>
+    </a>
+    <nav class="app-footer-nav" aria-label="Footer">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#faq">Help</a>
+      <a href="terms-conditions.html">Terms</a>
+      <a href="privacy-policy.html">Privacy</a>
+      <a href="mailto:sondagedirect@gavenze.com">Contact</a>
+    </nav>
+    <p class="app-footer-copy">
+      &copy; 2026 Sondage Direct &mdash; a brand by Main Frame Ltd, registered in Sofia, Bulgaria.
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

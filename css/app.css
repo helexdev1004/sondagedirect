@@ -877,6 +877,337 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
 
 .who .avatar{ width:30px; height:30px; font-size:11.5px; }
 
+/* the icon tile shrinks inside a table cell - a 40px tile on a 16px row
+   makes the row taller than its own text */
+.data-table .who .row-icon{ width:30px; height:30px; border-radius:9px; flex:none; }
+
+/* a reference is for quoting, not reading, so it is set in the same tabular
+   figures as the amounts and a size down */
+.ref{
+  font-variant-numeric:tabular-nums;
+  font-size:13px;
+  color:var(--body);
+  letter-spacing:.01em;
+  white-space:nowrap;
+}
+
+/* sits under a table rather than beside it, inside the same card */
+.table-note{
+  margin:0;
+  padding:14px 22px;
+  border-top:1px solid var(--border);
+  background:var(--bg-soft);
+  color:var(--body);
+  font-size:12.5px;
+  line-height:1.6;
+}
+
+/* ---- profiling survey ----
+   Questions, one panel each. A fieldset/legend rather than a div/h2 so the
+   question is read out with every option in it, which is the whole reason
+   those two elements exist. */
+
+.quiz{ display:flex; flex-direction:column; gap:18px; }
+
+.question{
+  padding:26px 28px 24px;
+  border:1px solid var(--border);
+  margin:0;
+}
+
+/* A legend is not laid out like anything else - it straddles the fieldset's
+   own border box and ignores most of what you set on it, which put every
+   question's text outside and across the top edge of its panel. Floating it
+   takes it out of that special case and back into normal flow; the next
+   element then has to clear the float. min-width:0 on the fieldset stops it
+   refusing to shrink below its content, which is a separate piece of legacy
+   fieldset behaviour. */
+.question{ min-width:0; }
+
+.q-head{
+  float:left;
+  display:block;
+  width:100%;
+  padding:0;
+  margin:0 0 18px;
+}
+
+.q-head + *{ clear:both; }
+
+.q-num{
+  display:block;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:var(--blue-btn);
+  margin-bottom:8px;
+}
+
+.q-text{
+  display:block;
+  font-size:18.5px;
+  font-weight:700;
+  line-height:1.35;
+  color:var(--navy);
+  letter-spacing:-.015em;
+}
+
+.q-note{
+  display:block;
+  font-size:13px;
+  color:var(--body);
+  margin-top:6px;
+}
+
+.choices{ display:flex; flex-direction:column; gap:9px; }
+
+/* The whole row is the target, not the 19px control. On a phone a native
+   radio is about a third of the minimum tap size, and the label beside it is
+   the part people actually aim at. */
+.choice{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:14px 16px;
+  border:1.5px solid var(--border);
+  border-radius:13px;
+  background:var(--white);
+  cursor:pointer;
+  transition:border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+.choice:hover{ border-color:#A9C8EC; background:#FBFDFF; }
+
+/* "None of these" answers a different question from the four above it, so it
+   is set apart rather than left as a fifth item in the same run. */
+.choice.is-apart{ margin-top:5px; border-style:dashed; }
+
+/* the control is drawn rather than native: a native one cannot be resized or
+   recoloured consistently across browsers, and these need to read at a glance */
+.choice input{
+  appearance:none;
+  -webkit-appearance:none;
+  flex:none;
+  width:21px;
+  height:21px;
+  margin:0;
+  border:2px solid #B9CBE4;
+  background:var(--white);
+  cursor:pointer;
+  transition:border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+.choice input[type="radio"]{ border-radius:50%; }
+.choice input[type="checkbox"]{ border-radius:7px; }
+
+.choice input:checked{
+  border-color:var(--blue-btn);
+  background:var(--blue-btn);
+}
+
+/* the dot and the tick, drawn with a shadow and a mask so neither needs an
+   extra element inside the label */
+.choice input[type="radio"]:checked{
+  box-shadow:inset 0 0 0 4px var(--white);
+}
+
+.choice input[type="checkbox"]:checked{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:13px 13px;
+}
+
+.choice input:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+.choice:has(input:checked){
+  border-color:var(--blue-btn);
+  background:#F2F7FF;
+  box-shadow:0 0 0 3px rgba(11,85,206,.1);
+}
+
+.choice-text{ font-size:15px; color:var(--navy); line-height:1.4; }
+
+.open{ display:block; }
+
+.open-input{
+  width:100%;
+  font:inherit;
+  font-size:15px;
+  line-height:1.6;
+  color:var(--navy);
+  background-color:var(--bg-soft);
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:14px 16px;
+  resize:vertical;
+  min-height:112px;
+  transition:border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.open-input::placeholder{ color:#9AA7BF; }
+
+.open-input:focus{
+  outline:none;
+  background-color:var(--white);
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(8,116,252,.14);
+}
+
+.open-count{
+  margin:8px 0 0;
+  text-align:right;
+  font-size:12.5px;
+  color:var(--body);
+  font-variant-numeric:tabular-nums;
+}
+
+.open-count.is-near{ color:#9D650A; font-weight:600; }
+
+/* hidden until a submit finds the question unanswered */
+.q-error{
+  display:none;
+  margin:14px 0 0;
+  color:#CD352B;
+  font-size:13px;
+  font-weight:500;
+}
+
+.question.is-bad{ border-color:#E0837B; background:#FFFCFC; }
+.question.is-bad .q-error{ display:block; }
+
+/* what it pays, beside the title */
+.quiz-pay{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+
+.quiz-pay-figure{
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-.025em;
+  color:var(--navy);
+  font-variant-numeric:tabular-nums;
+}
+
+.quiz-pay-note{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  color:var(--body);
+}
+
+.quiz-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:22px;
+  flex-wrap:wrap;
+  padding:22px 28px;
+}
+
+.quiz-foot-note{
+  margin:0;
+  max-width:46em;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--body);
+}
+
+.quiz-foot-note a{ color:var(--blue-btn); font-weight:600; }
+.quiz-foot-note a:hover{ text-decoration:underline; }
+
+.quiz-submit{ flex:none; min-height:52px; padding-inline:30px; }
+
+/* ---- and what replaces the form once it is sent ---- */
+
+.quiz-done{ padding:44px 32px 38px; text-align:center; }
+.quiz-done:focus{ outline:none; }
+
+.quiz-done .result-mark{
+  display:grid;
+  width:70px;
+  height:70px;
+  margin:0 auto 22px;
+  border-radius:50%;
+  place-items:center;
+  color:#fff;
+  background:linear-gradient(145deg,#2BC48A 0%,#0E8F63 100%);
+  box-shadow:0 14px 30px -12px rgba(14,143,99,.75), inset 0 1px 0 rgba(255,255,255,.4);
+}
+
+.quiz-done-title{
+  font-size:clamp(23px, 1.2rem + .8vw, 29px);
+  font-weight:800;
+  letter-spacing:-.025em;
+  color:var(--navy);
+  margin:0;
+}
+
+.quiz-done-sub{
+  max-width:34em;
+  margin:12px auto 0;
+  color:var(--body);
+  font-size:15px;
+  line-height:1.65;
+}
+
+.quiz-done-sub strong{ color:#0B7F58; font-weight:700; }
+
+/* the two figures a person wants straight after answering: what they have,
+   and how far that leaves them from something they can spend */
+.quiz-done-sums{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin:26px 0 0;
+}
+
+.sum{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:168px;
+  padding:15px 22px;
+  border-radius:15px;
+  background:var(--bg-soft);
+  border:1px solid var(--border);
+}
+
+.sum-label{
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--body);
+}
+
+.sum-figure{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:var(--navy);
+  font-variant-numeric:tabular-nums;
+}
+
+.quiz-done-go{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:28px;
+}
+
+@media (max-width:767.98px){
+  .question{ padding:22px 20px 20px; }
+  .quiz-foot{ padding:20px; }
+  .quiz-submit{ width:100%; }
+  .quiz-pay{ align-items:flex-start; }
+  .quiz-done{ padding:34px 20px 30px; }
+  .sum{ flex:1 1 100%; }
+  .quiz-done-go .btn{ width:100%; }
+}
+
 /* ---- empty states + small print ---- */
 
 .empty{

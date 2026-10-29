@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Survey finished &mdash; SondageDirect</title>
+<meta name="description" content="Where a survey leaves you when it ends, whether you finished it or did not qualify for it.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<script>
+  /* Which of the two this is, decided before first paint so neither version is
+     ever briefly visible as the other. Same query the live page uses:
+     ?s=completed is the finished one, anything else is not qualified. */
+  (function () {
+    var done = /[?&]s=completed(&|$)/.test(window.location.search);
+    document.documentElement.classList.add(done ? 'is-done' : 'is-screened');
+
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var root = document.documentElement;
+    root.classList.add('sd-anim');
+    window.setTimeout(function () {
+      if (!root.classList.contains('sd-anim-ready')) root.classList.remove('sd-anim');
+    }, 2500);
+  })();
+</script>
+</head>
+<body class="auth-body">
+
+<!-- just what this page uses. Lucide 0.544 (ISC). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.013 3H2l8 9.46V19l4 2v-8.54l.9-1.055"/><path d="m22 3-5 5"/><path d="m17 3 5 5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></symbol>
+</defs></svg>
+
+<header class="auth-bar">
+  <div class="container auth-bar-inner">
+    <a class="brand-lockup" href="index.html">
+      <img src="assets/logo-mark.png" alt="" class="brand-mark">
+      <span class="brand-name">SondageDirect</span>
+    </a>
+    <div class="auth-bar-aside">
+      <a href="signin.html" class="auth-link d-none d-sm-inline">Log in</a>
+      <a href="signup.html" class="btn btn-ghost">Create an account</a>
+    </div>
+  </div>
+</header>
+
+<main class="auth-main">
+  <div class="container">
+    <div class="auth-stage">
+
+      <div class="auth-card glass is-centred result" data-anim="up">
+
+        <!-- Both versions are in the markup and the <html> class picks one. A
+             panelist only ever sees one, and the reviewer can see both by
+             changing the query rather than by opening a second file. -->
+        <span class="result-mark is-good" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 24 24"><use href="#i-tick"/></svg>
+        </span>
+        <span class="result-mark is-screen" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24"><use href="#i-filter"/></svg>
+        </span>
+
+        <h1 class="auth-title only-done">Thank you for completing this survey!</h1>
+        <h1 class="auth-title only-screened">Unfortunately, you didn&rsquo;t qualify for this survey</h1>
+
+        <!-- The points are the one thing a panelist actually wants off this
+             page, so they are stated rather than left to the dashboard. It
+             needs the amount passing in on the redirect - see README. -->
+        <p class="earned only-done">
+          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark"/></svg>
+          <strong>+14 points</strong> added to your balance
+        </p>
+
+        <p class="auth-sub only-screened">
+          Every survey is looking for a particular group of people, and this one
+          wasn&rsquo;t looking for yours. Nothing has been taken off your balance,
+          and it doesn&rsquo;t affect which surveys you are sent next.
+        </p>
+
+        <p class="auth-sub">Have a look at what else is open to you right now.</p>
+
+        <a href="dashboard.html" class="btn btn-brand auth-submit">
+          Continue <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+
+        <p class="auth-switch only-screened">
+          Surveys that don&rsquo;t match are the reason
+          <a href="profile.html" class="auth-link">keeping your profile up to date</a>
+          is worth the few minutes.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="app-footer">
+  <div class="container app-footer-inner">
+    <a class="brand-lockup" href="index.html">
+      <img src="assets/logo-mark.png" alt="" class="brand-mark">
+      <span class="brand-name">SondageDirect</span>
+    </a>
+    <nav class="app-footer-nav" aria-label="Footer">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#faq">Help</a>
+      <a href="terms-conditions.html">Terms</a>
+      <a href="privacy-policy.html">Privacy</a>
+      <a href="mailto:sondagedirect@gavenze.com">Contact</a>
+    </nav>
+    <p class="app-footer-copy">
+      &copy; 2026 Sondage Direct &mdash; a brand by Main Frame Ltd, registered in Sofia, Bulgaria.
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/animations.js"></script>
+</body>
+</html>

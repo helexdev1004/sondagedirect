@@ -364,6 +364,87 @@
     });
   }
 
+  /* profiling survey */
+
+  // Three questions, one page, no back end. Submitting checks the two that
+  // have to be answered, then swaps the form for the confirmation.
+  (function () {
+    var quiz = document.querySelector('[data-quiz]');
+    if (!quiz) return;
+
+    var done = document.querySelector('[data-quiz-done]');
+
+    // "None of these" clears the others and any other answer clears it -
+    // otherwise people tick it on top of an answer and the row says two
+    // things at once.
+    [].slice.call(quiz.querySelectorAll('[data-group]')).forEach(function (box) {
+      box.addEventListener('change', function () {
+        if (!box.checked) return;
+        var peers = [].slice.call(quiz.querySelectorAll('[data-group="' + box.getAttribute('data-group') + '"]'));
+        var exclusive = box.hasAttribute('data-exclusive');
+        peers.forEach(function (p) {
+          if (p === box) return;
+          if (exclusive || p.hasAttribute('data-exclusive')) p.checked = false;
+        });
+      });
+    });
+
+    // How much room is left, and only once it starts to matter - a counter
+    // sitting at 0/500 from the start is noise.
+    var open = quiz.querySelector('[data-count-max]');
+    var now  = quiz.querySelector('[data-count-now]');
+    if (open && now) {
+      var max = parseInt(open.getAttribute('data-count-max'), 10);
+      open.addEventListener('input', function () {
+        now.textContent = open.value.length;
+        now.parentNode.classList.toggle('is-near', open.value.length > max * 0.9);
+      });
+    }
+
+    var answered = function (q) {
+      var ins = [].slice.call(q.querySelectorAll('[data-required]'));
+      if (!ins.length) return true;
+      return ins.some(function (i) { return i.checked; });
+    };
+
+    quiz.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var bad = [].slice.call(quiz.querySelectorAll('[data-question]')).filter(function (q) {
+        var ok = answered(q);
+        q.classList.toggle('is-bad', !ok);
+        return !ok;
+      });
+
+      if (bad.length) {
+        // to the first one that is wrong, not the top of the page
+        bad[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+        var first = bad[0].querySelector('[data-required]');
+        if (first) first.focus();
+        return;
+      }
+
+      quiz.hidden = true;
+      if (done) {
+        done.hidden = false;
+        // The form it replaced was taller, so everything measured below it is
+        // now wrong. Same reason the FAQ refreshes after it slides.
+        if (window.ScrollTrigger) window.requestAnimationFrame(function () { window.ScrollTrigger.refresh(); });
+        // Focus moves to the confirmation or a screen reader is left on a
+        // button that no longer exists and says nothing happened.
+        done.focus();
+        done.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    });
+
+    // Clearing the red the moment it is put right, rather than at the next
+    // submit, which is when it stops being useful.
+    quiz.addEventListener('change', function (e) {
+      var q = e.target.closest('[data-question]');
+      if (q && q.classList.contains('is-bad') && answered(q)) q.classList.remove('is-bad');
+    });
+  })();
+
   /* delete account */
 
   // button stays dead until the word is typed. one click is too easy to hit by

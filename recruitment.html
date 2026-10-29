@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join SondageDirect &mdash; SondageDirect</title>
+<meta name="description" content="What SondageDirect is, how points work, and what you need to accept before creating an account.">
+<link rel="icon" href="assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<script>
+  /* hide what's about to animate before anything paints. animations.js drops
+     the class as soon as it takes over; the timeout is the failsafe for when
+     it never does (blocked CDN, script error) so the page still renders. */
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var root = document.documentElement;
+    root.classList.add('sd-anim');
+    window.setTimeout(function () {
+      if (!root.classList.contains('sd-anim-ready')) root.classList.remove('sd-anim');
+    }, 2500);
+  })();
+</script>
+</head>
+<body class="auth-body">
+
+<!-- just what this page uses. Lucide 0.544 (ISC). stroke-width is on each
+     symbol here rather than in CSS - they all draw at one size. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" /><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" /></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="9" y2="9" /><line x1="4" x2="20" y1="15" y2="15" /><line x1="10" x2="8" y1="3" y2="21" /><line x1="16" x2="14" y1="3" y2="21" /></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+  <symbol id="i-coins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></symbol>
+</defs></svg>
+
+<header class="auth-bar">
+  <div class="container auth-bar-inner">
+    <a class="brand-lockup" href="index.html">
+      <img src="assets/logo-mark.png" alt="" class="brand-mark">
+      <span class="brand-name">SondageDirect</span>
+    </a>
+    <div class="auth-bar-aside">
+      <span class="d-none d-sm-inline">Already a member?</span>
+      <a href="signin.html" class="btn btn-ghost">Log in</a>
+    </div>
+  </div>
+</header>
+
+<main class="auth-main">
+  <div class="container">
+    <div class="auth-stage">
+
+      <div class="auth-card glass recruit" data-anim="up">
+
+        <!-- Two steps on one sheet. The live page gives no sense of how much
+             is left, so the count is stated and the bar fills - the single
+             cheapest thing you can do to stop people abandoning a form. -->
+        <div class="steps-head">
+          <span class="steps-count" data-step-label>Step 1 of 2</span>
+          <span class="steps-bar" aria-hidden="true"><span class="steps-fill" data-step-fill></span></span>
+        </div>
+
+        <!-- ---- step one: what this is, and the two things to accept ---- -->
+        <section data-pane="info">
+          <h1 class="auth-title">Share your opinion. Earn rewards.</h1>
+          <p class="auth-sub">
+            SondageDirect puts you in touch with companies and organisations that want
+            your opinion. By answering the surveys offered here you help them build new
+            products and services, or improve the ones they already have. Topics vary
+            widely: consumer goods, cars, drinks, food, pet products, telecoms and more.
+          </p>
+
+          <!-- The three facts people actually want out of the wall of text on
+               the current page, pulled out so they can be read in a glance. -->
+          <ul class="facts list-unstyled">
+            <li class="fact">
+              <span class="fact-mark is-blue" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24"><use href="#i-coins"/></svg></span>
+              <span>
+                <strong>5 to 30 points a survey</strong>
+                How many depends on how long it takes. Most are under ten minutes.
+              </span>
+            </li>
+            <li class="fact">
+              <span class="fact-mark is-green" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24"><use href="#i-gift"/></svg></span>
+              <span>
+                <strong>275 points gets you a reward</strong>
+                A gift card, PayPal or a virtual Visa. Every reward costs the same.
+              </span>
+            </li>
+            <li class="fact">
+              <span class="fact-mark is-amber" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24"><use href="#i-inbox"/></svg></span>
+              <span>
+                <strong>Surveys arrive by email</strong>
+                We send you the link each time. Check your spam folder, especially at first.
+              </span>
+            </li>
+          </ul>
+
+          <div class="consent-block">
+            <h2 class="consent-title">Two things to accept first</h2>
+            <p class="consent-lead">
+              Please read both before you carry on. They open in a new tab, so you
+              won&rsquo;t lose your place here.
+            </p>
+
+            <form data-consent-form novalidate>
+              <div class="consents">
+                <label class="consent" data-consent>
+                  <input type="checkbox" id="acceptPrivacy" required>
+                  <span>I accept the <a href="privacy-policy.html" target="_blank" rel="noopener">privacy policy</a>.</span>
+                </label>
+                <label class="consent" data-consent>
+                  <input type="checkbox" id="acceptTerms" required>
+                  <span>I accept the <a href="terms-conditions.html" target="_blank" rel="noopener">terms and conditions</a>.</span>
+                </label>
+              </div>
+
+              <!-- Disabled until both are ticked rather than failing after the
+                   press. There are only two of them and they are right above
+                   the button, so there is nothing to explain. -->
+              <button type="submit" class="btn btn-brand auth-submit" data-consent-go disabled>
+                Continue <span class="arrow" aria-hidden="true">&rarr;</span>
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ---- step two: the account itself ---- -->
+        <section data-pane="form" hidden>
+          <button type="button" class="back-link" data-step-back>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="transform:rotate(90deg)"><use href="#i-chev"/></svg>
+            Back
+          </button>
+
+          <h1 class="auth-title">Create your account</h1>
+
+          <p class="earned is-shown">
+            <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark"/></svg>
+            <strong>25 points</strong> go in the moment you finish
+          </p>
+
+          <p class="auth-sub">
+            It takes a minute. We ask for a date of birth and a postcode because
+            surveys are matched on them &mdash; nothing here is shared with anyone.
+          </p>
+
+          <form class="auth-form" novalidate data-auth-form>
+            <div class="auth-done" data-done role="status">
+              <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>
+              <span>Everything checks out. Accounts are not open yet, so nothing has been sent.</span>
+            </div>
+
+            <div class="fields">
+              <label class="field" data-field>
+                <span class="field-label">First name</span>
+                <span class="field-wrap">
+                  <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"/></svg>
+                  <input class="field-input" id="first" name="first" type="text" autocomplete="given-name" placeholder="Alex" required data-rule="required">
+                </span>
+                <span class="field-error">Tell us your first name.</span>
+              </label>
+              <label class="field" data-field>
+                <span class="field-label">Last name</span>
+                <span class="field-wrap">
+                  <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"/></svg>
+                  <input class="field-input" id="last" name="last" type="text" autocomplete="family-name" placeholder="Carter" required data-rule="required">
+                </span>
+                <span class="field-error">Tell us your last name.</span>
+              </label>
+              <label class="field is-full" data-field>
+                <span class="field-label">Email address</span>
+                <span class="field-wrap">
+                  <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg>
+                  <input class="field-input" id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required data-rule="email">
+                </span>
+                <span class="field-hint">This is where your surveys arrive, so use one you read.</span>
+                <span class="field-error">Enter an email address in the form you@example.com.</span>
+              </label>
+              <label class="field is-full" data-field>
+                <span class="field-label">Password</span>
+                <span class="field-wrap">
+                  <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lock"/></svg>
+                  <input class="field-input" id="password" name="password" type="password" autocomplete="new-password" placeholder="At least 10 characters" required data-rule="password">
+                  <button class="field-eye" type="button" data-eye="password" aria-label="Show password" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg></button>
+                </span>
+                <span class="field-hint">Longer is better than complicated.</span>
+                <span class="field-error">Use at least 10 characters.</span>
+              </label>
+              <label class="field" data-field>
+                <span class="field-label">Birth date</span>
+                <span class="field-wrap">
+                  <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cal"/></svg>
+                  <input class="field-input" id="born" name="born" type="date" required data-rule="age16">
+                </span>
+                <span class="field-error">You need to be at least 16 to join.</span>
+              </label>
+              <label class="field" data-field>
+                <span class="field-label">Country</span>
+                <span class="field-wrap">
+                  <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg>
+                  <select class="field-input" id="country" name="country" required data-rule="required"><option value="" selected disabled>Choose your country</option><option>Belgium</option><option>France</option><option>Germany</option><option>Italy</option><option>Netherlands</option><option>Portugal</option><option>Spain</option></select>
+                </span>
+                <span class="field-error">Choose your country.</span>
+              </label>
+              <label class="field is-full" data-field>
+                <span class="field-label">Postal code</span>
+                <span class="field-wrap">
+                  <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-hash"/></svg>
+                  <input class="field-input" id="post" name="post" type="text" autocomplete="postal-code" placeholder="1017 CV" required data-rule="required">
+                </span>
+                <span class="field-error">Enter your postal code.</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-brand auth-submit">
+              Create account <span class="arrow" aria-hidden="true">&rarr;</span>
+            </button>
+          </form>
+
+          <p class="auth-switch">
+            Already have an account? <a href="signin.html" class="auth-link">Log in</a>
+          </p>
+        </section>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="app-footer">
+  <div class="container app-footer-inner">
+    <a class="brand-lockup" href="index.html">
+      <img src="assets/logo-mark.png" alt="" class="brand-mark">
+      <span class="brand-name">SondageDirect</span>
+    </a>
+    <nav class="app-footer-nav" aria-label="Footer">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#faq">Help</a>
+      <a href="terms-conditions.html">Terms</a>
+      <a href="privacy-policy.html">Privacy</a>
+      <a href="mailto:sondagedirect@gavenze.com">Contact</a>
+    </nav>
+    <p class="app-footer-copy">
+      &copy; 2026 Sondage Direct &mdash; a brand by Main Frame Ltd, registered in Sofia, Bulgaria.
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
