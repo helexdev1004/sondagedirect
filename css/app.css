@@ -911,17 +911,6 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   white-space:nowrap;
 }
 
-/* sits under a table rather than beside it, inside the same card */
-.table-note{
-  margin:0;
-  padding:14px 22px;
-  border-top:1px solid var(--border);
-  background:var(--bg-soft);
-  color:var(--body);
-  font-size:12.5px;
-  line-height:1.6;
-}
-
 /* The auth form components (fields, consents, the step bar) are shared with
    recruitment, which is an app page. Their face is tuned for glass, where a
    translucent white sits on colour; on a white panel it resolves to white and
@@ -1122,25 +1111,17 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   color:var(--body);
 }
 
+/* holds only the submit now, so it sits at the end. space-between with one
+   item puts it at the start, which read as the button having fallen left. */
 .quiz-foot{
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  justify-content:flex-end;
   gap:22px;
   flex-wrap:wrap;
   padding:22px 28px;
 }
 
-.quiz-foot-note{
-  margin:0;
-  max-width:46em;
-  font-size:13px;
-  line-height:1.6;
-  color:var(--body);
-}
-
-.quiz-foot-note a{ color:var(--blue-btn); font-weight:600; }
-.quiz-foot-note a:hover{ text-decoration:underline; }
 
 .quiz-submit{ flex:none; min-height:52px; padding-inline:30px; }
 
