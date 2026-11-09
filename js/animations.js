@@ -474,7 +474,7 @@
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
     document.querySelectorAll('.btn-brand, .btn-white-cta').forEach(function (el) {
-      var pull = 0.28;
+      var pull = 0.14;
       el.addEventListener('mousemove', function (e) {
         var b = el.getBoundingClientRect();
         gsap.to(el, {
@@ -486,7 +486,10 @@
         });
       });
       el.addEventListener('mouseleave', function () {
-        gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)', overwrite: 'auto' });
+        // settles rather than springs. elastic.out oscillates several times
+        // before it stops, which on a page's one call to action reads as the
+        // button wobbling rather than responding.
+        gsap.to(el, { x: 0, y: 0, duration: 0.45, ease: 'power3.out', overwrite: 'auto' });
       });
     });
   }
