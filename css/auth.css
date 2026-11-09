@@ -555,6 +555,14 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   box-shadow:none;
 }
 
+/* back to log in, under the reset form. inline-flex so the chevron sits on
+   the text baseline rather than hanging off it. */
+.back-to-signin{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+
 /* ---- survey finished ----
    One file, two outcomes. The <html> class is set by an inline script before
    first paint, so neither version is ever briefly visible as the other. */

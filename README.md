@@ -26,6 +26,7 @@ Then <http://localhost:8123>.
 index.html              marketing homepage
 recruitment.html        two-step join: what this is + consent, then the form
 signin.html             log in
+forgot-password.html    send yourself a reset link
 signup.html             create an account
 dashboard.html          available surveys, balance, activity
 profiling-survey.html   a profiling survey: the three question types
