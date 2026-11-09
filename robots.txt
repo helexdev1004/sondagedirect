@@ -1,0 +1,14 @@
+# The signed-in screens are not entry points. A result pointing at a
+# dashboard that is not yours helps nobody, and the finish page only means
+# anything arriving from a survey.
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /wallet.html
+Disallow: /payout-methods.html
+Disallow: /invite.html
+Disallow: /profile.html
+Disallow: /profiling-survey.html
+Disallow: /finish.html
+
+Sitemap: https://helexdev1004.github.io/sondagedirect/sitemap.xml
