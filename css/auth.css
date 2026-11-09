@@ -481,15 +481,17 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   transition:width .45s cubic-bezier(.22,.8,.3,1);
 }
 
-/* the three facts worth pulling out of the wall of text */
-.facts{
+/* the three selling points worth pulling out of the wall of text.
+   named .perk, not .fact - app.css already has a .fact, which is the little
+   chip on a survey row, and recruitment loads both stylesheets now. */
+.perks{
   display:flex;
   flex-direction:column;
   gap:16px;
   margin:28px 0 0;
 }
 
-.fact{
+.perk{
   display:flex;
   align-items:flex-start;
   gap:13px;
@@ -498,14 +500,14 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   line-height:1.55;
 }
 
-.fact strong{
+.perk strong{
   display:block;
   color:var(--navy);
   font-size:15px;
   margin-bottom:2px;
 }
 
-.fact-mark{
+.perk-mark{
   flex:none;
   width:38px;
   height:38px;
@@ -515,9 +517,9 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.5);
 }
 
-.fact-mark.is-blue { background:linear-gradient(145deg,#E7F1FF,#D5E6FF); color:#0B55CE; }
-.fact-mark.is-green{ background:linear-gradient(145deg,#E9F8F1,#D7F1E5); color:#0B7F58; }
-.fact-mark.is-amber{ background:linear-gradient(145deg,#FEF6E7,#FDECCF); color:#9D650A; }
+.perk-mark.is-blue { background:linear-gradient(145deg,#E7F1FF,#D5E6FF); color:#0B55CE; }
+.perk-mark.is-green{ background:linear-gradient(145deg,#E9F8F1,#D7F1E5); color:#0B7F58; }
+.perk-mark.is-amber{ background:linear-gradient(145deg,#FEF6E7,#FDECCF); color:#9D650A; }
 
 /* The two things to accept, set apart from the reading. On the live page they
    are two checkboxes at the end of a long scroll with nothing marking them as
@@ -552,23 +554,6 @@ input[type="date"].field-input:invalid{ color:#79839E; }
   cursor:not-allowed;
   box-shadow:none;
 }
-
-.back-link{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  margin-bottom:16px;
-  padding:0;
-  border:0;
-  background:none;
-  color:var(--on-glass-dim);
-  font-size:13.5px;
-  font-weight:600;
-  cursor:pointer;
-  transition:color .2s ease, transform .2s ease;
-}
-
-.back-link:hover{ color:var(--navy); transform:translateX(-3px); }
 
 /* ---- survey finished ----
    One file, two outcomes. The <html> class is set by an inline script before

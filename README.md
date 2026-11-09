@@ -50,6 +50,9 @@ An inline script in the `<head>` sets a class on `<html>` before first paint, so
 neither version is ever briefly visible as the other. The completed version
 states the points earned; that figure has to be passed in on the redirect.
 
+All of these sit inside the signed-in shell - same app bar, same footer as
+the dashboard - because that is where a panelist meets them.
+
 `recruitment.html` holds both steps. Step one is the explanation and the two
 consent checkboxes; the Continue button stays disabled until both are ticked.
 Step two is the account form. Going back keeps what was typed, because nothing
@@ -64,8 +67,9 @@ these" clears the other answers and any other answer clears it.
 ```
 css/style.css   shared: tokens, header, footer, marketing sections, legal pages
 css/app.css     signed-in screens only, loaded after style.css
-css/auth.css    the four pages on the blue stage: signin, signup,
-                recruitment, finish. loaded after style.css
+css/auth.css    two jobs: the blue glass stage, used only by signin and
+                signup, and the form components (fields, consents, the step
+                bar) which recruitment also uses from inside the app shell
 js/main.js      header, nav marking, sliding pill, review dots, FAQ
 js/animations.js  scroll and entrance animation (GSAP + ScrollTrigger)
 js/app.js       segmented controls, wallet arc, copy, modals, profile editing

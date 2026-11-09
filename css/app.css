@@ -23,6 +23,20 @@
 
 .screen{ max-width:1120px; }
 
+/* A screen that is one card rather than a dashboard. Narrower, because the
+   card holds prose and a form, and both want a measure rather than the full
+   1120 the grids use. Centred on the page, not on the container, so it sits
+   under the middle of the bar. */
+.screen-narrow{ max-width:700px; }
+
+/* the card inside it is narrower again, so it has to centre on the container
+   rather than sit at its left edge */
+.screen-narrow > *{ margin-inline:auto; }
+
+/* A short screen - one result card and a button - left two thirds of the
+   viewport empty below it. Centred in whatever height is going instead. */
+.app-main.is-middle{ display:flex; align-items:center; }
+
 .screen-head{ margin-bottom:28px; }
 
 .screen-title{
@@ -48,10 +62,16 @@
   flex-wrap:wrap;
 }
 
+/* used as an <a> on most screens and as a <button> on recruitment, so the
+   button chrome is reset here rather than in a second rule */
 .back-link{
   display:inline-flex;
   align-items:center;
   gap:8px;
+  padding:0;
+  border:0;
+  background:none;
+  cursor:pointer;
   color:var(--body);
   font-size:14px;
   font-weight:500;
@@ -901,6 +921,12 @@ a.row-card:hover .row-go{ color:var(--blue); transform:translateX(3px); }
   font-size:12.5px;
   line-height:1.6;
 }
+
+/* The auth form components (fields, consents, the step bar) are shared with
+   recruitment, which is an app page. Their face is tuned for glass, where a
+   translucent white sits on colour; on a white panel it resolves to white and
+   the field loses its edge. The app's own soft tint instead. */
+.app-body{ --field-face:var(--bg-soft); }
 
 /* ---- profiling survey ----
    Questions, one panel each. A fieldset/legend rather than a div/h2 so the
